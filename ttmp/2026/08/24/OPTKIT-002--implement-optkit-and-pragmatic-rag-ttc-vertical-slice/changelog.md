@@ -31,3 +31,12 @@ P1 complete: froze byte-identical Coinvault/RAG-TTC semantic fixture and passed 
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/rag-semantic-fixture-v1.json — Canonical cross-product RAG fixture v1
 
+
+## 2026-08-24
+
+P2 complete: extracted one direct RAG-TTC retrieval service below Geppetto and preserved semantic fixture parity (commit ea6c629be)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/search/service.go — Canonical channel, collapse, fusion, augmentation, hydration, and source-verification path
+

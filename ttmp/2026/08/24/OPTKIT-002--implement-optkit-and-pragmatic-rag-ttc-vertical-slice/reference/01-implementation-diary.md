@@ -438,3 +438,84 @@ The fixture is canonical in the OPTKIT-002 ticket and synchronized into each pro
 - Expected fused order: `chunk-b`, `chunk-a`, `chunk-c`.
 - Expected returned/admitted order: `chunk-b`, `chunk-a`.
 - Evidence labels: `chunk-b → E1`, `chunk-a → E2`; repeated `chunk-b → E1`.
+
+## Step 5: Phase P2 — Extract the canonical RAG-TTC retrieval service
+
+Phase P2 moved channel execution, collapse, fusion, route augmentation, hydration, and source-catalog verification into a direct `search.Service`. The Geppetto-facing `SearchTool` now owns only model input bounds, conversation-scoped evidence admission, result shaping, registration, and the structured-first tool outcome.
+
+The shared P1 fixture now calls the direct service before the tool and proves identical fused evidence order. There is one retrieval implementation and no transport, sessionstream, HTTP, or Geppetto dependency in the service.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 3)
+
+**Assistant interpretation:** Continue through the next gated implementation phase after P1 completed.
+
+**Inferred user intent:** Establish the direct service seam required for evaluation and Optkit without changing current serving behavior.
+
+**Commit (RAG-TTC):** `ea6c629be8496a8ac0d262594df8161708dd6d5a` — "refactor(rag): extract canonical retrieval service"
+
+### What I did
+
+- Printed the P2 plan slip before code changes at `2026-08-24T22:59:02Z`.
+- Added `RetrievalRequest`, `RetrievalResult`, and `Service` in `pkg/ttc/search/service.go`.
+- Moved default/named route selection, lexical/vector execution, collapse, weighted RRF, augmentation, hydration, and verified source checks into `Service.Retrieve`.
+- Moved route validation and registration into `Service.AddRoute`.
+- Changed `SearchTool` to compose one `Service` and delegate retrieval.
+- Kept the evidence ledger on each tool instance so conversation scope did not move into the reusable service.
+- Added direct-service fixture assertions for fused and hydrated chunk order.
+- Ran focused tests, focused race tests, the complete RAG-TTC suite, lint, vet, and pre-commit tests.
+
+### Why
+
+- Serving and experiments need one semantic execution path below model and transport adapters.
+- Retrieval is reusable across calls; evidence labels and budgets are session state and must not become service-global.
+- Moving source verification into the service prevents direct callers from bypassing a guarantee previously enforced only while shaping tool output.
+
+### What worked
+
+- The fixture preserves fused order `chunk-b, chunk-a, chunk-c` through the direct service.
+- Existing default, named, fallback, augmentation, structured, cancellation, bounds, source verification, and Geppetto registration tests pass unchanged in intent.
+- `go test -race ./pkg/ttc/search -count=1` passes.
+- The full repository test and lint hooks pass.
+- The refactor removed 95 lines from the tool while adding an independently callable service.
+
+### What didn't work
+
+- N/A. The extraction and all validation passed on the first implementation attempt.
+
+### What I learned
+
+- The existing package boundary was already suitable; a separate new module/package was unnecessary.
+- Source-catalog verification is retrieval semantics, while citation assignment is conversation semantics.
+- Returning channel, fused, and hydrated evidence together gives P3/P4 observability without reconstructing stages from tool output.
+
+### What was tricky to build
+
+- Augmenters require both channel rankings and the content store, so they remain prepared route behavior inside the service rather than tool behavior.
+- Tool results copy contributions by hydrated rank. Preserving the complete fused list in `RetrievalResult` keeps this exact behavior while avoiding a second fusion path.
+- `AddRoute` mutates setup state and is intentionally restricted by documentation to pre-concurrency composition; P3 will compile routes before exposure.
+
+### What warrants a second pair of eyes
+
+- Review `Service.Retrieve` for exact parity with the deleted block in `SearchTool.RunRoute`.
+- Confirm that returning full bounded hydrated evidence is the right direct-service contract before P4 diagnostics.
+- Review the permanent tool/service boundary; it is not a compatibility shim.
+- Consider whether `Source` should eventually be replaced by source metadata carried on direct evidence results.
+
+### What should be done in the future
+
+- P3 should add immutable runtime identity and prepared route compilation without reintroducing tool-owned retrieval.
+- P4 should consume `Channels`, `Fused`, and `Evidence` directly for stage diagnosis.
+
+### Code review instructions
+
+- Start at `pkg/ttc/search/service.go`, then compare the reduced `SearchTool.RunRoute`.
+- Review `semantic_fixture_test.go` direct-versus-tool assertions.
+- Run `GOWORK=off go test -race ./pkg/ttc/search -count=1` and `GOWORK=off go test ./... -count=1`.
+
+### Technical details
+
+- Direct API: `Service.Retrieve(context.Context, RetrievalRequest) (RetrievalResult, error)`.
+- Service output: normalized query, route observation, collapsed channels, fused hits, hydrated evidence.
+- Session output: citations, evidence budget effects, new-evidence count, and model-facing result limit.

@@ -14,13 +14,16 @@ Topics:
 DocType: index
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: ws://rag-ttc/pkg/ttc/search/service.go
+      Note: P2 canonical direct retrieval service (commit ea6c629be)
 ExternalSources: []
 Summary: Phase-gated implementation of the Optkit foundation and a Coinvault-informed, RagKit-backed RAG-TTC product campaign.
 LastUpdated: 2026-08-24T22:55:00-04:00
 WhatFor: Navigate the implementation plan, phase status, diary, scripts, and validation evidence for OPTKIT-002.
 WhenToUse: Start here before implementing, reviewing, or resuming any OPTKIT-002 phase.
 ---
+
 
 # Implement Optkit and Pragmatic RAG-TTC Vertical Slice
 
@@ -45,8 +48,9 @@ This ticket implements the architecture assessed in OPTKIT-001. Optkit remains a
 - P0 plan slip: printed.
 - **P0 Optkit baseline:** complete and green.
 - **P1 semantic RAG fixtures:** complete and green.
-- P2 canonical retrieval service: next.
-- P3-P8 and final delivery: pending.
+- **P2 canonical retrieval service:** complete and green.
+- P3 runtime identity, routes, and policy: next.
+- P4-P8 and final delivery: pending.
 
 ## P0 result
 

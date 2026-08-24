@@ -4,7 +4,7 @@
 
 - [x] P0 Import and normalize the supplied Optkit baseline <!-- t:9qtv -->
 - [x] P1 Freeze cross-product semantic RAG fixtures <!-- t:qvla -->
-- [ ] P2 Extract the canonical RAG-TTC retrieval service <!-- t:1rwx -->
+- [x] P2 Extract the canonical RAG-TTC retrieval service <!-- t:1rwx -->
 - [ ] P3 Add runtime identity, route compilation, and policy boundaries <!-- t:uxnu -->
 - [ ] P4 Build stage-aware deterministic retrieval evaluation <!-- t:sk0u -->
 - [ ] P5 Extract the direct answer application service and contracts <!-- t:r0sp -->
