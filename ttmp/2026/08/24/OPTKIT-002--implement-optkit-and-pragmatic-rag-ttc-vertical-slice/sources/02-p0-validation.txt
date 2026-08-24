@@ -1,0 +1,326 @@
+# OPTKIT-002 P0 validation
+
+revision: b49aece6daf446fe717d4aa19e42c0fc9e129a95
+validated_utc: 2026-08-24T22:45:42Z
+
+
+$ make ci-check
+GOWORK=off CGO_ENABLED=1 go vet ./...
+GOWORK=off CGO_ENABLED=1 go test ./... -count=1
+ok  	github.com/go-go-golems/optkit/artifact	0.021s
+ok  	github.com/go-go-golems/optkit/artifact/filesystem	0.026s
+?   	github.com/go-go-golems/optkit/artifact/memory	[no test files]
+ok  	github.com/go-go-golems/optkit/budget	0.011s
+ok  	github.com/go-go-golems/optkit/campaign	0.009s
+ok  	github.com/go-go-golems/optkit/cmd/optkit	0.603s
+ok  	github.com/go-go-golems/optkit/episode	0.005s
+ok  	github.com/go-go-golems/optkit/examples/numbergame	0.539s
+ok  	github.com/go-go-golems/optkit/experiment	0.005s
+ok  	github.com/go-go-golems/optkit/internal/archtest	0.008s
+ok  	github.com/go-go-golems/optkit/internal/sqlite	0.013s
+?   	github.com/go-go-golems/optkit/local	[no test files]
+ok  	github.com/go-go-golems/optkit/measure	0.006s
+?   	github.com/go-go-golems/optkit/projection	[no test files]
+ok  	github.com/go-go-golems/optkit/record	0.005s
+?   	github.com/go-go-golems/optkit/scheduler	[no test files]
+ok  	github.com/go-go-golems/optkit/space	0.005s
+ok  	github.com/go-go-golems/optkit/store/sqlite	0.112s
+GOWORK=off CGO_ENABLED=0 go test ./... -count=1
+ok  	github.com/go-go-golems/optkit/artifact	0.020s
+ok  	github.com/go-go-golems/optkit/artifact/filesystem	0.041s
+?   	github.com/go-go-golems/optkit/artifact/memory	[no test files]
+ok  	github.com/go-go-golems/optkit/budget	0.004s
+ok  	github.com/go-go-golems/optkit/campaign	0.011s
+?   	github.com/go-go-golems/optkit/cmd/optkit	[no test files]
+ok  	github.com/go-go-golems/optkit/episode	0.005s
+?   	github.com/go-go-golems/optkit/examples/numbergame	[no test files]
+ok  	github.com/go-go-golems/optkit/experiment	0.003s
+ok  	github.com/go-go-golems/optkit/internal/archtest	0.005s
+?   	github.com/go-go-golems/optkit/internal/sqlite	[no test files]
+?   	github.com/go-go-golems/optkit/local	[no test files]
+ok  	github.com/go-go-golems/optkit/measure	0.008s
+?   	github.com/go-go-golems/optkit/projection	[no test files]
+ok  	github.com/go-go-golems/optkit/record	0.004s
+?   	github.com/go-go-golems/optkit/scheduler	[no test files]
+ok  	github.com/go-go-golems/optkit/space	0.003s
+?   	github.com/go-go-golems/optkit/store/sqlite	[no test files]
+GOWORK=off CGO_ENABLED=1 go build ./...
+
+$ make race
+GOWORK=off CGO_ENABLED=1 go test -race ./... -count=1
+ok  	github.com/go-go-golems/optkit/artifact	1.033s
+ok  	github.com/go-go-golems/optkit/artifact/filesystem	1.047s
+?   	github.com/go-go-golems/optkit/artifact/memory	[no test files]
+ok  	github.com/go-go-golems/optkit/budget	1.033s
+ok  	github.com/go-go-golems/optkit/campaign	1.028s
+ok  	github.com/go-go-golems/optkit/cmd/optkit	1.962s
+ok  	github.com/go-go-golems/optkit/episode	1.027s
+ok  	github.com/go-go-golems/optkit/examples/numbergame	1.915s
+ok  	github.com/go-go-golems/optkit/experiment	1.020s
+ok  	github.com/go-go-golems/optkit/internal/archtest	1.028s
+ok  	github.com/go-go-golems/optkit/internal/sqlite	1.025s
+?   	github.com/go-go-golems/optkit/local	[no test files]
+ok  	github.com/go-go-golems/optkit/measure	1.014s
+?   	github.com/go-go-golems/optkit/projection	[no test files]
+ok  	github.com/go-go-golems/optkit/record	1.014s
+?   	github.com/go-go-golems/optkit/scheduler	[no test files]
+ok  	github.com/go-go-golems/optkit/space	1.015s
+ok  	github.com/go-go-golems/optkit/store/sqlite	1.077s
+
+$ make lint
+GOWORK=off golangci-lint run -v
+level=info msg="golangci-lint has version 2.4.0 built with go1.26.1 from (unknown, modified: ?, mod sum: \"h1:qz6O6vr7kVzXJqyvHjHSz5fA3D+PM8v96QU5gxZCNWM=\") on (unknown)"
+level=info msg="[config_reader] Config search paths: [./ /home/manuel/workspaces/2026-08-24/use-optkit/optkit /home/manuel/workspaces/2026-08-24/use-optkit /home/manuel/workspaces/2026-08-24 /home/manuel/workspaces /home/manuel /home /]"
+level=info msg="[config_reader] Used config file .golangci.yml"
+level=info msg="[config_reader] Module name \"github.com/go-go-golems/optkit\""
+level=info msg="maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"
+level=info msg="[goenv] Read go env for 2.80279ms: map[string]string{\"GOCACHE\":\"/home/manuel/.cache/go-build\", \"GOROOT\":\"/usr/local/go\"}"
+level=info msg="[lintersdb] Active 9 linters: [errcheck exhaustive gofmt govet ineffassign nonamedreturns predeclared staticcheck unused]"
+level=info msg="[loader] Go packages loading at mode 8767 (compiled_files|files|imports|types_sizes|deps|exports_file|name) took 74.536511ms"
+level=info msg="[runner/filename_unadjuster] Pre-built 0 adjustments in 4.87754ms"
+level=info msg="[linters_context/goanalysis] analyzers took 0s with no stages"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/exclusion_rules] Skipped 11 issues by rules: [Path: \"_test\\\\.go\", Linters: \"errcheck\"]"
+level=info msg="[runner] Issues before processing: 39, after processing: 0"
+level=info msg="[runner] Processors filtering stat (in/out): generated_file_filter: 11/11, path_absoluter: 39/39, cgo: 39/39, filename_unadjuster: 39/39, invalid_issue: 39/11, exclusion_rules: 11/0, path_relativity: 11/11, exclusion_paths: 11/11"
+level=info msg="[runner] processing took 414.008µs with stages: invalid_issue: 241.709µs, exclusion_rules: 69.52µs, generated_file_filter: 68.667µs, path_relativity: 18.932µs, cgo: 3.809µs, path_absoluter: 2.294µs, sort_results: 2.141µs, max_same_issues: 1.278µs, nolint_filter: 1.057µs, filename_unadjuster: 905ns, exclusion_paths: 639ns, severity-rules: 625ns, fixer: 564ns, max_per_file_from_linter: 374ns, path_prettifier: 372ns, diff: 353ns, max_from_linter: 226ns, path_shortener: 214ns, uniq_by_line: 171ns, source_code: 158ns"
+level=info msg="[runner] linters took 29.762918ms with stages: goanalysis_metalinter: 29.248652ms"
+0 issues.
+level=info msg="File cache stats: 0 entries of total size 0B"
+level=info msg="Memory: 3 samples, avg is 58.0MB, max is 71.6MB"
+level=info msg="Execution took 112.535577ms"
+
+$ GOWORK=off go run ./cmd/optkit demo --store /tmp/tmp.UZMlqnJz5E --reset
+{
+  "campaign": "campaign:468f0c1caf0f2cbe7b22ea54e6490d2d",
+  "candidate": "candidate:7352fad2bfeac8caa485885fc767bb8cd031c6b960ce679a3658d228e64a44e9",
+  "baseline": "snapshot:abaf1354710a5858ba594c40937e06bf535ae3d9754d2b43f646109521a0b2e1",
+  "challenger": "snapshot:d0073b9e4ab569008367851937c9397363238c4dcb2b9d1d217f128981ea95ec",
+  "patch": "patch:95d9160627d523946057f28f01fdcfa315e57a42accca582dfa8d38de7bcd491",
+  "trial": "trial:3347f0684e4c8e061316284058e903cfc0e6618231294a474c0f688c5d3e6619",
+  "estimate": {
+    "baseline": "baseline",
+    "treatment": "challenger",
+    "value": 0.71041675,
+    "sample_size": 4,
+    "missing": 0,
+    "deltas": [
+      0.5,
+      0.666667,
+      0.8,
+      0.875
+    ]
+  },
+  "decision": {
+    "policy": "numbergame.lexicographic/v1",
+    "status": "eligible",
+    "paired_accuracy_delta": 0.71041675,
+    "all_interventions_exercised": true,
+    "budget_violated": false,
+    "reason": "Every intervention was exercised and paired target accuracy improved."
+  },
+  "overview": {
+    "campaign": "campaign:468f0c1caf0f2cbe7b22ea54e6490d2d",
+    "version": 81,
+    "status": "completed",
+    "events": 81,
+    "episodes": 8,
+    "queued": 0,
+    "active": 0,
+    "completed": 8,
+    "failed_terminal": 0,
+    "last_digest": "sha256:a1a12ee286cf75857ab6d6e02a514d2986435fb416a2eedd2005f9c70f06c5a0"
+  },
+  "budget": {
+    "campaign": "campaign:468f0c1caf0f2cbe7b22ea54e6490d2d",
+    "resources": [
+      {
+        "resource": "episodes",
+        "limit": 8,
+        "reserved": 0,
+        "committed": 8,
+        "available": 0
+      },
+      {
+        "resource": "numbergame.operations",
+        "limit": 8,
+        "reserved": 0,
+        "committed": 8,
+        "available": 0
+      }
+    ],
+    "violated": false
+  },
+  "sample_trajectory": {
+    "digest": "sha256:8bc999f1d2daef46e0392a9dc4d776dcdd5eed60a5d6fc0e826781fb1d3566ea",
+    "media_type": "application/vnd.optkit.record+json",
+    "schema": "schema:optkit.trajectory/v1",
+    "size": 3027,
+    "sensitivity": "internal"
+  },
+  "store_root": "/tmp/tmp.UZMlqnJz5E",
+  "database_path": "/tmp/tmp.UZMlqnJz5E/optkit.db",
+  "artifacts_path": "/tmp/tmp.UZMlqnJz5E/artifacts"
+}
+
+$ env GOWORK=off go run ./cmd/optkit campaign inspect --store /tmp/tmp.UZMlqnJz5E --id campaign:468f0c1caf0f2cbe7b22ea54e6490d2d
+{
+  "overview": {
+    "campaign": "campaign:468f0c1caf0f2cbe7b22ea54e6490d2d",
+    "version": 81,
+    "status": "completed",
+    "events": 81,
+    "episodes": 8,
+    "queued": 0,
+    "active": 0,
+    "completed": 8,
+    "failed_terminal": 0,
+    "last_digest": "sha256:a1a12ee286cf75857ab6d6e02a514d2986435fb416a2eedd2005f9c70f06c5a0"
+  },
+  "budget": {
+    "campaign": "campaign:468f0c1caf0f2cbe7b22ea54e6490d2d",
+    "resources": [
+      {
+        "resource": "episodes",
+        "limit": 8,
+        "reserved": 0,
+        "committed": 8,
+        "available": 0
+      },
+      {
+        "resource": "numbergame.operations",
+        "limit": 8,
+        "reserved": 0,
+        "committed": 8,
+        "available": 0
+      }
+    ],
+    "violated": false
+  },
+  "event_kinds": {
+    "BudgetReserved": 8,
+    "CampaignCompleted": 1,
+    "CampaignCreated": 1,
+    "CampaignStarted": 1,
+    "CandidateProposed": 1,
+    "DecisionRecorded": 1,
+    "EpisodeAttemptStarted": 8,
+    "EpisodeCompleted": 8,
+    "EpisodeLeaseGranted": 8,
+    "EpisodeScheduled": 8,
+    "EstimateRecorded": 1,
+    "ObservationRecorded": 24,
+    "PlanCompiled": 1,
+    "SnapshotMaterialized": 1,
+    "TrialPlanned": 1,
+    "UsageCommitted": 8
+  },
+  "tail": [
+    {
+      "seq": 72,
+      "kind": "EpisodeLeaseGranted",
+      "subject": "episode:1b8d31e186897e58a3aa00fdf51a4893a2c8f867bd04e5af0d0d0bf1e81c5f7d",
+      "occurred_at": "2026-08-24T22:45:49.825547463Z",
+      "payload_digest": "sha256:73d786958cb9c06e891fba611e6d238bb1de297713302721917bbbbd4e842af9"
+    },
+    {
+      "seq": 73,
+      "kind": "EpisodeAttemptStarted",
+      "subject": "episode:1b8d31e186897e58a3aa00fdf51a4893a2c8f867bd04e5af0d0d0bf1e81c5f7d",
+      "occurred_at": "2026-08-24T22:45:49.827731456Z",
+      "payload_digest": "sha256:90c3afbadd09b2217040411b120cb34ece974bdeefa6f7ad527037662f7cf5e8"
+    },
+    {
+      "seq": 74,
+      "kind": "UsageCommitted",
+      "subject": "work:1772e691db2dc5c5e2336115a17c17cea396e613837840280ff783c18302b186",
+      "occurred_at": "2026-08-24T22:45:49.841097633Z",
+      "payload_digest": "sha256:5dfd26ef5e1ea5dcc3ec2601ca483c370e3bc98abb392e2ee759f46cc4a9c790"
+    },
+    {
+      "seq": 75,
+      "kind": "EpisodeCompleted",
+      "subject": "episode:1b8d31e186897e58a3aa00fdf51a4893a2c8f867bd04e5af0d0d0bf1e81c5f7d",
+      "occurred_at": "2026-08-24T22:45:49.842605164Z",
+      "payload_digest": "sha256:7dcb53938bad06935a6b8e384836a9e0e1ee3de1d6e486ab45aa4e45fd7cfc40"
+    },
+    {
+      "seq": 76,
+      "kind": "ObservationRecorded",
+      "subject": "observation:d33b6b5e0031f78c11455f3d3e8f3e11682d8633ed8a5b4749820ac955659eb4",
+      "occurred_at": "2026-08-24T22:45:49.844116144Z",
+      "payload_digest": "sha256:890d7618e6f842dc1b302ed04ca36b80176a9fb1301d584297bdd81d111bd058"
+    },
+    {
+      "seq": 77,
+      "kind": "ObservationRecorded",
+      "subject": "observation:aa8f8f1ffd36d0c46a4116a31547a7ce20b06d38085c0c8f96fdc7a3a093316d",
+      "occurred_at": "2026-08-24T22:45:49.845397891Z",
+      "payload_digest": "sha256:9b862b18b23da08a0b089803a43ace63f8d6b3a96b6a1570eb1ae5f8afa1b718"
+    },
+    {
+      "seq": 78,
+      "kind": "ObservationRecorded",
+      "subject": "observation:171064d6670445f29e919428ffcf54aa07b2c6fdcd6ecbdb2eb57f5e06bc9a7c",
+      "occurred_at": "2026-08-24T22:45:49.846728096Z",
+      "payload_digest": "sha256:89f64b95548c0c6a28b9de5f96af0650d244bbb841cd5230c5d2315a4a2c0843"
+    },
+    {
+      "seq": 79,
+      "kind": "EstimateRecorded",
+      "subject": "trial:3347f0684e4c8e061316284058e903cfc0e6618231294a474c0f688c5d3e6619",
+      "occurred_at": "2026-08-24T22:45:49.858855271Z",
+      "payload_digest": "sha256:3a6f7835849d0ef402e4a41e1c6335bde4b7c2b28bb679f7f2b10037460debc2"
+    },
+    {
+      "seq": 80,
+      "kind": "DecisionRecorded",
+      "subject": "candidate:7352fad2bfeac8caa485885fc767bb8cd031c6b960ce679a3658d228e64a44e9",
+      "occurred_at": "2026-08-24T22:45:49.861983071Z",
+      "payload_digest": "sha256:6c227644b60239bea4d212b1e8474f527c283165406be3e1dde084048b981632"
+    },
+    {
+      "seq": 81,
+      "kind": "CampaignCompleted",
+      "occurred_at": "2026-08-24T22:45:49.864501474Z",
+      "payload_digest": "sha256:8b1f0149914ae6b9b3bed7e7f75ec1a10bf2c6bda1c299d847de08864dd158aa"
+    }
+  ]
+}
+
+$ env GOWORK=off go run ./cmd/optkit campaign verify --store /tmp/tmp.UZMlqnJz5E --id campaign:468f0c1caf0f2cbe7b22ea54e6490d2d
+{
+  "campaign": "campaign:468f0c1caf0f2cbe7b22ea54e6490d2d",
+  "events": 81,
+  "journal": "verified",
+  "unique_event_payloads": 80
+}
+
+P0_VALIDATION=PASS

@@ -16,51 +16,41 @@ Intent: long-term
 Owners: []
 RelatedFiles: []
 ExternalSources: []
-Summary: ""
-LastUpdated: 2026-08-24T18:33:48.791637354-04:00
-WhatFor: ""
-WhenToUse: ""
+Summary: Phase-gated implementation of the Optkit foundation and a Coinvault-informed, RagKit-backed RAG-TTC product campaign.
+LastUpdated: 2026-08-24T22:55:00-04:00
+WhatFor: Navigate the implementation plan, phase status, diary, scripts, and validation evidence for OPTKIT-002.
+WhenToUse: Start here before implementing, reviewing, or resuming any OPTKIT-002 phase.
 ---
 
 # Implement Optkit and Pragmatic RAG-TTC Vertical Slice
 
 ## Overview
 
-<!-- Provide a brief overview of the ticket, its goals, and current status -->
+This ticket implements the architecture assessed in OPTKIT-001. Optkit remains a domain-neutral optimization and experiment framework; RagKit remains a separate RAG-domain library; RAG-TTC composes both as the first real product vertical slice.
 
-## Key Links
+## Key links
 
-- **Related Files**: See frontmatter RelatedFiles field
-- **External Sources**: See frontmatter ExternalSources field
+- [Detailed phased implementation plan](design-doc/01-phased-implementation-plan.md)
+- [Strict implementation diary](reference/01-implementation-diary.md)
+- [Tasks](tasks.md)
+- [Changelog](changelog.md)
+- [P0 archive import script](scripts/01-import-optkit-baseline.sh)
+- [P0 validation script](scripts/02-validate-p0.sh)
+- [P0 archive manifest](sources/01-optkit-baseline-manifest.txt)
+- [P0 validation transcript](sources/02-p0-validation.txt)
 
-## Status
+## Current status
 
-Current status: **active**
+- Overall plan slip: printed.
+- P0 plan slip: printed.
+- **P0 Optkit baseline:** complete and green.
+- P1 semantic RAG fixtures: next.
+- P2-P8 and final delivery: pending.
 
-## Topics
+## P0 result
 
-- optkit
-- rag
-- rag-ttc
-- coinvault
-- judgekit
-- implementation
-- migration
-- local-development
+The checked-out repository now contains the supplied Optkit implementation at archive revision `1786d1d`, normalized into the existing CI, lint, release, and ticket plumbing. Full CGO, no-CGO, race, vet, build, lint, demo, inspect, journal verification, artifact verification, and GoReleaser configuration checks pass.
 
-## Tasks
+## Stable boundary decision
 
-See [tasks.md](./tasks.md) for the current task list.
-
-## Changelog
-
-See [changelog.md](./changelog.md) for recent changes and decisions.
-
-## Structure
-
-- design/ - Architecture and design documents
-- reference/ - Prompt packs, API contracts, context summaries
-- playbooks/ - Command sequences and test procedures
-- scripts/ - Temporary code and tooling
-- various/ - Working notes and research
-- archive/ - Deprecated or reference-only artifacts
+RagKit primitives do not move into Optkit. Product-owned integration code composes Optkit orchestration and RagKit algorithms. Consolidation targets duplicated RagOpt and product-runner orchestration after behavioral parity is proven.

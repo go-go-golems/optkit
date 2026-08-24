@@ -15,14 +15,27 @@ DocType: reference
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: repo://.goreleaser.yaml
+      Note: Normalized release and Homebrew cask metadata
+    - Path: repo://Makefile
+      Note: Repository-level CGO, no-CGO, race, vet, build, lint, and demo gates
+    - Path: repo://artifact/filesystem/store.go
+      Note: Filesystem CAS cleanup and durability normalization
+    - Path: repo://campaign/reducer.go
+      Note: Explicit lifecycle and evidence-event projection behavior
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/design-doc/01-phased-implementation-plan.md
       Note: Controls phase gates and work-slip cadence
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/01-import-optkit-baseline.sh
+      Note: Reproducible archive import and collision policy
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/02-validate-p0.sh
+      Note: Complete P0 validation and smoke workflow
 ExternalSources: []
 Summary: Chronological implementation record for the Optkit and pragmatic RAG-TTC vertical slice, including phase slips, commands, commits, failures, decisions, and review instructions.
 LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 # Diary
@@ -193,3 +206,127 @@ This changes P8 from “move generic kit code” to “stabilize boundaries and 
 - Updated task ID: `o795`.
 - Stable dependency direction: product integration imports both Optkit and RagKit; Optkit core imports neither product nor RAG packages.
 - Superseded concept: mandatory migration of RagKit primitives into `optkit/rag`.
+
+## Step 3: Phase P0 — Import and normalize the Optkit baseline
+
+Phase P0 replaced the checked-out template with the complete supplied Optkit vertical slice while preserving GitHub workflows, release configuration, lint policy, project guidance, and both docmgr tickets. The source import is provenance-isolated from repository normalization so reviewers can compare the domain implementation directly with archive revision `1786d1d`.
+
+The imported module now contains 46 core Go files under artifact, budget, campaign, episode, experiment, measurement, scheduling, configuration-space, and storage packages, plus the CLI and Numbergame proof system. Full CGO, no-CGO, race, vet, build, lint, GoReleaser configuration, demo, inspect, and journal/artifact verification checks pass.
+
+### Prompt Context
+
+**User prompt (verbatim):**
+
+> ok, update the design as necessary, continue
+>
+> [REMINDER] Output a <summary>...</summary> block at the VERY END of your response. This is mandatory.
+
+**Assistant interpretation:** Apply the separate-RagKit decision to the implementation design, then continue the agreed phase/slip/commit/diary workflow without pausing at planning.
+
+**Inferred user intent:** Begin real implementation from a corrected architecture and preserve the promised operational evidence.
+
+**Commit (source import):** `ea51f8fedc3d74d7ccb81911eacb73d380780aa0` — "feat: import optkit baseline at 1786d1d"
+
+**Commit (repository normalization):** `b49aece6daf446fe717d4aa19e42c0fc9e129a95` — "chore: normalize imported optkit repository"
+
+### What I did
+
+- Printed the P0 plan slip before modifying production files; printer result was `printed: true` at `2026-08-24T22:38:26Z`.
+- Extracted the source archive into a temporary directory rather than over the worktree.
+- Added `scripts/01-import-optkit-baseline.sh` with explicit source directories and collision behavior.
+- Generated `sources/01-optkit-baseline-manifest.txt` containing archive SHA-256 `f211877fa4b845f6d0750601e5dfe65c209fc4c12eb86dc9caa454e4baa9f975`, source revision, and per-file hashes.
+- Imported the archive packages, CLI, examples, architecture tests, source docs, module path, and README.
+- Removed template `cmd/XXX`, placeholder `pkg`, logcopter generator, and stale dependency graph.
+- Preserved `AGENT.md`, `.github`, lint, release, lefthook, license, and `ttmp` history.
+- Rebuilt the Makefile around the actual CGO/no-CGO/race/vet/build/lint/demo commands.
+- Normalized GoReleaser project, binary, command, Homebrew cask, and package metadata and removed the irrelevant disabled Glazed docs-publishing template.
+- Updated CI to install SQLite headers and run `make ci-check` without a deleted template logcopter package.
+- Fixed imported code issues exposed by the repository's existing lint policy.
+- Added `scripts/02-validate-p0.sh` and generated a complete command transcript in `sources/02-p0-validation.txt`.
+- Ran the Numbergame demo, inspected its 81-event completed campaign, and verified the journal and 80 unique event payloads.
+
+### Why
+
+- An explicit import script and checksums make provenance reproducible and reviewable.
+- Keeping archive semantics in the first commit distinguishes imported behavior from local cleanup.
+- Template dependencies and commands referred to a nonexistent `XXX` product and would have made CI/release behavior misleading.
+- The no-CGO path is part of the archive's declared portability contract even though local persistence requires SQLite/CGO.
+- Lint fixes improve resource cleanup and make evidence-only campaign events explicit without changing architecture.
+
+### What worked
+
+- Baseline tests passed before normalization in normal, no-CGO, race, and vet modes.
+- `make ci-check`, `make race`, and `make lint` pass after normalization.
+- `goreleaser check` reports `1 configuration file(s) validated`.
+- The demo completed eight episodes, committed both finite budgets exactly, recorded a positive paired estimate, and reached campaign status `completed`.
+- `campaign verify` validated the journal and all event payload artifacts after reopening the local profile.
+- `docmgr doctor` is clean after adding the missing `implementation` vocabulary topic.
+
+### What didn't work
+
+- The first ticket doctor run warned:
+
+  `unknown_topics — unknown topics value(s): implementation (3 docs)`
+
+  I added `topics/implementation` to `ttmp/vocabulary.yaml` and reran doctor successfully.
+- The first import commit command included `git add -u cmd/XXX pkg ...` after those paths had already been staged by parent directories. Git returned:
+
+  `fatal: pathspec 'cmd/XXX' did not match any files`
+
+  I used a repository-wide `git add -u`, reviewed the staged list, and committed successfully.
+- The first lint run found 21 issues: 16 unchecked concrete `Close`/`Remove` calls, one non-exhaustive campaign event switch, one predeclared `min` variable, two redundant embedded selectors, and one unused SQLite row helper. Production issues were fixed; test cleanup is explicitly excluded from `errcheck` because temporary-store cleanup cannot alter completed assertions.
+- The initial `goreleaser check` rejected two deprecated properties:
+
+  `snapshot.name_template should not be used anymore`
+
+  `brews is being phased out in favor of homebrew_casks`
+
+  I removed the snapshot override, migrated to `homebrew_casks`, inspected the installed GoReleaser JSON schema for supported fields, and reran successfully.
+- The validation script's first smoke attempt inherited the workspace and failed because the parent `go.work` version is older than sibling module requirements. I set `GOWORK=off` on every direct `go run`.
+- The next smoke attempt parsed the demo field as `campaign_id`; the actual stable JSON field is `campaign`, producing `KeyError: 'campaign_id'`. I corrected the parser. The next full validation passed.
+
+### What I learned
+
+- The archive is genuinely dependency-free at the Go module level; SQLite is accessed through a narrow system-library CGO binding.
+- The current parent `go.work` is not usable for direct commands across all sibling modules. Repository scripts must use `GOWORK=off` until the workspace Go directive is upgraded.
+- The campaign reducer intentionally receives evidence events that change journal custody but not lifecycle projection. Listing them explicitly is clearer than a default branch and satisfies exhaustive checking.
+- GoReleaser's current binary distribution mechanism is `homebrew_casks`; preserving old `brews` configuration would leave a known migration warning.
+- A completed Numbergame run contains 81 control events but only 80 unique payloads because content addressing legitimately deduplicates equal semantic payload bytes.
+
+### What was tricky to build
+
+- Collision handling had three classes: archive-owned semantic source, repository-owned lifecycle plumbing, and template-only placeholders. Blind copying would have dropped CI; blind preservation would have retained `XXX` metadata and a huge irrelevant dependency graph. The import script copies only archive semantic directories and module/readme files, while normalization handles repository plumbing deliberately.
+- Resource cleanup had to avoid changing primary error semantics. Error-path closes are best-effort (`_ = Close`) because the operation's original stat/migration error remains authoritative. Successful API callers still receive explicit close errors when they call `Close` themselves.
+- The campaign reducer's newly explicit no-op event cases are not ignored events: they still advance version, digest, and event count after transition and digest verification. The comment documents this invariant.
+- The validation script needed isolation from the parent workspace and a machine-readable campaign identifier from demo output. Both assumptions were corrected from observed failures rather than hidden with shell fallbacks.
+
+### What warrants a second pair of eyes
+
+- Review `artifact/filesystem/store.go` cleanup behavior around temp-file removal, close-on-stat-error, and directory sync.
+- Review the explicit evidence-event cases in `campaign.Apply` to confirm no event should update the current overview beyond version/digest/count.
+- Review the GoReleaser CGO matrix before the first actual tagged release; configuration validation does not prove cross-compiled SQLite availability.
+- Review the lint exclusion for concrete close errors in `_test.go`; production files remain fully checked.
+- Compare the import manifest and `ea51f8f` tree with the source ZIP to verify collision policy did not omit a domain file.
+
+### What should be done in the future
+
+- Upgrade the parent `go.work` Go directive in a workspace-management change if multi-module workspace commands are desired.
+- Exercise the actual GoReleaser split build in release-readiness work before tagging.
+- Begin P1 with credential-free semantic fixtures; do not change retrieval architecture until characterization tests exist.
+
+### Code review instructions
+
+- Review commit `ea51f8f` first as the provenance import; compare it with `sources/01-optkit-baseline-manifest.txt`.
+- Review commit `b49aece` second for local normalization and lint changes.
+- Start code review at `go.mod`, `internal/archtest/architecture_test.go`, `campaign/reducer.go`, `artifact/filesystem/store.go`, `Makefile`, and `.github/workflows/push.yml`.
+- Reproduce all checks with `scripts/02-validate-p0.sh`.
+- Inspect `sources/02-p0-validation.txt` and require the terminal marker `P0_VALIDATION=PASS`.
+
+### Technical details
+
+- Archive SHA-256: `f211877fa4b845f6d0750601e5dfe65c209fc4c12eb86dc9caa454e4baa9f975`.
+- Archive revision: `1786d1da86c9e03316ed71336bbc993fa30531f0`.
+- Module: `github.com/go-go-golems/optkit`.
+- Validation revision: `b49aece6daf446fe717d4aa19e42c0fc9e129a95`.
+- Validation commands: `make ci-check`, `make race`, `make lint`, demo, campaign inspect, campaign verify.
+- Validation result: `P0_VALIDATION=PASS`.
