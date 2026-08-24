@@ -235,3 +235,85 @@ The repository audit showed that RAG-TTC already has a verified hybrid index, st
 - Primary guide: `ttmp/2026/08/24/OPTKIT-001--pragmatic-optkit-unification-and-coinvault-to-rag-ttc-port/design-doc/01-optkit-current-state-and-pragmatic-rag-implementation-guide.md`
 - Focused RAG-TTC test command: `GOWORK=off go test ./pkg/ttc/search ./pkg/ttc/toolconfig ./internal/customer/ragsearch ./internal/customer/realruntime ./cmd/rag-ttc/cmds/indexes ./cmd/rag-ttc/cmds/knowledge ./cmd/rag-ttc/cmds/experiments/answerquality -count=1`
 - Focused Coinvault test command: `GOWORK=off go test ./internal/knowledge ./internal/knowledgebuild ./internal/webchat/evalchat -count=1`
+
+## Step 3: Validate and deliver the research bundle
+
+The final step expanded verification from focused RAG packages to the complete Coinvault and RAG-TTC Go modules, validated ticket health, and delivered the intern guide as a reMarkable bundle. This closes the research task with both repository evidence and a portable reading artifact.
+
+The upload contains the ticket index, 1,448-line primary guide, investigation diary through Step 2, and generated repository inventory. The ticket itself remains authoritative and includes this final delivery record.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same request as Steps 1 and 2)
+
+**Assistant interpretation:** Complete evidence-backed validation, ensure docmgr hygiene, upload the technical bundle to the requested device, and leave a clean committed ticket.
+
+**Inferred user intent:** Make the assessment immediately reviewable by an intern or engineer away from the development machine and preserve exact delivery evidence.
+
+### What I did
+
+- Ran full `GOWORK=off go test ./... -count=1` in Coinvault.
+- Ran full `GOWORK=off go test ./... -count=1` in RAG-TTC.
+- Ran `docmgr doctor --ticket OPTKIT-001 --stale-after 30`.
+- Updated the ticket index with the primary conclusion, accepted sequence, status, and direct links.
+- Ran a non-interactive reMarkable bundle dry-run with ToC depth 2.
+- Uploaded the real four-document bundle to `/ai/2026/08/24/OPTKIT-001`.
+
+### Why
+
+- Focused tests prove the analyzed paths; full module tests catch boundary assumptions and unrelated compile breakage at the inspected revision.
+- Doctor validates frontmatter, vocabulary, links, and ticket consistency before external delivery.
+- Dry-run catches path/name/bundle errors before PDF rendering and cloud mutation.
+- A bundled PDF gives the intern one navigable document while the docmgr ticket retains independently searchable source files.
+
+### What worked
+
+- All Coinvault Go packages passed.
+- All RAG-TTC Go packages passed.
+- Docmgr reported `✅ All checks passed` for OPTKIT-001.
+- The reMarkable dry-run included all four intended Markdown files.
+- The real upload returned exactly:
+
+  `OK: uploaded OPTKIT-001 Pragmatic RAG Architecture and Implementation Guide.pdf -> /ai/2026/08/24/OPTKIT-001`
+
+### What didn't work
+
+- N/A. Validation, dry-run, rendering, and upload succeeded on the first attempt in this step.
+
+### What I learned
+
+- The full module tests reinforce that this is a sequencing/ownership problem, not a broken-code rescue: both products are green before refactoring.
+- The primary guide is 1,448 lines and 7,655 words; the detail request was satisfied without embedding the 8,841-line original source architecture in the ticket.
+- The reMarkable CLI's success line is sufficient upload verification; an extra cloud listing would add cost without new evidence.
+
+### What was tricky to build
+
+- Delivery evidence necessarily occurs after the uploaded diary snapshot is rendered. The ticket diary includes this final step; the uploaded bundle includes the diary through Step 2. Re-uploading with `--force` solely to include the upload receipt would overwrite the newly created document and was not justified.
+- Full RAG-TTC test output spans many product, TUI, feedback, persistence, and mixed-domain packages. The relevant conclusion is the command-level pass, while the primary guide keeps detailed claims anchored to the focused package tests and source reads.
+
+### What warrants a second pair of eyes
+
+- Open the uploaded PDF and confirm the large diagrams/code blocks remain readable on-device if visual layout quality is critical.
+- Review the accepted decisions before creating implementation tickets; validation proves current behavior, not the proposed refactor.
+- Confirm that future uploads should overwrite this bundle only deliberately because `--force` can remove annotations.
+
+### What should be done in the future
+
+- Create focused follow-up tickets beginning with the provenance-preserving Optkit archive import and RAG-TTC semantic fixture pack.
+- If the design changes materially, upload a new versioned bundle rather than overwriting annotated review material silently.
+
+### Code review instructions
+
+- Run `git log --oneline -- ttmp/2026/08/24/OPTKIT-001--pragmatic-optkit-unification-and-coinvault-to-rag-ttc-port` to inspect documentation commits.
+- Run `docmgr doctor --ticket OPTKIT-001 --stale-after 30` from `optkit`.
+- Re-run full product tests from each module with `GOWORK=off`.
+- Review the reMarkable destination named below; no routine cloud-list verification is needed after the successful upload receipt.
+
+### Technical details
+
+- Full Coinvault validation: `cd coinvault && GOWORK=off go test ./... -count=1`
+- Full RAG-TTC validation: `cd rag-ttc && GOWORK=off go test ./... -count=1`
+- Doctor: `cd optkit && docmgr doctor --ticket OPTKIT-001 --stale-after 30`
+- Remote directory: `/ai/2026/08/24/OPTKIT-001`
+- PDF name: `OPTKIT-001 Pragmatic RAG Architecture and Implementation Guide.pdf`
+- Bundle inputs: `index.md`, primary design doc, investigation diary, repository inventory.

@@ -47,7 +47,7 @@ The checked-out `optkit` repository is still a template, while the supplied arch
 - Intern implementation guide: complete.
 - Coinvault/RAG-TTC/Judgekit/RagKit/RagOpt focused and full relevant tests: green.
 - `docmgr doctor`: clean.
-- reMarkable delivery: pending final bundle upload.
+- reMarkable delivery: uploaded successfully to `/ai/2026/08/24/OPTKIT-001`.
 - Product implementation: intentionally deferred to follow-up tickets.
 
 ## Accepted direction
