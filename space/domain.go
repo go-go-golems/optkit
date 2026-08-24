@@ -37,8 +37,8 @@ func (d IntRangeDomain) Validate(v int) error {
 }
 
 func (d IntRangeDomain) Descriptor() DomainDescriptor {
-	min, max := d.Minimum, d.Maximum
-	return DomainDescriptor{Kind: "integer_range", Minimum: &min, Maximum: &max}
+	minimum, maximum := d.Minimum, d.Maximum
+	return DomainDescriptor{Kind: "integer_range", Minimum: &minimum, Maximum: &maximum}
 }
 
 type ChoiceDomain[V comparable] struct {

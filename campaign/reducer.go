@@ -70,6 +70,11 @@ func Apply(state State, event ControlEvent) (State, error) {
 		} else {
 			next.Episodes[event.Subject] = EpisodeFailedTerminal
 		}
+	case CandidateProposed, SnapshotMaterialized, TrialPlanned,
+		ObservationRecorded, EstimateRecorded, DecisionRecorded,
+		BudgetReserved, UsageCommitted, BudgetReleased:
+		// These evidence events advance journal custody without changing the
+		// lifecycle or per-episode status projection.
 	}
 	next.Version = event.Seq
 	next.LastDigest = event.Digest

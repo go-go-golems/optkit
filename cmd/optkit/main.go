@@ -120,7 +120,7 @@ func runCampaignInspect(ctx context.Context, args []string, stdout, stderr io.Wr
 	if err != nil {
 		return err
 	}
-	defer profile.Close()
+	defer func() { _ = profile.Close() }()
 	if err := profile.Metadata.Verify(ctx, campaignID); err != nil {
 		return err
 	}
@@ -177,7 +177,7 @@ func runCampaignVerify(ctx context.Context, args []string, stdout, stderr io.Wri
 	if err != nil {
 		return err
 	}
-	defer profile.Close()
+	defer func() { _ = profile.Close() }()
 	if err := profile.Metadata.Verify(ctx, campaignID); err != nil {
 		return err
 	}
@@ -250,7 +250,7 @@ func runArtifactVerify(ctx context.Context, args []string, stdout, stderr io.Wri
 	if err != nil {
 		return err
 	}
-	defer profile.Close()
+	defer func() { _ = profile.Close() }()
 	if err := profile.Artifacts.Verify(ctx, ref); err != nil {
 		return err
 	}

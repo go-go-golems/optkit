@@ -32,7 +32,7 @@ func OpenWithClock(path string, now func() time.Time) (*Store, error) {
 	}
 	store := &Store{db: db, now: now}
 	if err := store.migrate(context.Background()); err != nil {
-		db.Close()
+		_ = db.Close()
 		return nil, err
 	}
 	return store, nil

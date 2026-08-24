@@ -47,7 +47,7 @@ func (s *Store) Put(ctx context.Context, request artifact.PutRequest, r io.Reade
 		return artifact.Ref{}, fmt.Errorf("create artifact temp file: %w", err)
 	}
 	tmpPath := tmp.Name()
-	defer os.Remove(tmpPath)
+	defer func() { _ = os.Remove(tmpPath) }()
 
 	digest, size, copyErr := copyAndHash(ctx, tmp, r)
 	syncErr := tmp.Sync()
@@ -120,11 +120,11 @@ func (s *Store) Open(ctx context.Context, ref artifact.Ref) (io.ReadCloser, erro
 	}
 	info, err := f.Stat()
 	if err != nil {
-		f.Close()
+		_ = f.Close()
 		return nil, fmt.Errorf("stat artifact: %w", err)
 	}
 	if info.Size() != ref.Size {
-		f.Close()
+		_ = f.Close()
 		return nil, fmt.Errorf("%w: size %d, expected %d", artifact.ErrCorrupt, info.Size(), ref.Size)
 	}
 	return f, nil
@@ -226,7 +226,7 @@ func syncDir(path string) error {
 	if err != nil {
 		return fmt.Errorf("open artifact directory for sync: %w", err)
 	}
-	defer dir.Close()
+	defer func() { _ = dir.Close() }()
 	if err := dir.Sync(); err != nil {
 		return fmt.Errorf("sync artifact directory: %w", err)
 	}

@@ -15,7 +15,16 @@
 # vendor/
 dist/
 
+# Optkit local stores and generated evidence
+.optkit/
+tmp/
+*.db
+*.db-shm
+*.db-wal
+coverage.out
+
 # misc files and directories
 .env
 .envrc
 .history
+.DS_Store

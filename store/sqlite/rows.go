@@ -43,21 +43,6 @@ func integer(row sqlitedb.Row, name string) (int64, error) {
 	return value.Integer, nil
 }
 
-func nullableInteger(row sqlitedb.Row, name string) (*int64, error) {
-	value, ok := row[name]
-	if !ok {
-		return nil, fmt.Errorf("SQLite row has no column %q", name)
-	}
-	if value.Type == sqlitedb.Null {
-		return nil, nil
-	}
-	if value.Type != sqlitedb.Integer {
-		return nil, fmt.Errorf("SQLite column %q is not nullable integer", name)
-	}
-	out := value.Integer
-	return &out, nil
-}
-
 func bytesValue(row sqlitedb.Row, name string) ([]byte, error) {
 	value, ok := row[name]
 	if !ok {

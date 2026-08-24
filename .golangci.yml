@@ -30,6 +30,13 @@ linters:
         - (io.Closer).Close
         - fmt.Fprintf
         - fmt.Fprintln
+  exclusions:
+    rules:
+      # Tests use deferred cleanup for local temporary stores. Cleanup failure
+      # cannot affect the assertion outcome and is covered by filesystem reset.
+      - path: _test\.go
+        linters:
+          - errcheck
 
 # Formatters configuration
 formatters:

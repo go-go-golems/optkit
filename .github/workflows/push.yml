@@ -18,15 +18,11 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
-      -
-        name: Verify logcopter package loggers
-        run: make logcopter-check
-      -
-        name: Generate assets
+      - name: Install SQLite build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+      - name: Generate assets
         run: go generate ./...
-      -
-        name: Verify generated files are up to date
+      - name: Verify generated files are up to date
         run: git diff --exit-code
-      -
-        name: Run unit tests
-        run: go test ./...
+      - name: Run repository checks
+        run: make ci-check

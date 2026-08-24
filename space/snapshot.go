@@ -77,8 +77,8 @@ func LoadSnapshot[C any](ctx context.Context, store artifact.Store, rec Snapshot
 	if err != nil {
 		return Snapshot[C]{}, err
 	}
-	if materialized.ID != rec.ID || materialized.SnapshotRecord.Config.Digest != rec.Config.Digest {
-		return Snapshot[C]{}, fmt.Errorf("snapshot identity verification failed: got %s/%s, want %s/%s", materialized.ID, materialized.SnapshotRecord.Config.Digest, rec.ID, rec.Config.Digest)
+	if materialized.ID != rec.ID || materialized.Config.Digest != rec.Config.Digest {
+		return Snapshot[C]{}, fmt.Errorf("snapshot identity verification failed: got %s/%s, want %s/%s", materialized.ID, materialized.Config.Digest, rec.ID, rec.Config.Digest)
 	}
 	return Snapshot[C]{SnapshotRecord: rec, Value: config}, nil
 }

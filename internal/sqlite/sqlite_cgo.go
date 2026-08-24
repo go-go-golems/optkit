@@ -103,7 +103,7 @@ PRAGMA foreign_keys=ON;
 PRAGMA busy_timeout=5000;
 PRAGMA synchronous=NORMAL;
 `); err != nil {
-		db.Close()
+		_ = db.Close()
 		return nil, err
 	}
 	return db, nil

@@ -1,6 +1,6 @@
 # OptKit clean-slate vertical slice
 
-This repository is an executable, local-first vertical slice of the supplied OptKit architecture. It begins as one Go module with enforced package boundaries and no compatibility layer.
+This repository is an executable, local-first vertical slice of the supplied OptKit architecture. The initial implementation was imported from source revision `1786d1da86c9e03316ed71336bbc993fa30531f0`; OPTKIT-002 records the archive checksum, collision policy, and validation evidence. It begins as one Go module with enforced package boundaries and no compatibility layer.
 
 It is intentionally deeper than a collection of interfaces: the included number-game campaign creates typed snapshots and a patch, expands a complete-block trial, leases durable work from SQLite, records artifact-backed trajectories and measurement epochs, restarts the process twice, analyzes paired evidence, records a decision, completes the campaign, and rebuilds its overview solely from the journal.
 
