@@ -138,6 +138,7 @@ Do not combine cross-repository changes in one Git commit. Record all related co
 | P0 | supplied Optkit implementation is the actual repository | Optkit | full, race, and static-link tests green |
 | P1 | deterministic shared RAG semantic fixtures | RAG-TTC, Coinvault | fixture laws pass without provider credentials |
 | P2 | canonical direct TTC retrieval service | RAG-TTC | direct/tool parity and full tests green |
+| P2.5 | read-only campaign query plane and UI navigation contract | Optkit | replayable projections, search, deep links, and SSE |
 | P3 | complete runtime identity, routes, and source policy | RAG-TTC | configured behavior and trace attribution proven |
 | P4 | stage-aware deterministic retrieval evaluation | RAG-TTC | target-loss diagnosis is machine readable |
 | P5 | direct answer application service and contracts | RAG-TTC | direct/served domain parity proven |
@@ -265,6 +266,52 @@ Move semantic retrieval out of the model-facing `SearchTool` into one TTC-owned 
 - There is only one implementation of channel/collapse/fusion semantics.
 - The direct service has no Geppetto, HTTP, WebSocket, or sessionstream dependency.
 - Evidence remains conversation scoped.
+
+## 8A. P2.5 — Build the read-only campaign query plane and UI navigation contract
+
+### Goal
+
+Enable UI development against real Numbergame campaigns without moving campaign creation, configuration, compilation, or lifecycle mutation into the browser. LLM agents and scientists use the CLI for writes; the UI is an addressable explorer for navigation, search, replay, comparison, and visualization.
+
+### Tasks
+
+1. Print the P2.5 plan slip.
+2. Define versioned read-model contracts for campaign summaries, lineage, episode matrices, event timelines, trajectories, measurements, estimates, decisions, budgets, and artifact previews.
+3. Add a query service that rebuilds projections from the journal and resolves immutable artifact references without exposing SQLite tables.
+4. Add read-only `net/http` endpoints:
+   - campaign list and campaign overview;
+   - campaign lineage graph;
+   - case-by-arm episode matrix;
+   - paginated control events after a sequence;
+   - episode detail and trajectory;
+   - measurements, estimates, decisions, and budgets;
+   - bounded artifact metadata/JSON preview;
+   - search across IDs, kinds, schemas, actors, tags, and indexed text projections.
+5. Add replayable SSE for campaign events using `after` sequence cursors; SSE carries facts, not browser commands.
+6. Define stable URL routes and deep links for campaigns, candidates, snapshots, trials, episodes, observations, estimates, decisions, and artifacts.
+7. Generate checked-in Numbergame API fixtures for frontend work and Storybook/mock-server use.
+8. Add navigation-oriented projections:
+   - stage rail and campaign status;
+   - provenance/lineage graph;
+   - episode matrix;
+   - event timeline with replay slider;
+   - trajectory span tree;
+   - measurement table and paired-delta chart;
+   - budget utilization;
+   - artifact/evidence drawer.
+9. Add query pagination, response size limits, artifact sensitivity checks, and cancellation.
+10. Add tests proving the server exposes no mutation routes and cannot alter journal head, budgets, queue state, or artifacts.
+11. Document CLI-to-UI handoff: agents print or return campaign IDs/URLs after creating or changing campaigns.
+12. Run full/race tests, commit code, update diary, and print the P2.5 status slip.
+
+### Acceptance gate
+
+- A completed or running Numbergame campaign can be navigated entirely through stable deep links.
+- The UI can reconnect and replay events from an exact journal sequence.
+- Search reaches campaigns and evidence without coupling to authoritative storage tables.
+- Checked-in API fixtures allow frontend work without a running backend.
+- The HTTP surface has no create, update, delete, start, pause, resume, stop, or decision mutation endpoint.
+- All writes remain CLI/application-command responsibilities and appear in the UI through journal/projection updates.
 
 ## 9. P3 — Add runtime identity, route compilation, and policy boundaries
 
@@ -487,6 +534,14 @@ All repository checks pass, the worktrees contain no unexplained changes, ticket
 - **Rationale:** The instrument boundary is explicit and supports independent evolution.
 - **Status:** accepted
 
+### Decision: UI is a read-only scientific query plane
+
+- **Context:** Campaigns and parameter changes will primarily be authored through CLI workflows operated by LLM agents; the UI is needed for comprehension rather than form-based administration.
+- **Decision:** Build navigation, search, replay, provenance, and visualization APIs only. Do not add browser mutation endpoints.
+- **Rationale:** This preserves one command path, avoids duplicating validation logic in forms, and lets agents hand scientists deep links to durable evidence.
+- **Consequence:** The backend needs rich projections, stable URLs, SSE replay, and bounded artifact inspection; CLI ergonomics must return campaign URLs/IDs.
+- **Status:** accepted
+
 ### Decision: Fixed arms before adaptive search
 
 - **Context:** Durable orchestration and measurement must be proven before optimizer complexity.
@@ -504,6 +559,7 @@ All repository checks pass, the worktrees contain no unexplained changes, ticket
 - No transport-only evaluation path.
 - No duplicated retrieval implementation after P2.
 - No automatic deployment or production promotion.
+- No browser mutation API; UI state is derived from authoritative journal and artifact facts.
 - No backwards-compatibility shim without explicit approval.
 - Every phase has before/after thermal slips and diary evidence.
 

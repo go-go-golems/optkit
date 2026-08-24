@@ -40,3 +40,12 @@ P2 complete: extracted one direct RAG-TTC retrieval service below Geppetto and p
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/search/service.go — Canonical channel, collapse, fusion, augmentation, hydration, and source-verification path
 
+
+## 2026-08-24
+
+Added P2.5 read-only scientific query plane: CLI/agents own writes; UI owns search, navigation, replay, provenance, and visualization
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/design-doc/01-phased-implementation-plan.md — Read-only UI phase and accepted boundary decision
+

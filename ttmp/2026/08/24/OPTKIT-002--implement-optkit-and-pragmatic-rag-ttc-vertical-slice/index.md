@@ -49,7 +49,8 @@ This ticket implements the architecture assessed in OPTKIT-001. Optkit remains a
 - **P0 Optkit baseline:** complete and green.
 - **P1 semantic RAG fixtures:** complete and green.
 - **P2 canonical retrieval service:** complete and green.
-- P3 runtime identity, routes, and policy: next.
+- P2.5 read-only campaign query plane: next.
+- P3 runtime identity, routes, and policy: queued after UI bootstrap.
 - P4-P8 and final delivery: pending.
 
 ## P0 result
@@ -59,3 +60,5 @@ The checked-out repository now contains the supplied Optkit implementation at ar
 ## Stable boundary decision
 
 RagKit primitives do not move into Optkit. Product-owned integration code composes Optkit orchestration and RagKit algorithms. Consolidation targets duplicated RagOpt and product-runner orchestration after behavioral parity is proven.
+
+The UI is a read-only scientific query plane. LLM agents use CLI/application commands for campaign creation and mutation; the UI provides search, deep links, provenance navigation, replay, comparison, and visualization.

@@ -12,3 +12,4 @@
 - [ ] P7 Integrate Judgekit with lightweight research attribution <!-- t:t1k3 -->
 - [ ] P8 Stabilize Optkit-RagKit boundaries and delete superseded orchestration paths <!-- t:o795 -->
 - [ ] Final validation, documentation, and reMarkable delivery <!-- t:yvpg -->
+- [ ] P2.5 Build the read-only campaign query plane and UI navigation contract <!-- t:gym7 -->

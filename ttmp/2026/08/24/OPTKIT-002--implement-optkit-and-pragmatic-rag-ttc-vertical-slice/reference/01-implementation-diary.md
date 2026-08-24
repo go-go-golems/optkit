@@ -519,3 +519,85 @@ The shared P1 fixture now calls the direct service before the tool and proves id
 - Direct API: `Service.Retrieve(context.Context, RetrievalRequest) (RetrievalResult, error)`.
 - Service output: normalized query, route observation, collapsed channels, fused hits, hydrated evidence.
 - Session output: citations, evidence budget effects, new-evidence count, and model-facing result limit.
+
+## Step 6: Refocus the UI as a read-only scientific query plane
+
+The UI scope is now deliberately read-only. Campaign creation, parameter selection, candidate proposal, trial compilation, lifecycle commands, and decisions remain in the CLI/application command path used primarily by LLM agents. The browser is responsible for helping scientists find, navigate, replay, compare, and understand durable evidence.
+
+I inserted P2.5 before the remaining RAG phases so UI work can start against Numbergame immediately. The phase defines query projections, stable deep links, search, paginated timelines, artifact inspection, checked-in fixtures, and replayable SSE, with an explicit acceptance test that no HTTP mutation route exists.
+
+### Prompt Context
+
+**User prompt (verbatim):**
+
+> we care abut navigation and visualization, the creation of campaigns and parameters and all that will be done through the CLI by LLM agents mostly, so the UI should basically allow navigation / search / visualization, no need for editing.
+>
+> [REMINDER] Output a <summary>...</summary> block at the VERY END of your response. This is mandatory.
+
+**Assistant interpretation:** Remove browser authoring and lifecycle controls from the UI design; optimize the UI/backend for read-only scientific exploration and agent-to-human deep-link handoff.
+
+**Inferred user intent:** Avoid duplicating complex command validation in forms and build the interface that is actually valuable to a scientist reviewing agent-operated campaigns.
+
+### What I did
+
+- Added task `gym7`: `P2.5 Build the read-only campaign query plane and UI navigation contract`.
+- Added detailed P2.5 tasks and acceptance gates to the phased implementation plan.
+- Defined read models for campaign overview, lineage, episode matrix, events, trajectories, measurements, estimates, decisions, budgets, and artifacts.
+- Defined GET-only query/search/SSE responsibilities and stable entity deep links.
+- Added an accepted decision that the UI has no campaign mutation API.
+- Added the read-only UI rule to cross-phase invariants.
+
+### Why
+
+- CLI and LLM-agent workflows remain the single command path for validated writes.
+- Read-only projections can evolve for comprehension without changing authoritative campaign semantics.
+- Deep links let agents create a campaign and hand a scientist the exact result to inspect.
+- Eliminating browser writes simplifies security, concurrency, validation, and auditability.
+
+### What worked
+
+- Numbergame already supplies enough events, artifacts, snapshots, observations, estimates, and decisions to design every navigation view.
+- P2.5 can proceed independently of the real RAG-TTC campaign.
+- The query plane aligns with Optkit's existing separation between authoritative journal facts and rebuildable projections.
+
+### What didn't work
+
+- The prior scenario included browser forms and buttons for creating baselines, candidates, trials, and lifecycle commands. That UI model is superseded and should not guide implementation.
+- A P3 plan slip had already been printed before this clarification. No P3 code was changed; P3 remains queued and its phase slip can be reprinted when implementation actually resumes.
+
+### What I learned
+
+- The most valuable UI unit is an addressable evidence object, not an editable campaign form.
+- Search and provenance navigation are first-class scientific tools: users need to move from decision to estimate to observations to episode trajectory to immutable payload.
+- Agent-operated CLI writes should return campaign IDs and URLs as part of the human handoff.
+
+### What was tricky to build
+
+- Read-only does not mean static. Running campaigns still need cursor-based SSE, reconnection, and replay, but these streams carry committed facts and never commands.
+- Search must be built over derived indexes/projections rather than allowing UI queries to depend on authoritative SQLite table layouts.
+- Artifact previews need sensitivity and size enforcement even in a trusted local environment.
+
+### What warrants a second pair of eyes
+
+- Review the exact boundary between safe artifact metadata/preview and raw artifact download.
+- Review whether global search begins with structured filters only or includes SQLite FTS in the first slice.
+- Confirm that no convenience lifecycle action is added to the browser later without a new decision.
+
+### What should be done in the future
+
+- Implement and print P2.5 slips before resuming P3.
+- Add CLI output fields for canonical campaign and entity URLs once the query server address is configurable.
+- Build frontend navigation against checked-in Numbergame API fixtures before requiring a live server.
+
+### Code review instructions
+
+- Review the P2.5 section and `UI is a read-only scientific query plane` decision in the phase plan.
+- Verify `tasks.md` contains task `gym7`.
+- Reject any P2.5 endpoint that mutates campaigns, queues, budgets, artifacts, or decisions.
+
+### Technical details
+
+- Query transport: GET JSON plus GET SSE.
+- Live cursor: campaign journal sequence (`after=<seq>`).
+- Primary navigation entities: campaign, candidate, snapshot, patch, trial, episode, observation, estimate, decision, artifact.
+- Write transport: existing/future CLI application commands only.
