@@ -22,3 +22,12 @@ P0 complete: imported archive revision 1786d1d, normalized repository plumbing, 
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/02-p0-validation.txt — Full successful P0 validation transcript
 
+
+## 2026-08-24
+
+P1 complete: froze byte-identical Coinvault/RAG-TTC semantic fixture and passed focused/full product tests (commits b8aaf41d9, e3090be05)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/rag-semantic-fixture-v1.json — Canonical cross-product RAG fixture v1
+

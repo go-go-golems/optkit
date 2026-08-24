@@ -15,12 +15,16 @@ DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: ws://coinvault/internal/knowledge/semantic_fixture_test.go
+      Note: P1 authorization and evidence reference laws
     - Path: ws://coinvault/internal/knowledge/service.go
       Note: Cross-product RAG behavioral reference
     - Path: ws://judgekit/judging/claimjudge.go
       Note: P7 measurement integration boundary
     - Path: ws://rag-ttc/pkg/ttc/search/search.go
       Note: P2 extraction starting point
+    - Path: ws://rag-ttc/pkg/ttc/search/semantic_fixture_test.go
+      Note: P1 TTC retrieval and evidence characterization
     - Path: ws://ragkit/rag/retrieval/retrieval.go
       Note: Retained reusable RAG-domain boundary
     - Path: ws://sources/optkit-implementation-source.zip
@@ -31,6 +35,7 @@ LastUpdated: 2026-08-24T22:45:00-04:00
 WhatFor: Define phase boundaries, concrete tasks, tests, commits, work-slip checkpoints, and acceptance gates for OPTKIT-002.
 WhenToUse: Before starting or reviewing any implementation phase in the Optkit and RAG-TTC vertical-slice program.
 ---
+
 
 
 # Phased Implementation Plan

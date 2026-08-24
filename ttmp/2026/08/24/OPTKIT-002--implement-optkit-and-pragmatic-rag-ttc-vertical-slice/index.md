@@ -44,8 +44,9 @@ This ticket implements the architecture assessed in OPTKIT-001. Optkit remains a
 - Overall plan slip: printed.
 - P0 plan slip: printed.
 - **P0 Optkit baseline:** complete and green.
-- P1 semantic RAG fixtures: next.
-- P2-P8 and final delivery: pending.
+- **P1 semantic RAG fixtures:** complete and green.
+- P2 canonical retrieval service: next.
+- P3-P8 and final delivery: pending.
 
 ## P0 result
 

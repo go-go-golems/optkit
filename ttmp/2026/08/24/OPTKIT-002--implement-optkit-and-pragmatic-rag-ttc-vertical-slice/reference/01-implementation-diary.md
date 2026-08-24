@@ -330,3 +330,111 @@ The imported module now contains 46 core Go files under artifact, budget, campai
 - Validation revision: `b49aece6daf446fe717d4aa19e42c0fc9e129a95`.
 - Validation commands: `make ci-check`, `make race`, `make lint`, demo, campaign inspect, campaign verify.
 - Validation result: `P0_VALIDATION=PASS`.
+
+## Step 4: Phase P1 — Freeze cross-product semantic RAG fixtures
+
+Phase P1 created one versioned, byte-identical semantic fixture consumed by Coinvault and RAG-TTC tests without adding a new runtime package or requiring an unpublished RagKit dependency. The fixture freezes the behavior that P2 must preserve: raw channel identities, deterministic fusion and return order, policy-negative filtering, evidence labels and budgets, and explicit answer/no-answer expectations.
+
+The fixture is canonical in the OPTKIT-002 ticket and synchronized into each product's testdata by a checked script. Each product decodes strictly, pins the SHA-256, and tests its own current responsibility: RAG-TTC proves retrieval/evidence behavior, while Coinvault proves authorization-before-use and run-scoped evidence admission.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 3)
+
+**Assistant interpretation:** Continue from the completed Optkit import into the next planned phase, preserving the thermal slip, test, commit, and diary cadence.
+
+**Inferred user intent:** Establish a safe semantic refactoring baseline before extracting RAG-TTC's retrieval service.
+
+**Commit (RAG-TTC):** `b8aaf41d9a2ded9daca400cb16f9083fbcf37225` — "test(rag): freeze cross-product semantic fixture"
+
+**Commit (Coinvault):** `e3090be05b657b4ce6f0015028f3eba562ef909b` — "test(rag): adopt cross-product semantic fixture"
+
+### What I did
+
+- Printed the P1 plan slip before fixture changes; printer result was `printed: true` at `2026-08-24T22:47:47Z`.
+- Added canonical `sources/rag-semantic-fixture-v1.json` with three documents, three chunks, three representations, two channel rankings, four query modes, stage expectations, evidence policy, and answer expectations.
+- Added `scripts/03-sync-rag-semantic-fixture.sh` with `sync` and `--check` modes.
+- Synchronized byte-identical fixtures into RAG-TTC and Coinvault testdata.
+- Pinned canonical SHA-256 `2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f` in both product test suites.
+- Refactored RAG-TTC's existing search fixture constructor to load documents, chunks, and channel hits from the canonical semantic fixture.
+- Added RAG-TTC assertions for returned/admitted IDs, exact citation labels, repeat-label reuse, and explicit abstention-case custody.
+- Added Coinvault assertions for public-scope vector filtering, product-role filtering, evidence label reuse, item-budget rejection, and citation-label expectations.
+- Ran focused and complete Go tests in both products.
+- Added `sources/03-p1-validation.md` with identities, commands, commits, laws, and the observed unrelated flake.
+
+### Why
+
+- P2 will move retrieval semantics. A small deterministic corpus prevents the refactor from silently changing ranks, evidence, or route behavior.
+- Product-local test decoders avoid a new runtime dependency and avoid requiring a RagKit release merely to share test data.
+- A canonical ticket file plus byte comparison makes intentional duplication auditable.
+- Coinvault and RAG-TTC should share laws without pretending their product policies and service APIs are identical.
+
+### What worked
+
+- Both strict decoders accept the final schema and reject unknown top-level/nested struct fields.
+- Fixture synchronization reports both product copies verified and the expected SHA-256.
+- Existing RAG-TTC search tests now use realistic public guide/product and analyst schema documents while preserving expected returned order.
+- Coinvault proves that the analyst-only vector hit is absent from public results and that role filtering returns only the product hit.
+- Final focused and complete product tests pass.
+- Both repository pre-commit hooks passed after workspace isolation was explicit.
+
+### What didn't work
+
+- RAG-TTC's first strict decode failed with:
+
+  `json: unknown field "public_vector_chunk_ids"`
+
+  Its local fixture struct omitted two Coinvault-oriented expectations. I added both fields so strict decoding covers the complete shared schema.
+- After adopting realistic evidence text, the named-route fallback test returned `chunk-b, chunk-c` instead of `chunk-b, chunk-a`. The route had already admitted `chunk-c`; the initial 120-rune fixture budget admitted only one more distinct chunk. I increased the canonical rune budget to 240, resynchronized both copies, and updated both pinned hashes. The item budget still proves third-distinct rejection in the dedicated Coinvault ledger test.
+- The first full RAG-TTC suite run failed in the unrelated admin WebSocket heartbeat test with:
+
+  `heartbeat timeout was not observable`
+
+  The exact isolated test passed 10 consecutive runs, and the complete suite passed on rerun. No heartbeat code was changed.
+- The first Coinvault commit hook inherited the parent workspace and failed every Go command because `go.work` declares Go 1.25 while sibling modules require Go 1.26.x. Re-running as `GOWORK=off git commit ...` allowed the existing hook to generate, lint, vet, test, and commit successfully.
+
+### What I learned
+
+- Cross-product fixtures should share data and semantic expectations, not force test helper APIs into a common runtime module.
+- Evidence budgets interact with session history: a named-route call can consume budget before a fallback/default call. Characterization must account for ledger scope, not only one isolated retrieval.
+- Coinvault's authorization law can be expressed over RagKit hits and content without opening a full production bundle, which keeps the fixture fast and credential-free.
+- The current RAG-TTC full suite contains a low-frequency timing flake unrelated to RAG changes; isolated repetition is useful evidence, but the flake remains a product maintenance concern.
+
+### What was tricky to build
+
+- The fixture needed metadata meaningful to both products. The shared keys `access_scopes` and `source_role` already match Coinvault conventions and are safely ignored or displayed by RAG-TTC, so no translation layer was required.
+- Byte-identical copies are deliberate because the products consume released RagKit v0.1.9 under `GOWORK=off`; importing a new local fixture package would either break isolated CI or require an unrelated library release. The sync script makes duplication controlled rather than accidental.
+- Rune and item budgets test different laws. Increasing the rune ceiling preserved existing multi-route characterization, while the two-item ceiling in Coinvault still isolates deterministic rejection of the third distinct chunk.
+
+### What warrants a second pair of eyes
+
+- Review whether the fixture's duplicate rank-1 lexical hits accurately preserve the tie behavior P2 must maintain.
+- Review the decision to keep fixture data duplicated and synchronized rather than releasing a RagKit test-support package.
+- Confirm the public/analyst and guide/product/schema roles represent the minimum policy boundary needed by both products.
+- Review whether P2 direct-service parity should include session-history scenarios or only retrieval results before evidence admission.
+- Track the admin heartbeat flake separately if it recurs in CI.
+
+### What should be done in the future
+
+- P2 must preserve `stage_chunk_ids.fused`, `returned`, and `admitted` for this fixture.
+- P3 should use the policy-negative case and public expectations to prove source-policy ordering in RAG-TTC.
+- P4 should consume required groups and classify the first stage where a target disappears.
+- Add a second fixture version instead of mutating v1 after implementation phases begin to depend on its digest.
+
+### Code review instructions
+
+- Review the canonical JSON and sync script in OPTKIT-002 first.
+- In RAG-TTC, start at `pkg/ttc/search/newFixture`, `semantic_fixture_test.go`, and the local testdata copy.
+- In Coinvault, start at `internal/knowledge/semantic_fixture_test.go`, especially `authorizeHits` inputs and ledger assertions.
+- Run the exact commands in `sources/03-p1-validation.md` and verify the sync SHA.
+- Compare commits `b8aaf41d9` and `e3090be05` independently; they intentionally share only fixture semantics.
+
+### Technical details
+
+- Fixture schema: `rag.semantic-fixture/v1`.
+- Corpus ID: `cross-product-tiny-corpus-v1`.
+- Canonical SHA-256: `2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f`.
+- Modes: `positive`, `authorization_negative`, `answer_only`.
+- Expected fused order: `chunk-b`, `chunk-a`, `chunk-c`.
+- Expected returned/admitted order: `chunk-b`, `chunk-a`.
+- Evidence labels: `chunk-b → E1`, `chunk-a → E2`; repeated `chunk-b → E1`.
