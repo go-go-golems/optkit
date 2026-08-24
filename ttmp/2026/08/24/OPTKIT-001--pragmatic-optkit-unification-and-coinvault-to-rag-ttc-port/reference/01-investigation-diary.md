@@ -137,3 +137,101 @@ I also unpacked the supplied implementation archive into a temporary review dire
 - Archive revision comment: `1786d1da86c9e03316ed71336bbc993fa30531f0`
 - Archive module: `github.com/go-go-golems/optkit`
 - Verified command: `cd /tmp/optkit-implementation-source/optkit && go test ./... -count=1`
+
+## Step 2: Reframe unification around a pragmatic RAG-TTC vertical slice
+
+This step converted the broad clean-slate program into a product-first implementation sequence. Instead of recommending that all four extracted kits move before useful product work can begin, the analysis now treats Coinvault as the behavioral reference and RAG-TTC as the first real Optkit consumer.
+
+The repository audit showed that RAG-TTC already has a verified hybrid index, strict file-backed configuration, turn-scoped evidence, and a runtime composition below HTTP. The proposed work is therefore a convergence and observability refactor: split canonical retrieval semantics from the model-facing tool, add Coinvault-style runtime identity and stage diagnosis, create a deterministic retrieval suite, and then register that direct service as an Optkit system.
+
+### Prompt Context
+
+**User prompt (verbatim):**
+
+> we want to be pragmatic and basically apply the work we did in coinvault to rag-ttc to get a proper RAG system going
+>
+> [REMINDER] Output a <summary>...</summary> block at the VERY END of your response. This is mandatory.
+
+**Assistant interpretation:** Prioritize a practical transfer of Coinvault's proven RAG construction, retrieval, evidence, attribution, and evaluation discipline into RAG-TTC; use that product slice to drive Optkit rather than making full framework consolidation a prerequisite.
+
+**Inferred user intent:** Deliver a trustworthy, diagnosable RAG system in RAG-TTC soon while preserving a credible route toward the unified optimization framework.
+
+**Commit (docs and investigation script):** `f5d7366a4eb1d1e0c370e022952d0bfe88fefe69` — "docs(optkit-001): add pragmatic RAG implementation guide"
+
+### What I did
+
+- Read the clean-slate architecture sections covering package consolidation, Coinvault, RAG-TTC, pull-request ordering, worked RAG examples, and final recommendation.
+- Read all seven supplied implementation-diary steps and inspected the archive's core APIs.
+- Read Coinvault's verified-bundle open path, hybrid service, runtime configuration, evidence ledger, tool output, strict eval schema, candidate-pool diagnosis, and canonical evaluator composition.
+- Read RAG-TTC's current hybrid search tool, customer bundle lifecycle, runtime composer/resolver, strict tool configuration, index build, knowledge build, answer-quality runner, and relevant tests.
+- Read RagKit's retrieval and broad answering APIs, RagOpt's package responsibilities, and current Judgekit value types/execution boundary.
+- Ran focused and full-kit tests with `GOWORK=off` where appropriate.
+- Added `scripts/01-repository-inventory.sh` and generated `sources/01-repository-inventory.md`.
+- Wrote the primary design document with current-state evidence, diagrams, API sketches, retrieval/controller pseudocode, implementation phases, test strategy, decisions, risks, deletion gates, and intern review instructions.
+- Checked the first seven OPTKIT-001 tasks and related seven decision-shaping files to the design document.
+
+### Why
+
+- The clarification changes sequencing: “proper RAG in RAG-TTC” is the first outcome, not the reward after a multi-repository consolidation.
+- Existing RAG-TTC behavior is substantial enough that a rewrite would discard useful work; a service extraction and semantic hardening are more pragmatic.
+- Coinvault's strongest reusable contribution is not its product code but its laws: verified immutable input, deterministic stage ordering, pre-external-boundary policy filtering, runtime identity, bounded evidence, and stage-aware evaluation.
+- An inventory script makes repository size, module identity, package count, and kit dependencies reproducible instead of hand-maintained prose.
+
+### What worked
+
+- All six inspected modules or focused package sets passed tests.
+- The inventory found that neither Coinvault nor RAG-TTC currently imports Judgekit, despite both having judge/evaluation paths.
+- RAG-TTC already has the right seams to extend: `SearchTool.RunRoute`, `ragsearch.Open`, `Handle.NewSessionRegistry`, and `realruntime.Composer.Compose`.
+- The audit found one concrete config/runtime gap: intent-routing configuration is strongly typed and validated, while the customer `ragsearch` composition does not compile it into `SearchTool.AddRoute` registrations.
+- The 61,607-byte design document fits the requested intern-oriented scope without reproducing the original 8,841-line architecture wholesale.
+
+### What didn't work
+
+- The first run of `scripts/01-repository-inventory.sh` exited with status 1 and no normal output. Under `set -euo pipefail`, `rg -l` correctly returned status 1 when a product had zero Judgekit imports, causing the command substitution to abort even though zero was valid data.
+- Running with `bash -x` isolated the failing pipeline at the Judgekit import count. I changed the counter to wrap `rg` with `|| true` before `wc -l`, then reran successfully.
+- An early broad `rg` type inventory exceeded the tool output limit and was truncated. I replaced it with focused symbol and file reads rather than treating truncated output as complete evidence.
+
+### What I learned
+
+- RAG-TTC is not missing all RAG infrastructure. It is missing a single canonical semantic service and complete attribution across infrastructure that already exists.
+- Coinvault's pre-fusion authorization is product-critical because it mixes public/analyst scopes. RAG-TTC should adopt a server-selected source policy, but it should not invent multi-tenant machinery if its customer corpus is entirely public.
+- Judgekit's lightweight architecture is partly prospective: the current `eval.Instance` still stores a digest, and claim extraction still receives a complete instance. The design direction is accepted, but simplification work remains.
+- The Optkit archive's hash-chained journal is compatible with a pragmatic local trust model. Keeping an already tested corruption/replay check does not require expanding into signatures or cross-trust attestations.
+- The lowest-risk consolidation sequence is product-owned service first, exercised generic primitive move second, last-caller switch third, and deletion fourth.
+
+### What was tricky to build
+
+- The central design tension was avoiding two bad extremes: blocking RAG-TTC on complete kit consolidation, or creating another product-only runner that makes consolidation harder. The resolution is a TTC-owned canonical service whose API remains product-semantic while its temporary implementation composes RagKit primitives.
+- “Apply Coinvault” required separating general laws from Coinvault-specific code. Access scopes, SQL tools, product prompts, and Coinvault cases remain local; verified bundles, stage ordering, policy-before-external-boundary, evidence identity, and diagnostic failure custody transfer.
+- The status assessment had to distinguish three layers: the checked-out Optkit template, the green implementation archive, and the much larger proposed architecture. Conflating them would either understate completed work or overstate what is on the branch.
+
+### What warrants a second pair of eyes
+
+- Review the accepted decision to allow temporary RagKit imports while building the first Optkit product slice; confirm the named deletion gates are strong enough to prevent permanence.
+- Confirm whether RAG-TTC's customer corpus requires actual source-role policy filtering or only attribution and route selection.
+- Validate the finding that checked-in intent-routing configuration is not wired into the customer serving composition.
+- Review the proposed direct `CustomerApplication.RunTurn` seam against current Pinocchio/sessionstream behavior before implementation.
+- Review the initial Optkit import strategy so `ttmp` and repository CI are preserved without obscuring archive provenance.
+
+### What should be done in the future
+
+- Implement Phase 0 as a provenance-preserving import, not a hand port.
+- Start the RAG-TTC work with deterministic semantic fixtures and direct-service/tool parity tests.
+- Add Judgekit only after deterministic retrieval and answer-contract evidence are reliable.
+- Track each temporary old-kit import with a deletion task and architecture test.
+
+### Code review instructions
+
+- Start with the design document's Sections 1, 6, 8, 9, 11, 15, and 20.
+- Reproduce the inventory by running `scripts/01-repository-inventory.sh`.
+- Validate focused repositories with the commands listed in the design document's evidence section.
+- Compare Coinvault `internal/knowledge/service.go:456` with RAG-TTC `pkg/ttc/search/search.go:172` to review the proposed transfer.
+- Compare RAG-TTC `pkg/ttc/toolconfig/types.go` with `internal/customer/ragsearch/ragsearch.go` to review the route-wiring finding.
+
+### Technical details
+
+- Inventory script: `ttmp/2026/08/24/OPTKIT-001--pragmatic-optkit-unification-and-coinvault-to-rag-ttc-port/scripts/01-repository-inventory.sh`
+- Inventory output: `ttmp/2026/08/24/OPTKIT-001--pragmatic-optkit-unification-and-coinvault-to-rag-ttc-port/sources/01-repository-inventory.md`
+- Primary guide: `ttmp/2026/08/24/OPTKIT-001--pragmatic-optkit-unification-and-coinvault-to-rag-ttc-port/design-doc/01-optkit-current-state-and-pragmatic-rag-implementation-guide.md`
+- Focused RAG-TTC test command: `GOWORK=off go test ./pkg/ttc/search ./pkg/ttc/toolconfig ./internal/customer/ragsearch ./internal/customer/realruntime ./cmd/rag-ttc/cmds/indexes ./cmd/rag-ttc/cmds/knowledge ./cmd/rag-ttc/cmds/experiments/answerquality -count=1`
+- Focused Coinvault test command: `GOWORK=off go test ./internal/knowledge ./internal/knowledgebuild ./internal/webchat/evalchat -count=1`
