@@ -78,4 +78,8 @@ The detailed engineering record, including failed commands, design changes, revi
 
 ## Deliberate boundaries
 
-This is a substantial foundation and durable vertical slice, not the complete 146-page product-porting program. It does not claim to include the unavailable Coinvault or RAG-TTC repositories, PostgreSQL/S3 adapters, web UI, authorization/exposure enforcement, provider integrations, sophisticated search strategies, production deployment, hierarchical organization/stage budgets, or provider pricing catalogs. Those are named follow-on slices rather than mocked as completed product work.
+Optkit is a domain-neutral control plane. No Optkit package or test may import RagKit, RagOpt, Judgekit, Coinvault, or RAG-TTC; `internal/boundary/boundary_test.go` enforces this over the module's direct imports. Products compose domain behavior through `system.Factory` and `system.Prepared`, while snapshots and queues retain only canonical configuration and artifact references.
+
+RAG algorithms remain in RagKit, evaluator semantics remain in Judgekit, and product policy remains in product repositories. The embedded web application is a read-only query plane over Optkit campaigns; it does not make Optkit own product-specific projections or browser mutation workflows.
+
+This is a substantial foundation and durable vertical slice, not the complete product-porting program. PostgreSQL/S3 adapters, production deployment, hierarchical organization/stage budgets, provider pricing catalogs, and adaptive optimization remain named follow-on slices rather than mocked as completed work.
