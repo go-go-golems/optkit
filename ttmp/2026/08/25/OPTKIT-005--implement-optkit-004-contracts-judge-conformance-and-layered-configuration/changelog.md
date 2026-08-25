@@ -22,3 +22,13 @@ Published a 728-line Glazed-style Optkit model reference and moved legacy ADR/di
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/docs/01-optkit-records-artifacts-and-control-model.md — Current public data-model reference
 
+
+## 2026-08-25
+
+Removed declared-only scheduler claims/heartbeat/failure evidence and unused event causation/correlation; migrated RAG-TTC to published Optkit commit fda4ad6
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/scheduler/types.go — Lean work contract after removal
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/optkitcampaign/campaign.go — Product caller migrated to lean constructor
+

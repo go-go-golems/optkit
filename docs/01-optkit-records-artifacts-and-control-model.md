@@ -27,7 +27,7 @@ SectionType: GeneralTopic
 
 Optkit separates immutable scientific facts from mutable execution control. Product adapters write typed configurations, episode evidence, observations, and campaign commands; Optkit stores those values as canonical records and artifacts; projectors and query services rebuild read models without becoming a second authority. This separation makes experiment identity, restart behavior, and measurement attribution explicit.
 
-This reference documents the exported records and interfaces that participate in that model. Each table names the writer, reader, and operational status of every field. Items marked **slated for removal** still exist in the current source so historical code can be reviewed, but they have no complete behavioral consumer and will leave the v0 contract before the specialist UI freezes its schemas.
+This reference documents the exported records and interfaces that participate in that model. Each table names the writer, reader, and operational status of every field. Items marked **removed before v0 freeze** were present in the imported implementation but had no complete behavioral consumer. They remain documented so readers understand the deletion and the evidence required to reintroduce them.
 
 ## Ownership and status vocabulary
 
@@ -45,7 +45,7 @@ Optkit uses a small set of ownership roles. Distinguishing these roles prevents 
 | Active | Written and consumed by a current RAG-TTC or Optkit execution path. |
 | Implemented foundation | Has executable behavior and tests, but the first RAG-TTC campaign does not exercise it. |
 | Declared only | Stored or exposed without a behavioral consumer. |
-| Slated for removal | Declared-only API that creates a false capability signal or duplicates another authority. |
+| Removed before v0 freeze | Former declared-only API deleted because it created a false capability signal or duplicated another authority. |
 
 The removal rule is strict: a field remains only when a current product, executable proof system, integrity check, or read model gives it semantics. A field does not remain merely because a future distributed system might need it.
 
@@ -97,7 +97,7 @@ Each exported ID type prevents accidental interchange at compile time while reta
 | `CampaignID` | Product campaign creation | Journal, queue, budget, query API | Root authority for one campaign. Active. |
 | `EventID` | Episode writer or campaign materializer | Trajectories, journal chain, query API | Identifies immutable events. Active. |
 | `CommandID` | Command caller | Controller and command lookup | Makes lifecycle commands idempotent. Active. |
-| `CorrelationID` | No meaningful current writer | Campaign event storage and query API | Intended operation grouping. **Slated for removal:** no command, worker, projector, or UI assigns or queries it. |
+| `CorrelationID` **(removed)** | No meaningful writer | Former campaign event storage and query API | Removed before v0 freeze because no command, worker, projector, or UI assigned or queried it. |
 | `EpisodeID` | Experiment expansion | Trajectory writer, campaign reducer | Identifies one arm/case/repeat execution. Active. |
 | `TrialID` | `NewCompleteBlockTrial` | Episode specs and campaign summary | Identifies an experimental design. Active. |
 | `ObservationID` | `measure.NewObservation` | Journal and estimators | Identifies one attributed measured fact. Active. |
@@ -299,7 +299,7 @@ The `episode` package records one execution as ordered immutable events followed
 | `Resource` | Prepared system | Budget reconciliation | Names a consumed quantity such as queries or results. |
 | `Units` | Prepared system | Budget reconciliation | Actual integer consumption. |
 
-Episode usage is the source of actual budget commitment. It is different from the scheduler resource claims slated for removal because the budget ledger consumes and enforces it.
+Episode usage is the source of actual budget commitment. It is different from the removed scheduler resource claims because the budget ledger consumes and enforces it.
 
 ### `episode.Failure`
 
@@ -313,7 +313,7 @@ Episode usage is the source of actual budget commitment. It is different from th
 | `Evidence` | Product executable | Review and diagnostics | Artifact references supporting classification. Active at episode level. |
 | `Diagnostics` | Product executable | Domain-specific projector | Schema-owned structured details. |
 
-Episode failure evidence remains supported. Only `scheduler.WorkFailure.Evidence`, which has no writer or reader, is slated for removal.
+Episode failure evidence remains supported. The former `scheduler.WorkFailure.Evidence` field was removed because it had no writer or behavioral reader.
 
 ### Results and trajectories
 
@@ -461,8 +461,8 @@ The `campaign` package is the control-plane authority. Commands request validate
 | `OccurredAt` | Writer or journal default | UI and event identity | Domain occurrence time. Active. |
 | `Actor` | Writer | Audit/query | Attribution. Active. |
 | `Command` | Controller | Command lookup | Idempotent command provenance. Active. |
-| `Causation` | No meaningful product writer | SQLite and query API only | Intended immediate-cause event. **Slated for removal:** no workflow assigns or queries it, while inclusion in event identity creates a permanent contract. |
-| `Correlation` | No meaningful product writer | SQLite and query API only | Intended operation grouping. **Slated for removal:** no operation establishes or queries correlation groups. |
+| `Causation` **(removed)** | No meaningful product writer | Former SQLite and query serialization only | Removed because no workflow assigned or queried immediate-cause relationships. |
+| `Correlation` **(removed)** | No meaningful product writer | Former SQLite and query serialization only | Removed because no operation established or queried correlation groups. |
 | `Payload` | Writer | Reducer/projector/verifier | Immutable event data. Active. |
 | `Tags` | Writer | Query API and diagnostics | Small labels. Active. |
 | `Campaign` | Journal materializer | Chain verifier/projector | Owning campaign. Active. |
@@ -518,9 +518,9 @@ The `scheduler` package defines mutable execution authority. Work identity is de
 | `Priority` | Product campaign | SQLite lease ordering | Higher values lease first. Active mechanism; current products use zero. |
 | `EarliestStart` | Product campaign or retry path | SQLite lease filter | Initial delay and retry backoff. Active. |
 | `LeaseDuration` | Product campaign | SQLite lease | Expiry window. Active. |
-| `ResourceClaims` | RAG-TTC and Numbergame | SQLite serialization only | Intended worker-capacity declaration. **Slated for removal:** the queue never compares claims with worker capacity, and enforced budget claims duplicate the current values. |
+| `ResourceClaims` **(removed)** | Formerly RAG-TTC and Numbergame | Former SQLite serialization only | Removed because the queue never compared claims with worker capacity and enforced budget claims duplicated the values. |
 
-`ResourceClaim.Resource` names a claimed capacity and `Units` declares an amount. Neither field has a behavioral reader. The cleanup removes the type, the `WorkItem` field, the `NewWorkItem` argument, and active SQL serialization. Existing local SQLite databases may retain an ignored column.
+The removed `ResourceClaim.Resource` named a capacity and `Units` declared an amount, but neither field had a behavioral reader. Commit `fda4ad62c97de2db4d85eab78aea926a7d474f5f` removed the type, the `WorkItem` field, the `NewWorkItem` argument, and active SQL serialization. Pre-freeze local stores created with the old `resource_claims_json NOT NULL` schema must be reset before enqueueing new work.
 
 ### Lease request and lease
 
@@ -546,7 +546,7 @@ A stale worker cannot commit after reassignment because terminal updates require
 | `Message` | Worker | Operator diagnostics | Human detail. Implemented foundation. |
 | `Retryable` | Worker | Queue `Fail` | Return to ready state or terminate. Implemented foundation. |
 | `Backoff` | Worker | Queue `Fail` | New earliest-start delay. Implemented foundation. |
-| `Evidence` | No meaningful current writer | SQLite serialization only | Intended scheduler-level supporting artifacts. **Slated for removal:** episode failures already carry evidence, and no queue policy or projector consumes this duplicate field. |
+| `Evidence` **(removed)** | No meaningful writer | Former SQLite serialization only | Removed because episode failures already carry evidence and no queue policy or projector consumed the duplicate field. |
 
 ### `WorkRecord`
 
@@ -569,13 +569,13 @@ A stale worker cannot commit after reassignment because terminal updates require
 |---|---|---|---|
 | `Enqueue` | RAG-TTC and Numbergame | SQLite queue | Active. |
 | `Lease` | RAG-TTC and Numbergame | SQLite queue | Active. |
-| `Heartbeat` | None | SQLite can extend expiry but no worker invokes it | **Slated for removal:** it advertises multi-worker liveness without a heartbeat loop, cancellation policy, or reclamation race test. Reintroduce with the first real long-running worker. |
+| `Heartbeat` **(removed)** | None | Former SQLite expiry update | Removed because it advertised multi-worker liveness without a heartbeat loop, cancellation policy, or reclamation race test. Reintroduce with the first real long-running worker. |
 | `Complete` | RAG-TTC and Numbergame | SQLite fenced update | Active. |
 | `Fail` | Numbergame | SQLite retry/terminal transition | Implemented foundation; RAG-TTC still needs failure integration. |
 | `ReclaimExpired` | RAG-TTC and tests | SQLite queue | Active crash recovery. |
 | `Get` | RAG-TTC reconciliation and tests | SQLite queue | Active. |
 
-Lease IDs, lease expiry, and reclamation remain even if `Heartbeat` leaves the v0 interface. The local worker model tolerates expiry and replay; Phase 3 bundle-build work must introduce heartbeat as a complete worker protocol rather than a lone method.
+Lease IDs, lease expiry, and reclamation remain after `Heartbeat` left the v0 interface. The local worker model tolerates expiry and replay; Phase 3 bundle-build work must introduce heartbeat as a complete worker protocol rather than a lone method.
 
 ## Budget accounting
 
@@ -655,7 +655,7 @@ Projection and query types are read models. They may be rebuilt or versioned wit
 | `EventPage.After` / `Through` / `Head` | Sequence cursor and journal | Pagination client | Stable cursor bounds. |
 | `EventPage.Events` / `HasMore` | Bounded journal read | Pagination client | Event page and continuation signal. |
 
-`EventView.Causation` and `EventView.Correlation` are slated for removal together with their control-event fields. `PayloadJSON`, `PayloadAvailable`, and `PayloadReason` remain because the query service must explain why a preview is present, absent, sensitive, too large, or undecodable.
+The former `EventView.Causation` and `EventView.Correlation` fields were removed with their control-event fields. `PayloadJSON`, `PayloadAvailable`, and `PayloadReason` remain because the query service must explain why a preview is present, absent, sensitive, too large, or undecodable.
 
 The query API defaults to 200 events, permits at most 500, and refuses payload previews above 256 KiB.
 
@@ -671,11 +671,11 @@ The query API defaults to 200 events, permits at most 500, and refuses payload p
 
 `store/sqlite.Store` combines journal, command lookup, campaign catalog, queue, and budget ledger interfaces over one SQLite database. This is a local deployment choice, not permission for packages to bypass their interfaces or join artifact bytes into control tables.
 
-## Removal register
+## Completed removal register
 
-The removal register makes cleanup decisions visible before code deletion. These items are not deprecated compatibility APIs; they are pre-release fields that failed the writer-reader-enforcement test.
+The removal register preserves why pre-release fields were deleted in commit `fda4ad62c97de2db4d85eab78aea926a7d474f5f`. These were not deprecated compatibility APIs; they failed the writer-reader-enforcement test before the v0 contract freeze.
 
-| Item | Current writer | Current reader | Why removal is correct | Reintroduction gate |
+| Removed item | Former writer | Former reader | Why removal was correct | Reintroduction gate |
 |---|---|---|---|---|
 | `scheduler.ResourceClaim` | RAG-TTC and Numbergame constructors | SQLite serializer/decoder only | Duplicates enforced budget quantities and does not affect lease admission. | A worker-capacity model compares claims with declared worker capacities during an atomic lease. |
 | `WorkItem.ResourceClaims` | `NewWorkItem` | SQLite round trip only | Makes work appear capacity-aware when it is not. | Same as above. |
@@ -713,9 +713,9 @@ Optkit fails closed at boundaries where accepting ambiguous data could change sc
 | Trajectory load fails on an event payload | Referenced bytes are missing or corrupt | Stop analysis and repair custody from an authoritative copy; do not skip the event. |
 | Paired estimate reports missing pairs | One arm/case/repeat observation is absent, invalid, or NaN | Reconcile or rerun the missing episode; do not average only the surviving rows. |
 | Query event has no payload preview | Artifact is sensitive, unavailable, larger than 256 KiB, or not eligible for JSON preview | Use the reported `payload_reason`; inspect through an authorized artifact workflow if needed. |
-| Scheduler resource claims do not limit work | The fields are declared-only and slated for removal | Use the budget ledger for finite consumption. Wait for an enforced worker-capacity design before declaring capacity claims. |
+| Scheduler resource claims are unavailable | The unenforced fields were removed before v0 freeze | Use the budget ledger for finite consumption. Wait for an enforced worker-capacity design before declaring capacity claims. |
 | Heartbeat cannot be found after cleanup | The unused v0 method was removed | Use bounded local episodes; add the complete heartbeat worker protocol when long-running distributed work is implemented. |
-| Historical journal verification changes after event cleanup | Causation/correlation participated in the pre-freeze event identity shape | Validate historical journals with their original code/schema version or regenerate disposable local fixtures; do not silently reinterpret digests. |
+| A pre-freeze journal contains nonempty causation or correlation | Those removed values participated in the historical event identity | Validate that journal with its original code/schema version or regenerate disposable local fixtures; nil omitted values retain the same canonical identity shape. |
 
 ## See Also
 

@@ -333,3 +333,123 @@ ttmp/2026/08/25/OPTKIT-005--implement-optkit-004-contracts-judge-conformance-and
     implementation-diary.md
     journals/README.md
 ```
+
+## Step 4: Remove declared-only scheduler and event fields
+
+This step converted the documented removal register into a clean pre-v0 API. Scheduler resource claims, the unwired heartbeat method, scheduler-level failure evidence, and unused campaign causation/correlation fields no longer imply capabilities that no worker, policy, projector, or UI actually implements.
+
+Lease fencing, expiry reclamation, attempts, retryable failures, episode evidence, and enforced budget reservations remain intact. RAG-TTC now consumes the lean work-item constructor through a published Optkit pseudo-version, so isolated module builds continue to prove the real dependency boundary.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Ok, do it."
+
+**Follow-up user prompt (verbatim):** "commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill)"
+
+**Assistant interpretation:** Delete every approved item in the removal register, migrate active callers, validate behavior at repository boundaries, commit semantic units, and document the exact result.
+
+**Inferred user intent:** Freeze a smaller honest Optkit API before Phase 0 schemas and the UI make unused implementation placeholders expensive to remove.
+
+**Commit (Optkit code):** `fda4ad62c97de2db4d85eab78aea926a7d474f5f` — "Scheduler: remove unenforced control fields"
+
+**Commit (RAG-TTC caller):** `ebb6cbc63f37cd0090ccdd1661a7e512640b21db` — "Campaign: adopt lean Optkit work contract"
+
+### What I did
+
+- Removed `scheduler.ResourceClaim`, `WorkItem.ResourceClaims`, and the claims parameter from `NewWorkItem`.
+- Removed `resource_claims_json` from the new SQLite work-item schema, inserts, selects, and decoders.
+- Preserved enforced `budget.Quantity` reservations and episode actual-usage commitment.
+- Removed `Queue.Heartbeat` and the unused SQLite heartbeat implementation.
+- Removed `scheduler.WorkFailure.Evidence` while preserving `episode.Failure.Evidence`.
+- Removed campaign causation and correlation from `NewEvent`, `ControlEvent`, event identity, SQLite storage, query views, and `record.CorrelationID`.
+- Migrated Numbergame and RAG-TTC work-item constructors.
+- Published Optkit commit `fda4ad6` and pinned RAG-TTC to pseudo-version `v0.0.0-20260825222033-fda4ad62c97d`.
+- Updated the public model document from “slated” to a completed removal record with reintroduction gates.
+- Added `scripts/03-validate-control-cleanup.sh` and archived exact output in `sources/03-control-cleanup-validation.txt`.
+
+### Why
+
+- Resource claims duplicated budget quantities but had no capacity-aware lease reader.
+- Heartbeat had no worker loop and overstated multi-worker liveness guarantees.
+- Scheduler failure evidence duplicated the episode evidence authority.
+- Causation and correlation had storage and query fields but no producer or consumer semantics.
+- Removing these contracts before UI schema freeze avoids empty fields, fake controls, and permanent compatibility obligations.
+
+### What worked
+
+- The clean committed Optkit tree passed every package test and `go vet` under `GOWORK=off`.
+- The Numbergame demo completed against a fresh post-cleanup SQLite schema.
+- RAG-TTC focused tests and race tests passed against the published Optkit pseudo-version.
+- RAG-TTC's full pre-commit and pre-push test, golangci-lint, and Glazed-vet hooks passed.
+- Source guards found none of the removed identifiers in active Optkit Go or SQL source.
+- The validator ended with `CONTROL_CLEANUP_VALIDATION=PASS`.
+
+### What didn't work
+
+- N/A. The source migration and validation passed without a failed implementation attempt.
+
+### What I learned
+
+- Nil `causation` and `correlation` fields used `omitempty` in the event identity, so removing them preserves canonical identity for existing events that never populated those fields. Only hypothetical pre-freeze events with nonempty values require their original verifier.
+- Removing a `NOT NULL` SQLite column from new schema code creates an intentional pre-freeze storage break for old databases: an old `resource_claims_json` column without a default prevents new inserts. Existing stores must be reset rather than receiving a compatibility write shim.
+- Publishing Optkit before updating RAG-TTC preserved isolated-module validation and prevented the workspace from hiding an API mismatch.
+
+### What was tricky to build
+
+- The active Optkit worktree still contains an unrelated malformed `store/sqlite/rows.go`. Validation therefore applied the cleanup diff to a detached clean worktree before the code commit and validated committed `HEAD` afterward.
+- The SQLite schema had to remove both logical fields and active SQL columns. Leaving the old work-item column in current creation SQL would have retained the misleading contract even after deleting the Go type.
+- RAG-TTC already had unrelated Phase 0 files in progress. Staging named only `go.mod`, `go.sum`, and `pkg/ttc/optkitcampaign/campaign.go`, preserving the optimization fixture and stage constants for their own phase commit.
+
+### What warrants a second pair of eyes
+
+- Confirm that resetting pre-freeze local SQLite stores is acceptable and that no production store depends on `resource_claims_json`.
+- Review `campaign.eventIdentity` and the historical-journal note for nonempty removed metadata.
+- Confirm Phase 3 reintroduces heartbeat only with worker cadence, cancellation, reclaim races, and stale-completion tests.
+- Verify RAG-TTC should continue returning worker errors directly until its queue-failure integration is implemented.
+
+### What should be done in the future
+
+- Add capacity claims only with atomic capacity-aware leasing and worker capacity declarations.
+- Add heartbeat only as a complete long-running worker protocol.
+- Add causation or correlation only when a writer establishes validated edges and a projector or operator workflow consumes them.
+- Keep the public removal register synchronized with any reintroduction decision.
+
+### Code review instructions
+
+- Start at `scheduler/types.go` and `scheduler/queue.go`, then inspect SQLite removal in `store/sqlite/queue.go` and `store/sqlite/store.go`.
+- Review campaign identity changes in `campaign/event.go`, SQLite journal changes in `store/sqlite/journal.go`, and query removal in `query/service.go`.
+- Review RAG-TTC's two `NewWorkItem` calls and pinned Optkit pseudo-version.
+- Run `scripts/03-validate-control-cleanup.sh` and check for `CONTROL_CLEANUP_VALIDATION=PASS`.
+
+### Technical details
+
+Removed active identifiers:
+
+```text
+ResourceClaim
+ResourceClaims
+resource_claims_json
+Heartbeat
+WorkFailure.Evidence
+NewEvent.Causation
+ControlEvent.Causation
+NewEvent.Correlation
+ControlEvent.Correlation
+EventView.Causation
+EventView.Correlation
+CorrelationID
+```
+
+Published dependency:
+
+```text
+github.com/go-go-golems/optkit v0.0.0-20260825222033-fda4ad62c97d
+```
+
+Validation evidence:
+
+```text
+OPTKIT_COMMIT=fda4ad62c97de2db4d85eab78aea926a7d474f5f
+RAG_TTC_COMMIT=ebb6cbc63f37cd0090ccdd1661a7e512640b21db
+CONTROL_CLEANUP_VALIDATION=PASS
+```

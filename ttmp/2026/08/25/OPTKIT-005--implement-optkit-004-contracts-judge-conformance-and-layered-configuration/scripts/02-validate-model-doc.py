@@ -23,7 +23,7 @@ if data["SectionType"] != "GeneralTopic":
     raise SystemExit("field reference must be a GeneralTopic")
 if any(line.startswith("# ") for line in body.splitlines()):
     raise SystemExit("Glazed help entry must not contain a top-level Markdown heading")
-for heading in ("## Troubleshooting", "## See Also", "## Removal register"):
+for heading in ("## Troubleshooting", "## See Also", "## Completed removal register"):
     if heading not in body:
         raise SystemExit(f"missing required section: {heading}")
 
