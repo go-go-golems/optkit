@@ -1579,7 +1579,12 @@ The first gate exposed one pre-existing asynchronous test race in RAG-TTC observ
 
 ### Prompt Context
 
-**User prompt (verbatim):** "Do it. then use the diary and the git history and design docs or whatever to  write a detailed project report for the obsidian vault as a deep dive technical analysis blog post using a textbook writing style (no analogies, see skill).      \n Commit and push the bsidian vault when done (go-go-parc vault)."
+**User prompt (verbatim):**
+
+```text
+Do it. then use the diary and the git history and design docs or whatever to  write a detailed project report for the obsidian vault as a deep dive technical analysis blog post using a textbook writing style (no analogies, see skill).      
+ Commit and push the bsidian vault when done (go-go-parc vault).
+```
 
 **Assistant interpretation:** Complete OPTKIT-002's final validation, delivery, and closure, then author and publish a textbook-style deep technical project report in the go-go-parc Obsidian vault.
 
@@ -1598,6 +1603,10 @@ The first gate exposed one pre-existing asynchronous test race in RAG-TTC observ
 - Proved the fix with 100 race executions and ten complete chatserver package executions.
 - Reran the final gate and archived the passing output as `sources/12-final-validation.txt`.
 - Produced fresh campaign `campaign:5059080a270edd4c1078fe186692d4ee`; it completed six episodes with the expected paired delta, then returned byte-identical JSON from restart and inspect.
+- Dry-ran the six-document ticket bundle for `/ai/2026/08/25/OPTKIT-002` before invoking the real upload.
+- Corrected the literal prompt-line-break encoding after Pandoc rejected `\\n` as an undefined TeX control sequence.
+- Uploaded `OPTKIT-002 Pragmatic RAG TTC Vertical Slice.pdf` successfully.
+- Printed the final project status slip; it rendered as a two-segment 384 × 850 layout at `2026-08-25T20:23:41Z`.
 
 ### Why
 
@@ -1615,6 +1624,8 @@ The first gate exposed one pre-existing asynchronous test race in RAG-TTC observ
 - Optkit passes its no-CGO unit suite and static build in a detached clean worktree.
 - The fresh campaign's initial run, resumed run, and read-only inspection are byte-identical.
 - The final transcript ends with `FINAL_VALIDATION=PASS`.
+- The reMarkable command returned `OK: uploaded OPTKIT-002 Pragmatic RAG TTC Vertical Slice.pdf -> /ai/2026/08/25/OPTKIT-002`.
+- Every overall and per-phase plan/completion slip, including the final project slip, has printed successfully.
 
 ### What didn't work
 
@@ -1622,6 +1633,7 @@ The first gate exposed one pre-existing asynchronous test race in RAG-TTC observ
 - Exact failure: `observability_test.go:96: outcome metrics = chatserver.MetricsSnapshot{Accepted:0x1, Rejected:0x1, Conflicts:0x1, Canceled:0x1, Failed:0x1, Reconnects:0x0, ProjectionErrors:0x1, TimeToStatus:chatserver.DurationMetricSnapshot{Count:0x1, Total:2561772, Last:2561772}, Retrieval:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}, Model:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}, Validation:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}, TimeToAnswer:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}}`.
 - Focused reproduction failed with the same `Reconnects:0x0` observation under `-race -count=100`.
 - The failure was resolved by synchronizing the assertion with the observer's externally visible metric and log effects; no production code changed.
+- The first real reMarkable bundle upload failed during PDF generation with `! Undefined control sequence. l.5467 ...ting style (no analogies, see skill). \\n` and exit status 43. The diary had encoded the prompt's line break as a literal `\\n`; replacing it with the actual verbatim line break removed the invalid TeX control sequence.
 
 ### What I learned
 
@@ -1665,3 +1677,5 @@ The first gate exposed one pre-existing asynchronous test race in RAG-TTC observ
 - Failed transcript: `sources/11-final-validation-attempt-1.txt`.
 - Passing transcript: `sources/12-final-validation.txt`.
 - Result: `FINAL_VALIDATION=PASS`.
+- reMarkable destination: `/ai/2026/08/25/OPTKIT-002/OPTKIT-002 Pragmatic RAG TTC Vertical Slice.pdf`.
+- Final slip: `printed: true`, 384 × 850, two segments, rendered `2026-08-25T20:23:41Z`.

@@ -525,6 +525,14 @@ Validation across Optkit, RagKit, Judgekit, RagOpt, RAG-TTC, and Coinvault ends 
 
 All repository checks pass, the worktrees contain no unexplained changes, ticket doctor is clean, all phase slips were printed, the bundle upload succeeds, and the ticket closes with no open tasks.
 
+### Final completion outcome
+
+The closure gate revalidated every archived acceptance marker, the byte-identical semantic fixture, full and race suites across Optkit, RagKit, Judgekit, RagOpt, and RAG-TTC, Coinvault's retained RagOpt characterization, Glazed structure, no-CGO Optkit behavior, and a fresh durable campaign. Campaign `campaign:5059080a270edd4c1078fe186692d4ee` completed six episodes; its run, resumed-run, and inspect rows were byte-identical. The transcript ends in `FINAL_VALIDATION=PASS`.
+
+The first race run exposed an asynchronous reconnect-observability assertion. RAG-TTC commit `28e4a6e15f2d8e691d19a6fe67574527a9b7c315` makes the test wait for the exact reconnect metric and structured log without changing production behavior. The focused race test then passed 100 consecutive executions.
+
+The final project slip printed at `2026-08-25T20:23:41Z`. After a successful dry-run, the complete bundle uploaded as `OPTKIT-002 Pragmatic RAG TTC Vertical Slice.pdf` under `/ai/2026/08/25/OPTKIT-002`.
+
 ## 16. Key decisions
 
 ### Decision: RagKit remains separate

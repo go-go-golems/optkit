@@ -1,7 +1,7 @@
 ---
 Title: Implement Optkit and Pragmatic RAG-TTC Vertical Slice
 Ticket: OPTKIT-002
-Status: active
+Status: complete
 Topics:
     - optkit
     - rag
@@ -19,7 +19,7 @@ RelatedFiles:
       Note: P2 canonical direct retrieval service (commit ea6c629be)
 ExternalSources: []
 Summary: Phase-gated implementation of the Optkit foundation and a Coinvault-informed, RagKit-backed RAG-TTC product campaign.
-LastUpdated: 2026-08-25T20:04:00Z
+LastUpdated: 2026-08-25T20:23:41Z
 WhatFor: Navigate the implementation plan, phase status, diary, scripts, and validation evidence for OPTKIT-002.
 WhenToUse: Start here before implementing, reviewing, or resuming any OPTKIT-002 phase.
 ---
@@ -46,6 +46,9 @@ This ticket implements the architecture assessed in OPTKIT-001. Optkit remains a
 - [P8 boundary and migration inventory](sources/09-p8-boundary-and-migration-inventory.md)
 - [P8 validation script](scripts/10-validate-p8.sh)
 - [P8 validation transcript](sources/10-p8-validation.txt)
+- [Final validation script](scripts/11-validate-final.sh)
+- [Preserved failed final-validation attempt](sources/11-final-validation-attempt-1.txt)
+- [Passing final-validation transcript](sources/12-final-validation.txt)
 
 ## Current status
 
@@ -56,7 +59,9 @@ This ticket implements the architecture assessed in OPTKIT-001. Optkit remains a
 - **P6:** restartable durable TTC retrieval campaign complete.
 - **P7:** attributed historical Judgekit measurement complete; `P7_VALIDATION=PASS`.
 - **P8:** dependency boundaries stabilized and superseded outer customer tool-loop path deleted; `P8_VALIDATION=PASS`.
-- **Next:** final validation, documentation audit, reMarkable delivery, and ticket closure.
+- **Final gate:** complete after one asynchronous test correction; `FINAL_VALIDATION=PASS`.
+- **Delivery:** ticket bundle uploaded to `/ai/2026/08/25/OPTKIT-002` as `OPTKIT-002 Pragmatic RAG TTC Vertical Slice.pdf`.
+- **Ticket:** complete; all tasks and phase slips are closed.
 
 ## P0 result
 
