@@ -17,6 +17,14 @@ topics:
       description: local development
     - slug: implementation
       description: Implementation plans, execution diaries, and phase delivery evidence
+    - slug: ui
+      description: User interfaces and interaction architecture
+    - slug: query-plane
+      description: Read-only projections, search, and transport APIs
+    - slug: visualization
+      description: Visual representations of campaign evidence and provenance
+    - slug: scientific-workflow
+      description: Scientist-facing experiment review and assessment workflows
 docTypes: []
 intent: []
 status: []

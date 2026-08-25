@@ -1,0 +1,182 @@
+# OPTKIT-003 explorer validation
+revision: d90ae43061ff8ab61d03ad19c410eaf9a0d4cecc
+validated_utc: 2026-08-25T00:24:02Z
+
+$ make ci-check
+GOWORK=off CGO_ENABLED=1 go vet ./...
+GOWORK=off CGO_ENABLED=1 go test ./... -count=1
+ok  	github.com/go-go-golems/optkit/artifact	0.021s
+ok  	github.com/go-go-golems/optkit/artifact/filesystem	0.029s
+?   	github.com/go-go-golems/optkit/artifact/memory	[no test files]
+ok  	github.com/go-go-golems/optkit/budget	0.010s
+ok  	github.com/go-go-golems/optkit/campaign	0.010s
+ok  	github.com/go-go-golems/optkit/cmd/optkit	0.855s
+ok  	github.com/go-go-golems/optkit/episode	0.018s
+ok  	github.com/go-go-golems/optkit/examples/numbergame	0.770s
+ok  	github.com/go-go-golems/optkit/experiment	0.017s
+ok  	github.com/go-go-golems/optkit/internal/archtest	0.018s
+ok  	github.com/go-go-golems/optkit/internal/sqlite	0.040s
+ok  	github.com/go-go-golems/optkit/internal/web	1.212s
+?   	github.com/go-go-golems/optkit/local	[no test files]
+ok  	github.com/go-go-golems/optkit/measure	0.010s
+?   	github.com/go-go-golems/optkit/projection	[no test files]
+ok  	github.com/go-go-golems/optkit/query	0.439s
+ok  	github.com/go-go-golems/optkit/record	0.004s
+?   	github.com/go-go-golems/optkit/scheduler	[no test files]
+ok  	github.com/go-go-golems/optkit/space	0.004s
+ok  	github.com/go-go-golems/optkit/store/sqlite	0.083s
+GOWORK=off CGO_ENABLED=0 go test ./... -count=1
+ok  	github.com/go-go-golems/optkit/artifact	0.013s
+ok  	github.com/go-go-golems/optkit/artifact/filesystem	0.023s
+?   	github.com/go-go-golems/optkit/artifact/memory	[no test files]
+ok  	github.com/go-go-golems/optkit/budget	0.005s
+ok  	github.com/go-go-golems/optkit/campaign	0.006s
+?   	github.com/go-go-golems/optkit/cmd/optkit	[no test files]
+ok  	github.com/go-go-golems/optkit/episode	0.005s
+?   	github.com/go-go-golems/optkit/examples/numbergame	[no test files]
+ok  	github.com/go-go-golems/optkit/experiment	0.006s
+ok  	github.com/go-go-golems/optkit/internal/archtest	0.007s
+?   	github.com/go-go-golems/optkit/internal/sqlite	[no test files]
+?   	github.com/go-go-golems/optkit/internal/web	[no test files]
+?   	github.com/go-go-golems/optkit/local	[no test files]
+ok  	github.com/go-go-golems/optkit/measure	0.008s
+?   	github.com/go-go-golems/optkit/projection	[no test files]
+?   	github.com/go-go-golems/optkit/query	[no test files]
+ok  	github.com/go-go-golems/optkit/record	0.003s
+?   	github.com/go-go-golems/optkit/scheduler	[no test files]
+ok  	github.com/go-go-golems/optkit/space	0.003s
+?   	github.com/go-go-golems/optkit/store/sqlite	[no test files]
+GOWORK=off CGO_ENABLED=1 go build ./...
+
+$ make race
+GOWORK=off CGO_ENABLED=1 go test -race ./... -count=1
+ok  	github.com/go-go-golems/optkit/artifact	1.047s
+ok  	github.com/go-go-golems/optkit/artifact/filesystem	1.059s
+?   	github.com/go-go-golems/optkit/artifact/memory	[no test files]
+ok  	github.com/go-go-golems/optkit/budget	1.044s
+ok  	github.com/go-go-golems/optkit/campaign	1.030s
+ok  	github.com/go-go-golems/optkit/cmd/optkit	2.291s
+ok  	github.com/go-go-golems/optkit/episode	1.025s
+ok  	github.com/go-go-golems/optkit/examples/numbergame	2.253s
+ok  	github.com/go-go-golems/optkit/experiment	1.020s
+ok  	github.com/go-go-golems/optkit/internal/archtest	1.030s
+ok  	github.com/go-go-golems/optkit/internal/sqlite	1.026s
+ok  	github.com/go-go-golems/optkit/internal/web	3.458s
+?   	github.com/go-go-golems/optkit/local	[no test files]
+ok  	github.com/go-go-golems/optkit/measure	1.017s
+?   	github.com/go-go-golems/optkit/projection	[no test files]
+ok  	github.com/go-go-golems/optkit/query	2.001s
+ok  	github.com/go-go-golems/optkit/record	1.013s
+?   	github.com/go-go-golems/optkit/scheduler	[no test files]
+ok  	github.com/go-go-golems/optkit/space	1.019s
+ok  	github.com/go-go-golems/optkit/store/sqlite	1.095s
+
+$ make lint
+GOWORK=off golangci-lint run -v
+level=info msg="golangci-lint has version 2.4.0 built with go1.26.1 from (unknown, modified: ?, mod sum: \"h1:qz6O6vr7kVzXJqyvHjHSz5fA3D+PM8v96QU5gxZCNWM=\") on (unknown)"
+level=info msg="[config_reader] Config search paths: [./ /home/manuel/workspaces/2026-08-24/use-optkit/optkit /home/manuel/workspaces/2026-08-24/use-optkit /home/manuel/workspaces/2026-08-24 /home/manuel/workspaces /home/manuel /home /]"
+level=info msg="[config_reader] Used config file .golangci.yml"
+level=info msg="[config_reader] Module name \"github.com/go-go-golems/optkit\""
+level=info msg="maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"
+level=info msg="[goenv] Read go env for 2.778259ms: map[string]string{\"GOCACHE\":\"/home/manuel/.cache/go-build\", \"GOROOT\":\"/usr/local/go\"}"
+level=info msg="[lintersdb] Active 9 linters: [errcheck exhaustive gofmt govet ineffassign nonamedreturns predeclared staticcheck unused]"
+level=info msg="[loader] Go packages loading at mode 8767 (compiled_files|deps|exports_file|files|name|imports|types_sizes) took 196.274436ms"
+level=info msg="[runner/filename_unadjuster] Pre-built 0 adjustments in 11.44964ms"
+level=info msg="[linters_context/goanalysis] analyzers took 143.563048ms with top 10 stages: buildir: 51.879024ms, S1038: 7.179353ms, QF1010: 5.276419ms, SA6006: 4.995165ms, QF1004: 4.919149ms, fact_purity: 4.205425ms, S1001: 3.542594ms, SA1012: 3.519464ms, fact_deprecated: 2.985347ms, gofmt: 2.879752ms"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/invalid_issue] issue related to file /home/manuel/.cache/go-build/db/db02255b09bfa3e8e2a11e54a10744dc2ece54f713ed5c61d43de1c0a8dbf8f7-d is skipped"
+level=info msg="[runner/exclusion_rules] Skipped 11 issues by rules: [Path: \"_test\\\\.go\", Linters: \"errcheck\"]"
+level=info msg="[runner] Issues before processing: 39, after processing: 0"
+level=info msg="[runner] Processors filtering stat (in/out): exclusion_rules: 11/0, filename_unadjuster: 39/39, invalid_issue: 39/11, path_relativity: 11/11, exclusion_paths: 11/11, generated_file_filter: 11/11, cgo: 39/39, path_absoluter: 39/39"
+level=info msg="[runner] processing took 460.956µs with stages: invalid_issue: 296.019µs, generated_file_filter: 84.318µs, exclusion_rules: 41.659µs, path_relativity: 23.462µs, cgo: 4.312µs, path_absoluter: 2.421µs, sort_results: 1.787µs, filename_unadjuster: 1.281µs, exclusion_paths: 1.063µs, nolint_filter: 806ns, fixer: 772ns, max_same_issues: 768ns, path_prettifier: 402ns, max_from_linter: 316ns, diff: 310ns, max_per_file_from_linter: 304ns, path_shortener: 295ns, uniq_by_line: 252ns, source_code: 214ns, severity-rules: 195ns"
+level=info msg="[runner] linters took 169.964832ms with stages: goanalysis_metalinter: 169.41449ms"
+0 issues.
+level=info msg="File cache stats: 0 entries of total size 0B"
+level=info msg="Memory: 5 samples, avg is 57.9MB, max is 92.7MB"
+level=info msg="Execution took 381.203845ms"
+curl: (7) Failed to connect to 127.0.0.1 port 18081 after 0 ms: Couldn't connect to server
+
+$ curl -fsS http://127.0.0.1:18081/api/v1/health
+{"api_version":"optkit.query/v1","read_only":true,"status":"ok"}
+
+$ curl -fsS http://127.0.0.1:18081/api/v1/campaigns
+{"api_version":"optkit.query/v1","campaigns":[{"api_version":"optkit.query/v1","id":"campaign:35c060fc4a794f60882e2405a1867426","version":81,"status":"completed","system":"system:numbergame/v1","dataset":"dataset:250c9d5df865fe7bf6d732e5db32d5cda33a5ec088f8c1f46a18ee51e3cc6da7","trial":"trial:3347f0684e4c8e061316284058e903cfc0e6618231294a474c0f688c5d3e6619","overview":{"campaign":"campaign:35c060fc4a794f60882e2405a1867426","version":81,"status":"completed","events":81,"episodes":8,"queued":0,"active":0,"completed":8,"failed_terminal":0,"last_digest":"sha256:9eb4ec960187fce20b39b20c7903441e9a31d29c2f525dcebe6b21f9d68192aa"},"budget":{"campaign":"campaign:35c060fc4a794f60882e2405a1867426","resources":[{"resource":"episodes","limit":8,"reserved":0,"committed":8,"available":0},{"resource":"numbergame.operations","limit":8,"reserved":0,"committed":8,"available":0}],"violated":false},"event_kinds":{"BudgetReserved":8,"CampaignCompleted":1,"CampaignCreated":1,"CampaignStarted":1,"CandidateProposed":1,"DecisionRecorded":1,"EpisodeAttemptStarted":8,"EpisodeCompleted":8,"EpisodeLeaseGranted":8,"EpisodeScheduled":8,"EstimateRecorded":1,"ObservationRecorded":24,"PlanCompiled":1,"SnapshotMaterialized":1,"TrialPlanned":1,"UsageCommitted":8},"integrity":{"verified":true},"generated_at":"2026-08-25T00:24:15.384187394Z"}],"count":1,"generated_at":"2026-08-25T00:24:15.381452482Z"}
+
+$ curl -fsS http://127.0.0.1:18081/api/v1/campaigns/campaign:35c060fc4a794f60882e2405a1867426
+{"api_version":"optkit.query/v1","id":"campaign:35c060fc4a794f60882e2405a1867426","version":81,"status":"completed","system":"system:numbergame/v1","dataset":"dataset:250c9d5df865fe7bf6d732e5db32d5cda33a5ec088f8c1f46a18ee51e3cc6da7","trial":"trial:3347f0684e4c8e061316284058e903cfc0e6618231294a474c0f688c5d3e6619","overview":{"campaign":"campaign:35c060fc4a794f60882e2405a1867426","version":81,"status":"completed","events":81,"episodes":8,"queued":0,"active":0,"completed":8,"failed_terminal":0,"last_digest":"sha256:9eb4ec960187fce20b39b20c7903441e9a31d29c2f525dcebe6b21f9d68192aa"},"budget":{"campaign":"campaign:35c060fc4a794f60882e2405a1867426","resources":[{"resource":"episodes","limit":8,"reserved":0,"committed":8,"available":0},{"resource":"numbergame.operations","limit":8,"reserved":0,"committed":8,"available":0}],"violated":false},"event_kinds":{"BudgetReserved":8,"CampaignCompleted":1,"CampaignCreated":1,"CampaignStarted":1,"CandidateProposed":1,"DecisionRecorded":1,"EpisodeAttemptStarted":8,"EpisodeCompleted":8,"EpisodeLeaseGranted":8,"EpisodeScheduled":8,"EstimateRecorded":1,"ObservationRecorded":24,"PlanCompiled":1,"SnapshotMaterialized":1,"TrialPlanned":1,"UsageCommitted":8},"integrity":{"verified":true},"generated_at":"2026-08-25T00:24:15.400234317Z"}
+
+$ curl -fsS http://127.0.0.1:18081/api/v1/campaigns/campaign:35c060fc4a794f60882e2405a1867426/events?limit=2
+{"api_version":"optkit.query/v1","campaign":"campaign:35c060fc4a794f60882e2405a1867426","after":0,"through":2,"head":81,"events":[{"seq":1,"id":"event:ebe0dfca6925be4a7d7607fd55cca517b94acb86fa99e6935a49b176ac918da6","kind":"CampaignCreated","schema":"schema:numbergame.campaign-spec/v1","actor":"actor:demo","occurred_at":"2026-08-25T00:24:14.635643097Z","recorded_at":"2026-08-25T00:24:14.635643097Z","command":"command:f6b7a06db7fc2e39d048488f60297c89","payload":{"digest":"sha256:f0e596c7850384cb46260699348f73c67acbf1558f91481e8a4cde05d1d58c08","media_type":"application/vnd.optkit.record+json","schema":"schema:numbergame.campaign-spec/v1","size":713,"sensitivity":"internal"},"payload_json":{"system":"system:numbergame/v1","baseline":{"id":"snapshot:abaf1354710a5858ba594c40937e06bf535ae3d9754d2b43f646109521a0b2e1","system":"system:numbergame/v1","schema":"schema:numbergame.config/v1","config":{"digest":"sha256:ba4f75abe282c640d064f5e3ff6cce775ed733b69454bb7259e7e89f9921bce5","media_type":"application/vnd.optkit.record+json","schema":"schema:numbergame.config/v1","size":31,"sensitivity":"internal"}},"search_variables":["math.multiplier"],"dataset":"dataset:250c9d5df865fe7bf6d732e5db32d5cda33a5ec088f8c1f46a18ee51e3cc6da7","trial":"trial:3347f0684e4c8e061316284058e903cfc0e6618231294a474c0f688c5d3e6619","budget":[{"resource":"episodes","units":8},{"resource":"numbergame.operations","units":8}]},"payload_available":true,"digest":"sha256:ebe0dfca6925be4a7d7607fd55cca517b94acb86fa99e6935a49b176ac918da6"},{"seq":2,"id":"event:ef6dd87c9997ae7b11d45ce4c68d8707951f802fee5c7badb4fb9ff670081680","kind":"PlanCompiled","schema":"schema:numbergame.trial-plan/v1","actor":"actor:demo","occurred_at":"2026-08-25T00:24:14.637405828Z","recorded_at":"2026-08-25T00:24:14.637405828Z","command":"command:9a73f3f263c260e2dea96ac2df2c8d0f","payload":{"digest":"sha256:9b54aa33e09c9c4d9841169a578713106b5e537108efbda0579ad631779190f0","media_type":"application/vnd.optkit.record+json","schema":"schema:numbergame.trial-plan/v1","size":1643,"sensitivity":"internal"},"payload_json":{"id":"trial:3347f0684e4c8e061316284058e903cfc0e6618231294a474c0f688c5d3e6619","arms":[{"id":"baseline","snapshot":"snapshot:abaf1354710a5858ba594c40937e06bf535ae3d9754d2b43f646109521a0b2e1"},{"id":"challenger","snapshot":"snapshot:d0073b9e4ab569008367851937c9397363238c4dcb2b9d1d217f128981ea95ec"}],"dataset":{"id":"dataset:250c9d5df865fe7bf6d732e5db32d5cda33a5ec088f8c1f46a18ee51e3cc6da7","role":"development","cases":[{"id":"case-01","input":{"digest":"sha256:a073748f67b73cc80a1a4b07d40dc6096b1a18fef3afeaf124d73c6696cd8b02","media_type":"application/vnd.optkit.record+json","schema":"schema:numbergame.case/v1","size":22,"sensitivity":"internal"},"groups":["development","exact-target"]},{"id":"case-02","input":{"digest":"sha256:f53c26d447642c8b9a870151d83894b4f7adc627a3e33abf0de6b7b73770824b","media_type":"application/vnd.optkit.record+json","schema":"schema:numbergame.case/v1","size":22,"sensitivity":"internal"},"groups":["development","exact-target"]},{"id":"case-03","input":{"digest":"sha256:ce4d9cbbdaa56c2e0da0f2243505c44ae4d713da109479d8699f437c74fcb5bd","media_type":"application/vnd.optkit.record+json","schema":"schema:numbergame.case/v1","size":23,"sensitivity":"internal"},"groups":["development","exact-target"]},{"id":"case-04","input":{"digest":"sha256:e0eb0e4d4fad4e312ee8a51f8ef14057a8309bc216940cf6c466b9403ec9b38f","media_type":"application/vnd.optkit.record+json","schema":"schema:numbergame.case/v1","size":23,"sensitivity":"internal"},"groups":["development","exact-target"]}],"digest":"sha256:250c9d5df865fe7bf6d732e5db32d5cda33a5ec088f8c1f46a18ee51e3cc6da7"},"repeats":1,"protocol":"numbergame.execution/v1"},"payload_available":true,"digest":"sha256:ef6dd87c9997ae7b11d45ce4c68d8707951f802fee5c7badb4fb9ff670081680"}],"has_more":true,"generated_at":"2026-08-25T00:24:15.412393645Z"}
+
+$ curl -fsS http://127.0.0.1:18081/
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Optkit Campaign Explorer</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#/campaigns" aria-label="Optkit campaigns">OPTKIT</a>
+    <label class="global-search">
+      <span class="visually-hidden">Search visible campaigns and events</span>
+      <span aria-hidden="true">⌕</span>
+      <input id="global-search" type="search" placeholder="search ids, kinds, schemas, subjects…" autocomplete="off">
+    </label>
+    <div id="connection-status" class="connection-status">OFFLINE</div>
+  </header>
+
+  <main id="app" tabindex="-1">
+    <section class="loading" aria-live="polite">READING CAMPAIGN JOURNAL…</section>
+  </main>
+
+  <aside id="detail-drawer" class="detail-drawer" hidden aria-label="Evidence details">
+    <button id="drawer-close" class="text-button" type="button">CLOSE ×</button>
+    <div id="drawer-content"></div>
+  </aside>
+
+  <template id="error-template">
+    <section class="empty-state">
+      <p class="eyebrow error-text">QUERY ERROR</p>
+      <h1>Evidence unavailable</h1>
+      <p class="error-message"></p>
+      <a href="#/campaigns">Return to campaigns</a>
+    </section>
+  </template>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
+
+POST_MUTATION_STATUS=405
+CAMPAIGN=campaign:35c060fc4a794f60882e2405a1867426
+EXPLORER_VALIDATION=PASS
