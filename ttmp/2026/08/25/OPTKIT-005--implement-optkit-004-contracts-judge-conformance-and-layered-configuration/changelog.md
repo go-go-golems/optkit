@@ -41,3 +41,12 @@ Phase 0: froze layered RAG contracts, stage vocabulary, strict cross-layer fixtu
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/optimization/fixture.go — Strict canonical Phase 0 contract
 
+
+## 2026-08-25
+
+Phase 1: audited Judgekit conformance and proved two epochs preserve exact sealed product bytes (RAG-TTC e92644779)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/judgeinstrument/instrument_test.go — Historical remeasurement acceptance proof
+

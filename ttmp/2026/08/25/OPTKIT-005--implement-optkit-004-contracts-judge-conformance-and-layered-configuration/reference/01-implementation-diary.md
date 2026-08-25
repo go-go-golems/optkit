@@ -556,3 +556,84 @@ OPTIMIZATION_FIXTURE_SHA256=4c5f87b27e134e464e0da868b44df4c93cb6f344f3880ac905eb
 BASE_RETRIEVAL_FIXTURE_SHA256=2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f
 PHASE_0_VALIDATION=PASS
 ```
+
+## Step 6: Prove Judgekit conformance without rebuilding the adapter
+
+This step completed OPTKIT-004 Phase 1 as an evidence and conformance phase. The P7 Judgekit adapter already implemented the required behavior; the work here mapped every requirement to code and tests, strengthened the historical remeasurement test to protect exact sealed product bytes, and archived a focused cross-repository validation.
+
+The resulting evidence proves that a second judge protocol creates new epochs and observations over one unchanged answer trajectory. It also proves evidence-hidden claim extraction, cache-bypass execution, current-content instance rebinding, model/prompt/cache/usage provenance, and typed failure or missing states.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 4)
+
+**Assistant interpretation:** Audit and close Phase 1 after Phase 0, adding only the missing proof that historical product artifacts remain unchanged.
+
+**Inferred user intent:** Avoid duplicate implementation while establishing a reviewable, executable acceptance record before configuration-graph work begins.
+
+**Commit (RAG-TTC test):** `e92644779022b49e59be371f399f6317a9f1ceb8` — "Judge: prove sealed product bytes survive remeasurement"
+
+### What I did
+
+- Mapped every OPTKIT-004 Phase 1 deliverable to concrete RAG-TTC and Judgekit APIs and tests in `sources/05-phase1-conformance-matrix.md`.
+- Strengthened `TestHistoricalAnswerCanBeRemeasuredUnderNewEpoch` to snapshot exact trajectory and answer-output bytes before measurement and compare them after two judge epochs.
+- Verified current-content instance identity rebinding, evidence-hidden extraction, strict model attribution, prompt execution provenance, cache bypass, typed missing/failure states, deterministic evidence separation, and epoch isolation.
+- Added `scripts/05-validate-phase1.sh` and archived output in `sources/06-phase1-validation.txt`.
+- Confirmed the `Instrument.Measure` path contains no search, retrieval, customer turn, prepared system, or product execution call.
+
+### Why
+
+- Phase 1 was already behaviorally implemented by OPTKIT-002 P7, so a second adapter would create divergence rather than confidence.
+- Exact artifact-byte assertions make “no retrieval or answer rerun” concrete: the instrument receives only sealed artifacts and the test proves those product artifacts remain unchanged.
+- A conformance matrix makes inherited Judgekit guarantees visible without copying Judgekit logic into RAG-TTC tests.
+
+### What worked
+
+- Judgekit judging, assessment, and protocol packages passed unit, race, and vet checks.
+- RAG-TTC judgeinstrument focused and race tests passed.
+- All five Phase 1 validation markers passed, ending with `PHASE_1_VALIDATION=PASS`.
+- The RAG-TTC full pre-commit test and lint hooks passed.
+
+### What didn't work
+
+- N/A. Phase 1 required one additive regression assertion and no implementation repair.
+
+### What I learned
+
+- API shape contributes meaningful conformance evidence: `Instrument.Measure` cannot rerun product behavior because it receives an artifact store and sealed `episode.Result`, not a product executor.
+- Artifact immutability alone is not enough for an acceptance claim; capturing and comparing exact bytes makes the no-rewrite property explicit in the regression test.
+- Judgekit owns detailed prompt/model provenance tests while the product adapter owns the mapping from sealed product evidence into Optkit epochs and observations.
+
+### What was tricky to build
+
+- The conformance matrix had to distinguish guarantees supplied by Judgekit from adapter guarantees supplied by RAG-TTC. Evidence-hidden extraction belongs to Judgekit; sealed trajectory decoding and epoch mapping belong to RAG-TTC.
+- Deterministic contract artifacts appear in observation diagnostics rather than as substituted judge evidence. The test must preserve that distinction while still proving all evidence refs verify.
+
+### What warrants a second pair of eyes
+
+- Confirm that exact trajectory/output byte preservation plus the execution-free `Measure` API is sufficient proof of no product rerun.
+- Review whether the conformance validator's static execution-call guard should evolve into a repository boundary test.
+- Confirm the current two constructs and built-in protocol are fixture scope, not a frozen final judge calibration policy.
+
+### What should be done in the future
+
+- Add calibration and perturbation projectors when specialist Judgekit screens are implemented.
+- Keep product execution out of measurement instruments; future measurement adapters must accept sealed records only.
+- Promotion policies must compare only compatible epoch populations.
+
+### Code review instructions
+
+- Read `sources/05-phase1-conformance-matrix.md` first.
+- Review the strengthened historical test in `pkg/ttc/judgeinstrument/instrument_test.go`.
+- Follow `Instrument.Measure` through `LoadSealedAnswer`, `BuildInstance`, report validation, and observation creation.
+- Run `scripts/05-validate-phase1.sh` and check for `PHASE_1_VALIDATION=PASS`.
+
+### Technical details
+
+```text
+SEALED_ANSWER_REMEASUREMENT=PASS
+EVIDENCE_HIDDEN_EXTRACTION=PASS
+CACHE_BYPASS_PROBE=PASS
+TYPED_MISSING_FAILURE_STATES=PASS
+PHASE_1_VALIDATION=PASS
+```

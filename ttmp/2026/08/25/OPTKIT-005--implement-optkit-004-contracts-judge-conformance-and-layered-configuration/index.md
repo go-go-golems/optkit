@@ -35,7 +35,7 @@ This ticket implements the prerequisites for the OPTKIT-004 specialist UI. It st
 
 Current status: **active**
 
-Current phase: **Phase 1 — Judgekit conformance over sealed answers**
+Current phase: **Phase 2 — layered configuration graph**
 
 ## Topics
 
