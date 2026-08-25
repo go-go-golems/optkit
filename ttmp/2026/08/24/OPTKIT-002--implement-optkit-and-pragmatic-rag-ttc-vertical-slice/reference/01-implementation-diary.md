@@ -33,12 +33,24 @@ RelatedFiles:
       Note: P3 reproducible validation gate
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/05-validate-p4.sh
       Note: P4 reproducible validation gate
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/06-validate-p5.sh
+      Note: P5 reproducible validation gate
     - Path: ws://rag-ttc/cmd/rag-ttc/cmds/experiments/answerquality/stageaware.go
       Note: P4 existing-runner integration (commit d7701685d)
     - Path: ws://rag-ttc/internal/customer/ragsearch/connected.go
       Note: P3 connected-RAG augmentation adapter (commit d4c5adab4)
     - Path: ws://rag-ttc/internal/customer/ragsearch/routes.go
       Note: P3 verified configured-route compiler (commit d4c5adab4)
+    - Path: ws://rag-ttc/internal/customer/realruntime/composer.go
+      Note: P5 transport composition switch (commit 8853613a4)
+    - Path: ws://rag-ttc/internal/customer/webchatcmd/run.go
+      Note: P5 provider serving uses direct application (commit 8853613a4)
+    - Path: ws://rag-ttc/pkg/ttc/customerapp/service.go
+      Note: P5 canonical direct customer turn (commit 8853613a4)
+    - Path: ws://rag-ttc/pkg/ttc/customerapp/service_test.go
+      Note: P5 direct-served parity and redaction laws (commit 8853613a4)
+    - Path: ws://rag-ttc/pkg/ttc/customerapp/types.go
+      Note: P5 request result event failure and trajectory contracts (commit 8853613a4)
     - Path: ws://rag-ttc/pkg/ttc/retrievaleval/diagnose.go
       Note: P4 stage normalization rank movement and target-loss diagnosis (commit d7701685d)
     - Path: ws://rag-ttc/pkg/ttc/retrievaleval/evaluate.go
@@ -57,6 +69,7 @@ LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 
@@ -917,3 +930,117 @@ The existing answer-quality runner now emits canonical stage-aware JSON and conc
 - Rank movement delta is `from_rank - to_rank`; positive values mean improvement.
 - Validation transcript: `sources/05-p4-validation.txt`.
 - P4 completion slip: `printed: true`, 384 × 831, two segments, rendered `2026-08-25T01:30:56Z`.
+
+## Step 10: Phase P5 — Route customer turns through a direct application service
+
+P5 introduces `pkg/ttc/customerapp` as the canonical customer-domain turn below HTTP, WebSocket, and sessionstream. It owns the bounded provider/tool loop, fresh canonical search session, answer schema, citation mapping, safe abstention, failure taxonomy, content-free trajectory events, and redacted durable projection. Admin tool-answer execution remains separate.
+
+The provider webchat composition now wraps this direct service in a one-method engine adapter. The existing transport still supplies profile system instructions, streaming context, snapshots, and turn persistence, but it no longer owns a separate customer tool loop. Direct and served tests run the same service and produce equivalent answer, citation, contract, evidence, failure, and provider-call outcomes.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 9)
+
+**Assistant interpretation:** Continue from P4 into the next planned phase and land the canonical direct customer application boundary without pausing.
+
+**Inferred user intent:** Make the real customer product executable directly by future Optkit campaigns while preserving serving fidelity and the required phase evidence cadence.
+
+**Commit (RAG-TTC):** `8853613a4ffac96d6e801580fd300b2b300a036d` — "Route customer turns through direct application service"
+
+### What I did
+
+- Printed the P5 plan slip before implementation; it rendered at `2026-08-25T01:31:23Z`.
+- Added `pkg/ttc/customerapp` with direct `Service.RunTurn`, typed request/result, application events, event sink, statuses, failures, trajectory projection, and engine adapter.
+- Kept `pkg/ttc/toolanswer` and admin assistant composition unchanged so customer and admin applications remain separate.
+- Reused P3 `search.SearchTool` sessions; every turn receives a fresh evidence ledger and retains detached chronological search-call/stage evidence.
+- Added structured-output setup, bounded provider calls, reserved final call, tool error continuation, canonical citation-label validation, and immutable chunk-ID mapping.
+- Added explicit statuses `completed`, `abstained`, and `failed`.
+- Added failure codes for validation, cancellation, retrieval miss, policy removal, admission truncation, generation failure, malformed output, unsupported claim, unresolved citation, presentation failure, provider-call limit, and tool failure.
+- Added content-free application events for turn start, retrieval completion, turn completion, and turn failure.
+- Added `Result.Trajectory()` as the durable redacted projection: IDs, status, abstention, immutable citation IDs, failure codes, provider calls, and duration only.
+- Added retrieval diagnostics over P3 stages and made `SearchTool.Calls()` return deep detached copies.
+- Added direct-versus-engine-adapter domain parity tests, fresh-ledger tests, safe-abstention and contract-failure tests, provider/presentation failure tests, retrieval-diagnostic tests, and redaction tests.
+- Added `ApplicationEngineFactory` to the real runtime composer/resolver and switched provider webchat composition from an outer registry/tool loop to the customer application engine.
+- Preserved outer transport middleware, snapshot context, session metadata, and turn-store persistence; the direct application inherits event sinks and owns the inner tool loop.
+- Added the provider's tool-result reorder middleware inside the direct application so every inner provider call retains prior serving behavior.
+- Added `scripts/06-validate-p5.sh` and captured `sources/06-p5-validation.txt`.
+
+### Why
+
+- Optkit must invoke the exact product-domain turn directly rather than reconstructing customer behavior through WebSocket choreography.
+- HTTP/sessionstream and direct evaluation must not own independent tool-loop, answer-contract, or evidence semantics.
+- Customer and admin agents have different tools, policies, and product obligations and should not be collapsed into one application service.
+- Durable scientific trajectories must not retain customer questions, model prose, source text, or raw failure messages by accident.
+
+### What worked
+
+- Direct and engine-adapted execution produce equivalent statuses, grounded answers, contracts, citation chunk IDs, evidence IDs, failures, and provider-call counts.
+- Two turns in the same session each begin at citation `E1`, proving evidence ledger scope is per turn/session factory rather than service-global.
+- Safe abstention is a successful explicit outcome; malformed output, unsupported claims, and unresolved citations are failed contract outcomes.
+- Provider and event-sink failures surface as distinct generation and presentation codes.
+- Content-free events and `ttc-customer-trajectory/v1` omit the test customer secret and source prose while preserving immutable evidence IDs.
+- The composer test proves application-engine composition bypasses the old outer tool registry and remains callable through the transport engine contract.
+- Focused tests, focused race tests, the full repository suite, build, vet, golangci-lint, Glazed lint, and pre-commit hooks pass.
+- Validation ends with `P5_COMMIT=8853613a4ffac96d6e801580fd300b2b300a036d` and `P5_VALIDATION=PASS`.
+
+### What didn't work
+
+- The first customerapp compile failed because imports retained from the extracted source skeleton were unused:
+
+  `pkg/ttc/customerapp/service.go:7:2: "sync/atomic" imported and not used`
+
+  `pkg/ttc/customerapp/service.go:15:2: "github.com/go-go-golems/ragkit/rag" imported and not used`
+
+  `pkg/ttc/customerapp/service.go:16:2: "github.com/go-go-golems/ragkit/rag/answering" imported and not used`
+
+  I moved provider-budget and answer-contract logic into focused files and removed the stale imports.
+- The first webchat compile failed with:
+
+  `internal/customer/webchatcmd/run.go:220:3: unknown field ApplicationEngineFactory in struct literal of type realruntime.ResolverOptions`
+
+  I had added the factory to `ComposerOptions` but not propagated it through `ResolverOptions`; adding the field and forwarding it fixed the composition path.
+- The first service draft briefly contained placeholder type anchors for contract and diagnostics functions. I removed them and implemented typed `search.Citation`/`search.SearchOutput` helpers before running tests.
+
+### What I learned
+
+- The repository already contained a direct admin/tool-answer service, but reusing it for customers would violate the separate customer/admin boundary and retain the old duplicate search implementation.
+- The existing `realruntime.Composer` is the correct switch point: its outer enginebuilder can remain single-pass for persistence and streaming while the application adapter owns the inner tool loop.
+- Tool-result reordering must wrap the provider used by the inner application loop; retaining it only outside the application adapter would not affect later provider calls.
+- Domain contract failures should return both a populated failed `Result` and a Go error so transport snapshots cannot mistake malformed model output for a successful turn.
+
+### What was tricky to build
+
+- The served path previously built a tool-loop engine directly. To avoid nesting two tool loops, application composition now sets the outer registry to nil; the outer runner calls the application adapter once, while the direct service performs all provider/tool iterations.
+- Profile/Garden system instructions still enter through outer middleware. The application prepends its checked orchestration prompt to the resulting turn, preserving both product contract and profile specialization.
+- Search results contain source text for immediate answer validation, but durable events cannot. The implementation uses two representations: rich in-memory `Result` and deliberately content-free `Trajectory`/`Event` values.
+- Retrieval miss, policy removal, and admission truncation are nonterminal diagnostic outcomes: a valid safe abstention can coexist with them. Generation and contract failures remain terminal.
+
+### What warrants a second pair of eyes
+
+- Review system-prompt ordering when a long-lived turn already contains historical system blocks.
+- Review whether the provider/model metadata stamped from checked tool configuration should be overridden by dynamically selected runtime profiles.
+- Review the source-results widget tool in direct non-browser execution; it remains transport-aware and may warrant separation during P8.
+- Review whether all domain contract failures should remain Go errors for every direct caller or whether an Optkit adapter should treat populated failed results as observations.
+- Review failure messages before any caller persists the rich `Result`; only `Trajectory()` is guaranteed content-free.
+
+### What should be done in the future
+
+- P6 should invoke `customerapp.Service.RunTurn` directly and persist only the redacted trajectory plus explicitly reviewed stage artifacts.
+- P8 should remove the now-unused provider `buildProviderToolRegistry` serving path after confirming no caller remains.
+- Add a live provider smoke test when credentials and a sealed production bundle are available; this phase deliberately used deterministic scripted engines.
+
+### Code review instructions
+
+- Start with `pkg/ttc/customerapp/types.go`, `service.go`, `contract.go`, and `diagnostics.go`.
+- Review `EngineAdapter` and `realruntime.Composer` to confirm there is exactly one customer tool loop.
+- Review `webchatcmd/run.go` to verify provider serving constructs `ApplicationEngineFactory`.
+- Run `OPTKIT-002/scripts/06-validate-p5.sh` and confirm `P5_VALIDATION=PASS`.
+
+### Technical details
+
+- Direct API: `Service.RunTurn(context.Context, customerapp.Request) (customerapp.Result, error)`.
+- Durable projection schema: `ttc-customer-trajectory/v1`.
+- Transport adapter: `customerapp.EngineAdapter` implements Geppetto `engine.Engine`.
+- Search call history is detached and ordered; stage candidate slices and contribution slices are copied.
+- Validation transcript: `sources/06-p5-validation.txt`.
+- P5 completion slip: `printed: true`, 384 × 853, two segments, rendered `2026-08-25T01:47:51Z`.

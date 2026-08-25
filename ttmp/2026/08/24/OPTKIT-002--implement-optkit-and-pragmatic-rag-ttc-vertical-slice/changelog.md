@@ -69,3 +69,13 @@ Completed P4 deterministic stage-aware retrieval evaluation with treatment verif
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/retrievaleval/evaluate.go — Canonical P4 evaluator
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/05-p4-validation.txt — Passing P4 command transcript
 
+
+## 2026-08-24
+
+Completed P5 canonical direct customer application service and switched provider transport composition (RAG-TTC commit 8853613a4).
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/customerapp/service.go — Canonical P5 domain turn
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/06-p5-validation.txt — Passing P5 command transcript
+
