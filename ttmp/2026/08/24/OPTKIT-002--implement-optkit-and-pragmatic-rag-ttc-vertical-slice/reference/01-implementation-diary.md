@@ -1447,6 +1447,7 @@ Judge changes no longer require retrieval or answer generation to run again. The
 - Built-in constructs: `faithfulness` and `answer_relevance`.
 - Report sensitivity: confidential; observation sensitivity: internal.
 - Validation transcript: `sources/08-p7-validation.txt`.
+- P7 completion slip: `printed: true`, 384 × 878, two segments, rendered `2026-08-25T19:50:56Z`.
 
 ## Step 14: Phase P8 complete — Stabilize boundaries and delete only proven superseded orchestration
 
@@ -1559,3 +1560,4 @@ The phase also removed the obsolete outer customer tool-registry loop after prov
 - P8 boundary inventory: `sources/09-p8-boundary-and-migration-inventory.md`.
 - P8 validation transcript: `sources/10-p8-validation.txt`.
 - Retained RagOpt commit validated: `76d5fa2de4871c7bfc5bf07ee5994ad7952c4519`.
+- P8 completion slip: `printed: true`, 384 × 883, two segments, rendered `2026-08-25T20:06:25Z`.

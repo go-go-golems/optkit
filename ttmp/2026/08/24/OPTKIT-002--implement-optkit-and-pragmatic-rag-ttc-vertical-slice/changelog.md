@@ -121,3 +121,12 @@ P8 complete: guarded Optkit/RagKit/Judgekit ownership, deleted the superseded ou
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/09-p8-boundary-and-migration-inventory.md — Retention and migration evidence
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/10-p8-validation.txt — P8_VALIDATION=PASS
 
+
+## 2026-08-25
+
+Printed and recorded the P7 and P8 completion slips after both acceptance gates passed.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/reference/01-implementation-diary.md — P7/P8 slip render evidence
+

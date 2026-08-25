@@ -49,7 +49,7 @@ This ticket implements the architecture assessed in OPTKIT-001. Optkit remains a
 
 ## Current status
 
-- Overall and per-phase P0-P8 plan/completion slips: printed through P7; P8 completion slip follows its documentation commit.
+- Overall and per-phase P0-P8 plan/completion slips: printed.
 - **P0-P2:** baseline import, semantic fixtures, and canonical retrieval service complete.
 - **P2.5:** read-only campaign query plane complete.
 - **P3-P5:** runtime identity/policy, deterministic evaluation, and direct customer application complete.
