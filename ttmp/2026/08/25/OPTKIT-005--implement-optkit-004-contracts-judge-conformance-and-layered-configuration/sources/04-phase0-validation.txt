@@ -1,0 +1,15 @@
+verified /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/search/testdata/rag-semantic-fixture-v1.json
+verified /home/manuel/workspaces/2026-08-24/use-optkit/coinvault/internal/knowledge/testdata/rag-semantic-fixture-v1.json
+sha256=2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optimization	0.022s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/search	0.020s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/customerapp	0.015s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/judgeinstrument	0.044s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	1.494s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optimization	1.046s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/judgeinstrument	1.114s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	3.520s
+OPTIMIZATION_FIXTURE_SCHEMA=rag-ttc.optimization-semantic-fixture/v1
+OPTIMIZATION_FIXTURE_SHA256=4c5f87b27e134e464e0da868b44df4c93cb6f344f3880ac905eb7c022effba3f
+BASE_RETRIEVAL_FIXTURE_SHA256=2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f
+PHASE_0_VALIDATION=PASS

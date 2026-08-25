@@ -32,3 +32,12 @@ Removed declared-only scheduler claims/heartbeat/failure evidence and unused eve
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/scheduler/types.go — Lean work contract after removal
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/optkitcampaign/campaign.go — Product caller migrated to lean constructor
 
+
+## 2026-08-25
+
+Phase 0: froze layered RAG contracts, stage vocabulary, strict cross-layer fixture, constraints, metrics, and answer/judge lineage (RAG-TTC 9cf3b2e36)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/optimization/fixture.go — Strict canonical Phase 0 contract
+

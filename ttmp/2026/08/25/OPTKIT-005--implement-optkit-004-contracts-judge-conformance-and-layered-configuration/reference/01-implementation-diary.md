@@ -453,3 +453,106 @@ OPTKIT_COMMIT=fda4ad62c97de2db4d85eab78aea926a7d474f5f
 RAG_TTC_COMMIT=ebb6cbc63f37cd0090ccdd1661a7e512640b21db
 CONTROL_CLEANUP_VALIDATION=PASS
 ```
+
+## Step 5: Freeze the cross-layer optimization contracts
+
+This step completed OPTKIT-004 Phase 0 by adding one strict, digest-pinned optimization fixture over the existing cross-product retrieval fixture. The new contract links all configuration layers to stable retrieval, context, answer, and judge stage schemas, then carries one admitted evidence set through context construction, sealed answer lineage, two measurement epochs, observations, hard constraints, and primary metrics.
+
+Production retrieval stages now use exported constants instead of repeating string literals. The sealed-answer loader also rejects unknown fields and trailing JSON, preventing later measurement code from silently accepting schema drift.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 4)
+
+**Assistant interpretation:** Resume and complete Phase 0 after the control-contract cleanup, preserving strict contracts and validation evidence.
+
+**Inferred user intent:** Give projectors and the specialist UI one stable, attributable cross-layer vocabulary before implementing configuration diffs and invalidation.
+
+**Commit (RAG-TTC code):** `9cf3b2e368a5cb3ce2993dc9cfaeac57b67c36ff` — "Optimization: freeze cross-layer RAG contracts"
+
+### What I did
+
+- Added `pkg/ttc/optimization` with versioned schema constants and the canonical layer vocabulary from corpus through judge.
+- Added typed config references, stage contracts, content-free context lineage, answer lineage, judge lineage, hard constraints, and primary metrics.
+- Added `rag-ttc.optimization-semantic-fixture/v1`, pinned to SHA-256 `4c5f87b27e134e464e0da868b44df4c93cb6f344f3880ac905eb7c022effba3f`.
+- Linked the optimization fixture to retrieval fixture digest `2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f`.
+- Froze 16 stage names and their schemas/layers, including all canonical retrieval stages plus context, answer, and judge stages.
+- Added strict unknown-field and trailing-data rejection for the fixture and sealed historical answers.
+- Added validation for unique layer, stage, constraint, and metric identities; direct dependencies; lineage layer types; context/answer/judge links; citation admission; and observation alignment.
+- Added `scripts/04-validate-phase0.sh` and archived the successful run in `sources/04-phase0-validation.txt`.
+
+### Why
+
+- UI projectors need stable domain contracts rather than raw generic event interpretation.
+- A separate optimization fixture can extend the frozen cross-product retrieval fixture without mutating its v1 digest or forcing Coinvault to adopt RAG-TTC answer/judge contracts.
+- Exported production stage constants ensure fixture tests and runtime emissions share one vocabulary.
+- Strict historical-answer decoding prevents accidental schema widening during remeasurement.
+
+### What worked
+
+- Focused package tests, race tests, and vet passed.
+- RAG-TTC's complete pre-commit and pre-push tests, lint, and Glazed vet passed.
+- The existing RAG-TTC and Coinvault retrieval fixtures remain byte-identical to the canonical source.
+- Fixture tests reject unknown top-level and nested fields, broken dependencies, broken lineage, invalid metric direction, and schema drift.
+- The Phase 0 validator ended with `PHASE_0_VALIDATION=PASS`.
+
+### What didn't work
+
+- The first `scripts/04-validate-phase0.sh` run failed immediately with:
+
+  ```text
+  fatal: not a git repository (or any of the parent directories): .git
+  ```
+
+  The reused OPTKIT-002 fixture-sync script calls `git rev-parse` in its current directory. The Phase 0 validator was running from the workspace root, which is not a Git repository. The fix was to invoke the sync check inside `(cd "$OPTKIT" && ...)`.
+
+### What I learned
+
+- Cross-product retrieval semantics and RAG-TTC optimization semantics need separate fixture versions. Referencing the base fixture by schema and digest preserves both reuse and product ownership.
+- Stable stage names require runtime code to consume constants; a fixture containing the same literals is not sufficient protection against drift.
+- Layered refs can freeze vocabulary and lineage in Phase 0 without yet implementing Phase 2's transitive invalidation behavior.
+
+### What was tricky to build
+
+- Retrieval policy recheck and evidence stages share the retrieval-stage payload schema but belong to different invalidation layers. The fixture therefore validates both stage name and semantic layer rather than deriving layer solely from schema.
+- The fixture must remain content-free enough for public deterministic testing while still proving answer and judge lineage. It uses stable artifact identities and chunk IDs rather than embedding sensitive provider content.
+- `Layer` ordering is exposed through a copying function rather than an exported mutable slice, so callers cannot mutate the canonical graph vocabulary.
+
+### What warrants a second pair of eyes
+
+- Review whether `retrieval.policy_recheck` belongs to the evidence layer and whether `retrieval.augmented` belongs to fusion for invalidation purposes.
+- Confirm the first hard constraints and primary metrics are sufficient for UI fixture work without implying final promotion policy.
+- Review whether context token count should remain a fixture field before the authoritative tokenizer is selected.
+- Inspect strict sealed-answer decoding for any intentionally extensible metadata that should stay inside maps rather than becoming unknown top-level fields.
+
+### What should be done in the future
+
+- Phase 2 must derive semantic identities from actual typed configuration values rather than the fixture's stable example identities.
+- Future context, answer, and judge producers must emit records conforming to the frozen schemas or intentionally version them.
+- Add machine-readable schema documents if external consumers need independent generation or validation.
+
+### Code review instructions
+
+- Start in `pkg/ttc/optimization/contracts.go`, then review `fixture.go` and the canonical JSON fixture together.
+- Verify stage constants in `pkg/ttc/search/service.go` are used by retrieval and evidence paths.
+- Review `judgeinstrument.decodeSealedAnswer` and its unknown/trailing-field tests.
+- Run `scripts/04-validate-phase0.sh` and check both fixture digests plus `PHASE_0_VALIDATION=PASS`.
+
+### Technical details
+
+Frozen layers:
+
+```text
+corpus -> chunking -> representations -> embeddings -> indexes
+       -> retrieval -> fusion -> reranking -> evidence -> context
+       -> answer -> judge
+```
+
+Validation markers:
+
+```text
+OPTIMIZATION_FIXTURE_SCHEMA=rag-ttc.optimization-semantic-fixture/v1
+OPTIMIZATION_FIXTURE_SHA256=4c5f87b27e134e464e0da868b44df4c93cb6f344f3880ac905eb7c022effba3f
+BASE_RETRIEVAL_FIXTURE_SHA256=2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f
+PHASE_0_VALIDATION=PASS
+```
