@@ -22,10 +22,6 @@ func (s *Store) Enqueue(ctx context.Context, items []scheduler.WorkItem) error {
 			if err := validateWorkItem(item); err != nil {
 				return err
 			}
-			claims, err := record.CanonicalJSON(item.ResourceClaims)
-			if err != nil {
-				return err
-			}
 			var payloadSchema any
 			if item.Payload.Schema != nil {
 				payloadSchema = string(*item.Payload.Schema)
@@ -34,12 +30,12 @@ func (s *Store) Enqueue(ctx context.Context, items []scheduler.WorkItem) error {
 INSERT OR IGNORE INTO work_items(
     id, campaign_id, kind, semantic_key,
     payload_digest, payload_media_type, payload_schema, payload_size, payload_sensitivity,
-    priority, earliest_start, lease_duration_ns, resource_claims_json,
+    priority, earliest_start, lease_duration_ns,
     status, attempt, created_at, updated_at
-) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
+) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
 				string(item.ID), string(item.Campaign), string(item.Kind), item.SemanticKey.String(),
 				item.Payload.Digest.String(), item.Payload.MediaType, payloadSchema, item.Payload.Size, string(item.Payload.Sensitivity),
-				item.Priority, formatTime(item.EarliestStart), int64(item.LeaseDuration), claims,
+				item.Priority, formatTime(item.EarliestStart), int64(item.LeaseDuration),
 				string(scheduler.WorkReady), now, now)
 			if err != nil {
 				return err
@@ -120,21 +116,6 @@ func (s *Store) Lease(ctx context.Context, worker string, request scheduler.Leas
 		return nil
 	})
 	return leases, err
-}
-
-func (s *Store) Heartbeat(ctx context.Context, leaseID record.LeaseID, worker string, extension time.Duration) error {
-	if extension <= 0 {
-		return fmt.Errorf("heartbeat extension must be positive")
-	}
-	expires := s.now().UTC().Add(extension)
-	changes, err := s.db.Exec(ctx, `UPDATE work_items SET lease_expires_at = ?, updated_at = ? WHERE lease_id = ? AND leased_by = ? AND status = ?`, formatTime(expires), formatTime(s.now()), string(leaseID), worker, string(scheduler.WorkLeased))
-	if err != nil {
-		return err
-	}
-	if changes != 1 {
-		return scheduler.ErrLeaseNotFound
-	}
-	return nil
 }
 
 func (s *Store) Complete(ctx context.Context, leaseID record.LeaseID, result scheduler.WorkResult) error {
@@ -236,7 +217,7 @@ func (s *Store) Get(ctx context.Context, id record.WorkID) (scheduler.WorkRecord
 const workSelect = `SELECT
     id, campaign_id, kind, semantic_key,
     payload_digest, payload_media_type, payload_schema, payload_size, payload_sensitivity,
-    priority, earliest_start, lease_duration_ns, resource_claims_json,
+    priority, earliest_start, lease_duration_ns,
     status, attempt, lease_id, leased_by, lease_expires_at,
     result_digest, result_media_type, result_schema, result_size, result_sensitivity,
     failure_json, created_at, updated_at
@@ -283,14 +264,6 @@ func decodeWork(row sqlitedb.Row) (scheduler.WorkRecord, error) {
 	if err != nil {
 		return scheduler.WorkRecord{}, err
 	}
-	claimsRaw, err := bytesValue(row, "resource_claims_json")
-	if err != nil {
-		return scheduler.WorkRecord{}, err
-	}
-	var claims []scheduler.ResourceClaim
-	if err := json.Unmarshal(claimsRaw, &claims); err != nil {
-		return scheduler.WorkRecord{}, err
-	}
 	statusRaw, err := text(row, "status")
 	if err != nil {
 		return scheduler.WorkRecord{}, err
@@ -313,7 +286,7 @@ func decodeWork(row sqlitedb.Row) (scheduler.WorkRecord, error) {
 	}
 	rec := scheduler.WorkRecord{Item: scheduler.WorkItem{
 		ID: record.WorkID(id), Campaign: record.CampaignID(campaignID), Kind: scheduler.WorkKind(kind), SemanticKey: semantic, Payload: payload,
-		Priority: int(priority), EarliestStart: earliest, LeaseDuration: time.Duration(leaseDuration), ResourceClaims: claims,
+		Priority: int(priority), EarliestStart: earliest, LeaseDuration: time.Duration(leaseDuration),
 	}, Status: scheduler.WorkStatus(statusRaw), Attempt: int(attempt)}
 	if leaseRaw != nil {
 		rec.LeaseID = record.LeaseID(*leaseRaw)

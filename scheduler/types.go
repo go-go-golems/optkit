@@ -19,24 +19,18 @@ const (
 	WorkFailed    WorkStatus = "failed"
 )
 
-type ResourceClaim struct {
-	Resource string `json:"resource"`
-	Units    int64  `json:"units"`
-}
-
 type WorkItem struct {
-	ID             record.WorkID     `json:"id"`
-	Campaign       record.CampaignID `json:"campaign"`
-	Kind           WorkKind          `json:"kind"`
-	SemanticKey    record.Digest     `json:"semantic_key"`
-	Payload        artifact.Ref      `json:"payload"`
-	Priority       int               `json:"priority"`
-	EarliestStart  time.Time         `json:"earliest_start"`
-	LeaseDuration  time.Duration     `json:"lease_duration"`
-	ResourceClaims []ResourceClaim   `json:"resource_claims,omitempty"`
+	ID            record.WorkID     `json:"id"`
+	Campaign      record.CampaignID `json:"campaign"`
+	Kind          WorkKind          `json:"kind"`
+	SemanticKey   record.Digest     `json:"semantic_key"`
+	Payload       artifact.Ref      `json:"payload"`
+	Priority      int               `json:"priority"`
+	EarliestStart time.Time         `json:"earliest_start"`
+	LeaseDuration time.Duration     `json:"lease_duration"`
 }
 
-func NewWorkItem(campaign record.CampaignID, kind WorkKind, semanticKey record.Digest, payload artifact.Ref, priority int, earliest time.Time, leaseDuration time.Duration, claims []ResourceClaim) (WorkItem, error) {
+func NewWorkItem(campaign record.CampaignID, kind WorkKind, semanticKey record.Digest, payload artifact.Ref, priority int, earliest time.Time, leaseDuration time.Duration) (WorkItem, error) {
 	if err := record.ValidateID("campaign", string(campaign)); err != nil {
 		return WorkItem{}, err
 	}
@@ -68,7 +62,6 @@ func NewWorkItem(campaign record.CampaignID, kind WorkKind, semanticKey record.D
 	return WorkItem{
 		ID: record.WorkID(rawID), Campaign: campaign, Kind: kind, SemanticKey: semanticKey,
 		Payload: payload, Priority: priority, EarliestStart: earliest.UTC(), LeaseDuration: leaseDuration,
-		ResourceClaims: append([]ResourceClaim(nil), claims...),
 	}, nil
 }
 
@@ -91,11 +84,10 @@ type WorkResult struct {
 }
 
 type WorkFailure struct {
-	Code      string         `json:"code"`
-	Message   string         `json:"message"`
-	Retryable bool           `json:"retryable"`
-	Backoff   time.Duration  `json:"backoff"`
-	Evidence  []artifact.Ref `json:"evidence,omitempty"`
+	Code      string        `json:"code"`
+	Message   string        `json:"message"`
+	Retryable bool          `json:"retryable"`
+	Backoff   time.Duration `json:"backoff"`
 }
 
 type WorkRecord struct {

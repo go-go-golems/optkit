@@ -174,7 +174,7 @@ func TestQueueLeaseRecoveryAndTerminalIdempotency(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	item, err := scheduler.NewWorkItem(campaignID, "episode", record.SumBytes([]byte("episode-key")), workPayload, 10, baseTime, time.Minute, nil)
+	item, err := scheduler.NewWorkItem(campaignID, "episode", record.SumBytes([]byte("episode-key")), workPayload, 10, baseTime, time.Minute)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -259,7 +259,7 @@ func TestQueueRetryBackoff(t *testing.T) {
 	if _, err := store.Append(ctx, campaignID, 0, []campaign.NewEvent{{Kind: campaign.CampaignCreated, Schema: "schema:test/v1", Actor: "actor:test", Command: &cmd, Payload: payload}}); err != nil {
 		t.Fatal(err)
 	}
-	item, err := scheduler.NewWorkItem(campaignID, "instrument", record.SumBytes([]byte("instrument-key")), payload, 0, baseTime, time.Minute, nil)
+	item, err := scheduler.NewWorkItem(campaignID, "instrument", record.SumBytes([]byte("instrument-key")), payload, 0, baseTime, time.Minute)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -349,11 +349,11 @@ func TestQueueRejectsSemanticKeyWithDifferentPayload(t *testing.T) {
 		t.Fatal(err)
 	}
 	key := record.SumBytes([]byte("same-semantic-key"))
-	first, err := scheduler.NewWorkItem(campaignID, "episode", key, firstPayload, 0, baseTime, time.Minute, nil)
+	first, err := scheduler.NewWorkItem(campaignID, "episode", key, firstPayload, 0, baseTime, time.Minute)
 	if err != nil {
 		t.Fatal(err)
 	}
-	second, err := scheduler.NewWorkItem(campaignID, "episode", key, secondPayload, 0, baseTime, time.Minute, nil)
+	second, err := scheduler.NewWorkItem(campaignID, "episode", key, secondPayload, 0, baseTime, time.Minute)
 	if err != nil {
 		t.Fatal(err)
 	}

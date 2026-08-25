@@ -77,23 +77,21 @@ type CampaignPage struct {
 }
 
 type EventView struct {
-	Seq              uint64                `json:"seq"`
-	ID               record.EventID        `json:"id"`
-	Kind             campaign.EventKind    `json:"kind"`
-	Schema           record.SchemaID       `json:"schema"`
-	Subject          string                `json:"subject,omitempty"`
-	Actor            record.ActorRef       `json:"actor"`
-	OccurredAt       time.Time             `json:"occurred_at"`
-	RecordedAt       time.Time             `json:"recorded_at"`
-	Command          *record.CommandID     `json:"command,omitempty"`
-	Causation        *record.EventID       `json:"causation,omitempty"`
-	Correlation      *record.CorrelationID `json:"correlation,omitempty"`
-	Tags             map[string]string     `json:"tags,omitempty"`
-	Payload          artifact.Ref          `json:"payload"`
-	PayloadJSON      json.RawMessage       `json:"payload_json,omitempty"`
-	PayloadAvailable bool                  `json:"payload_available"`
-	PayloadReason    string                `json:"payload_reason,omitempty"`
-	Digest           record.Digest         `json:"digest"`
+	Seq              uint64             `json:"seq"`
+	ID               record.EventID     `json:"id"`
+	Kind             campaign.EventKind `json:"kind"`
+	Schema           record.SchemaID    `json:"schema"`
+	Subject          string             `json:"subject,omitempty"`
+	Actor            record.ActorRef    `json:"actor"`
+	OccurredAt       time.Time          `json:"occurred_at"`
+	RecordedAt       time.Time          `json:"recorded_at"`
+	Command          *record.CommandID  `json:"command,omitempty"`
+	Tags             map[string]string  `json:"tags,omitempty"`
+	Payload          artifact.Ref       `json:"payload"`
+	PayloadJSON      json.RawMessage    `json:"payload_json,omitempty"`
+	PayloadAvailable bool               `json:"payload_available"`
+	PayloadReason    string             `json:"payload_reason,omitempty"`
+	Digest           record.Digest      `json:"digest"`
 }
 
 type EventPage struct {
@@ -236,8 +234,8 @@ func (s Service) Events(ctx context.Context, id record.CampaignID, after uint64,
 		view := EventView{
 			Seq: event.Seq, ID: event.ID, Kind: event.Kind, Schema: event.Schema,
 			Subject: event.Subject, Actor: event.Actor, OccurredAt: event.OccurredAt,
-			RecordedAt: event.RecordedAt, Command: event.Command, Causation: event.Causation,
-			Correlation: event.Correlation, Tags: event.Tags, Payload: event.Payload,
+			RecordedAt: event.RecordedAt, Command: event.Command,
+			Tags: event.Tags, Payload: event.Payload,
 			Digest: event.Digest,
 		}
 		s.populatePayload(ctx, &view)

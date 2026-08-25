@@ -18,7 +18,6 @@ var (
 type Queue interface {
 	Enqueue(context.Context, []WorkItem) error
 	Lease(context.Context, string, LeaseRequest) ([]Lease, error)
-	Heartbeat(context.Context, record.LeaseID, string, time.Duration) error
 	Complete(context.Context, record.LeaseID, WorkResult) error
 	Fail(context.Context, record.LeaseID, WorkFailure) error
 	ReclaimExpired(context.Context, time.Time) (int64, error)

@@ -221,9 +221,7 @@ func RunDemo(ctx context.Context, options DemoOptions) (DemoSummary, error) {
 			return DemoSummary{}, err
 		}
 		claims := []budget.Quantity{{Resource: "episodes", Units: 1}, {Resource: "numbergame.operations", Units: 1}}
-		item, err := scheduler.NewWorkItem(campaignID, "episode", specValue.SemanticKey, workRef, 0, clock.Now(), time.Minute, []scheduler.ResourceClaim{
-			{Resource: "episodes", Units: 1}, {Resource: "numbergame.operations", Units: 1},
-		})
+		item, err := scheduler.NewWorkItem(campaignID, "episode", specValue.SemanticKey, workRef, 0, clock.Now(), time.Minute)
 		if err != nil {
 			return DemoSummary{}, err
 		}

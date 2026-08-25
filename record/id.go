@@ -62,8 +62,6 @@ type EventID string
 
 type CommandID string
 
-type CorrelationID string
-
 type EpisodeID string
 
 type TrialID string

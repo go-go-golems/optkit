@@ -40,35 +40,31 @@ const (
 var GenesisDigest = record.SumBytes([]byte("optkit.campaign.genesis/v1"))
 
 type NewEvent struct {
-	Kind        EventKind
-	Schema      record.SchemaID
-	Subject     string
-	OccurredAt  time.Time
-	Actor       record.ActorRef
-	Command     *record.CommandID
-	Causation   *record.EventID
-	Correlation *record.CorrelationID
-	Payload     artifact.Ref
-	Tags        map[string]string
+	Kind       EventKind
+	Schema     record.SchemaID
+	Subject    string
+	OccurredAt time.Time
+	Actor      record.ActorRef
+	Command    *record.CommandID
+	Payload    artifact.Ref
+	Tags       map[string]string
 }
 
 type ControlEvent struct {
-	ID             record.EventID        `json:"id"`
-	Campaign       record.CampaignID     `json:"campaign"`
-	Seq            uint64                `json:"seq"`
-	Kind           EventKind             `json:"kind"`
-	Schema         record.SchemaID       `json:"schema"`
-	Subject        string                `json:"subject,omitempty"`
-	OccurredAt     time.Time             `json:"occurred_at"`
-	RecordedAt     time.Time             `json:"recorded_at"`
-	Actor          record.ActorRef       `json:"actor"`
-	Command        *record.CommandID     `json:"command,omitempty"`
-	Causation      *record.EventID       `json:"causation,omitempty"`
-	Correlation    *record.CorrelationID `json:"correlation,omitempty"`
-	PreviousDigest record.Digest         `json:"previous_digest"`
-	Payload        artifact.Ref          `json:"payload"`
-	Tags           map[string]string     `json:"tags,omitempty"`
-	Digest         record.Digest         `json:"digest"`
+	ID             record.EventID    `json:"id"`
+	Campaign       record.CampaignID `json:"campaign"`
+	Seq            uint64            `json:"seq"`
+	Kind           EventKind         `json:"kind"`
+	Schema         record.SchemaID   `json:"schema"`
+	Subject        string            `json:"subject,omitempty"`
+	OccurredAt     time.Time         `json:"occurred_at"`
+	RecordedAt     time.Time         `json:"recorded_at"`
+	Actor          record.ActorRef   `json:"actor"`
+	Command        *record.CommandID `json:"command,omitempty"`
+	PreviousDigest record.Digest     `json:"previous_digest"`
+	Payload        artifact.Ref      `json:"payload"`
+	Tags           map[string]string `json:"tags,omitempty"`
+	Digest         record.Digest     `json:"digest"`
 }
 
 func MaterializeEvent(campaignID record.CampaignID, seq uint64, recordedAt time.Time, previous record.Digest, input NewEvent) (ControlEvent, error) {
@@ -106,8 +102,6 @@ func MaterializeEvent(campaignID record.CampaignID, seq uint64, recordedAt time.
 		RecordedAt:     recordedAt.UTC(),
 		Actor:          input.Actor,
 		Command:        input.Command,
-		Causation:      input.Causation,
-		Correlation:    input.Correlation,
 		PreviousDigest: previous,
 		Payload:        input.Payload,
 		Tags:           cloneTags(input.Tags),
@@ -146,25 +140,22 @@ func VerifyEventDigest(event ControlEvent) error {
 
 func eventIdentity(event ControlEvent) any {
 	return struct {
-		Campaign       record.CampaignID     `json:"campaign"`
-		Seq            uint64                `json:"seq"`
-		Kind           EventKind             `json:"kind"`
-		Schema         record.SchemaID       `json:"schema"`
-		Subject        string                `json:"subject,omitempty"`
-		OccurredAt     time.Time             `json:"occurred_at"`
-		RecordedAt     time.Time             `json:"recorded_at"`
-		Actor          record.ActorRef       `json:"actor"`
-		Command        *record.CommandID     `json:"command,omitempty"`
-		Causation      *record.EventID       `json:"causation,omitempty"`
-		Correlation    *record.CorrelationID `json:"correlation,omitempty"`
-		PreviousDigest record.Digest         `json:"previous_digest"`
-		Payload        artifact.Ref          `json:"payload"`
-		Tags           map[string]string     `json:"tags,omitempty"`
+		Campaign       record.CampaignID `json:"campaign"`
+		Seq            uint64            `json:"seq"`
+		Kind           EventKind         `json:"kind"`
+		Schema         record.SchemaID   `json:"schema"`
+		Subject        string            `json:"subject,omitempty"`
+		OccurredAt     time.Time         `json:"occurred_at"`
+		RecordedAt     time.Time         `json:"recorded_at"`
+		Actor          record.ActorRef   `json:"actor"`
+		Command        *record.CommandID `json:"command,omitempty"`
+		PreviousDigest record.Digest     `json:"previous_digest"`
+		Payload        artifact.Ref      `json:"payload"`
+		Tags           map[string]string `json:"tags,omitempty"`
 	}{
 		Campaign: event.Campaign, Seq: event.Seq, Kind: event.Kind, Schema: event.Schema,
 		Subject: event.Subject, OccurredAt: event.OccurredAt, RecordedAt: event.RecordedAt,
-		Actor: event.Actor, Command: event.Command, Causation: event.Causation,
-		Correlation: event.Correlation, PreviousDigest: event.PreviousDigest,
+		Actor: event.Actor, Command: event.Command, PreviousDigest: event.PreviousDigest,
 		Payload: event.Payload, Tags: event.Tags,
 	}
 }

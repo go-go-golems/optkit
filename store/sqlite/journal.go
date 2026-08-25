@@ -90,12 +90,12 @@ func (s *Store) Append(ctx context.Context, campaignID record.CampaignID, expect
 			if _, err := conn.Exec(ctx, `
 INSERT INTO campaign_events(
     campaign_id, seq, event_id, kind, schema_id, subject,
-    occurred_at, recorded_at, actor, command_id, causation_id, correlation_id,
+    occurred_at, recorded_at, actor, command_id,
     previous_digest, payload_digest, payload_media_type, payload_schema,
     payload_size, payload_sensitivity, tags_json, digest
-) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 				string(event.Campaign), int64(event.Seq), string(event.ID), string(event.Kind), string(event.Schema), event.Subject,
-				formatTime(event.OccurredAt), formatTime(event.RecordedAt), string(event.Actor), optionalCommand(event.Command), optionalEvent(event.Causation), optionalCorrelation(event.Correlation),
+				formatTime(event.OccurredAt), formatTime(event.RecordedAt), string(event.Actor), optionalCommand(event.Command),
 				event.PreviousDigest.String(), event.Payload.Digest.String(), event.Payload.MediaType, payloadSchema,
 				event.Payload.Size, string(event.Payload.Sensitivity), tags, event.Digest.String()); err != nil {
 				return err
@@ -183,7 +183,7 @@ func (s *Store) Verify(ctx context.Context, campaignID record.CampaignID) error 
 
 const eventSelect = `SELECT
     campaign_id, seq, event_id, kind, schema_id, subject,
-    occurred_at, recorded_at, actor, command_id, causation_id, correlation_id,
+    occurred_at, recorded_at, actor, command_id,
     previous_digest, payload_digest, payload_media_type, payload_schema,
     payload_size, payload_sensitivity, tags_json, digest
 FROM campaign_events`
@@ -257,14 +257,6 @@ func decodeEvent(row sqlitedb.Row) (campaign.ControlEvent, error) {
 	if err != nil {
 		return campaign.ControlEvent{}, err
 	}
-	causationRaw, err := nullableText(row, "causation_id")
-	if err != nil {
-		return campaign.ControlEvent{}, err
-	}
-	correlationRaw, err := nullableText(row, "correlation_id")
-	if err != nil {
-		return campaign.ControlEvent{}, err
-	}
 	previousRaw, err := text(row, "previous_digest")
 	if err != nil {
 		return campaign.ControlEvent{}, err
@@ -300,14 +292,6 @@ func decodeEvent(row sqlitedb.Row) (campaign.ControlEvent, error) {
 	if commandRaw != nil {
 		value := record.CommandID(*commandRaw)
 		event.Command = &value
-	}
-	if causationRaw != nil {
-		value := record.EventID(*causationRaw)
-		event.Causation = &value
-	}
-	if correlationRaw != nil {
-		value := record.CorrelationID(*correlationRaw)
-		event.Correlation = &value
 	}
 	return event, nil
 }
@@ -359,18 +343,6 @@ func sharedCommand(events []campaign.NewEvent) (record.CommandID, bool) {
 }
 
 func optionalCommand(value *record.CommandID) any {
-	if value == nil {
-		return nil
-	}
-	return string(*value)
-}
-func optionalEvent(value *record.EventID) any {
-	if value == nil {
-		return nil
-	}
-	return string(*value)
-}
-func optionalCorrelation(value *record.CorrelationID) any {
 	if value == nil {
 		return nil
 	}
