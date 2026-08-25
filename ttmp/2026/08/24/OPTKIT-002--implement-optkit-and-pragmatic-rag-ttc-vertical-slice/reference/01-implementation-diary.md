@@ -29,12 +29,25 @@ RelatedFiles:
       Note: Reproducible archive import and collision policy
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/02-validate-p0.sh
       Note: Complete P0 validation and smoke workflow
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/04-validate-p3.sh
+      Note: P3 reproducible validation gate
+    - Path: ws://rag-ttc/internal/customer/ragsearch/connected.go
+      Note: P3 connected-RAG augmentation adapter (commit d4c5adab4)
+    - Path: ws://rag-ttc/internal/customer/ragsearch/routes.go
+      Note: P3 verified configured-route compiler (commit d4c5adab4)
+    - Path: ws://rag-ttc/pkg/ttc/search/identity.go
+      Note: P3 runtime identity and semantic fingerprints (commit d4c5adab4)
+    - Path: ws://rag-ttc/pkg/ttc/search/service.go
+      Note: P3 policy-safe stage-traced retrieval and reranker fallback (commit d4c5adab4)
+    - Path: ws://rag-ttc/pkg/ttc/search/service_policy_test.go
+      Note: P3 identity policy fusion and fallback laws (commit d4c5adab4)
 ExternalSources: []
 Summary: Chronological implementation record for the Optkit and pragmatic RAG-TTC vertical slice, including phase slips, commands, commits, failures, decisions, and review instructions.
 LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 
@@ -601,3 +614,189 @@ I inserted P2.5 before the remaining RAG phases so UI work can start against Num
 - Live cursor: campaign journal sequence (`after=<seq>`).
 - Primary navigation entities: campaign, candidate, snapshot, patch, trial, episode, observation, estimate, decision, artifact.
 - Write transport: existing/future CLI application commands only.
+
+## Step 7: Phase P2.5 — Deliver the read-only scientific explorer
+
+P2.5 was implemented as the separate OPTKIT-003 ticket so its architecture, evidence capture, implementation diary, and reMarkable guide could remain reviewable without burying the RAG runtime work. The completed explorer satisfies the P2.5 gate with stable campaign deep links, search and filtering, sequence-cursor replay, provenance views, artifact previews, and a GET-only HTTP boundary.
+
+The browser remains a projection consumer rather than a campaign controller. CLI and application workflows retain every write, while committed journal facts become visible through polling-backed SSE and rebuildable query projections.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 6)
+
+**Assistant interpretation:** Implement the read-only query plane and scientific navigation contract before resuming RAG runtime phases.
+
+**Inferred user intent:** Give scientists a usable evidence explorer for agent-operated campaigns without duplicating campaign command semantics in a browser.
+
+**Commit (explorer implementation):** `1b09c3c` — "Add read-only scientific campaign explorer"
+
+**Commit (OPTKIT-003 closure):** `2c1f57428fc3595f9e2bf767c071285b3d3d76ee` — ticket documentation and completion
+
+### What I did
+
+- Created and completed `OPTKIT-003 — Read-Only Scientific Campaign Explorer`.
+- Implemented SQLite query projections, a query service, Go 1.22 `http.ServeMux`, embedded semantic HTML/CSS/JavaScript, JSON APIs, and sequence-cursor SSE.
+- Added campaign list/search, stage rail, lineage, trial matrix, paired deltas, budgets, event inventory, timeline, and evidence drawer views.
+- Enforced GET-only APIs, strict CSP, bounded event responses, and sensitivity/size checks for payload previews.
+- Added CGO-gated SQLite integration tests and a validation script proving `POST_MUTATION_STATUS=405`.
+- Verified a clean Chromium session with no console warnings or errors.
+- Uploaded the 1,575-line implementation guide to `/ai/2026/08/25/OPTKIT-003/OPTKIT-003 Scientific Campaign Explorer Guide.pdf`.
+- Printed the P2.5 completion work slip before resuming P3.
+
+### Why
+
+- The explorer is a coherent product slice with different implementation and documentation concerns from RAG-TTC retrieval.
+- A separate ticket preserves OPTKIT-002 phase ordering while allowing the substantial UI investigation to close independently.
+- Read-only HTTP keeps campaign validation and custody in one command path.
+
+### What worked
+
+- The Numbergame reference campaign projects 81 verified events, eight completed episodes, 24 observations, paired delta `+0.71041675`, and decision `eligible`.
+- Full CGO/no-CGO, race, vet, build, lint, HTTP, SSE, browser, and mutation-denial checks passed.
+- `docmgr doctor` passed and all eight OPTKIT-003 tasks closed.
+
+### What didn't work
+
+- See the OPTKIT-003 investigation diary for the detailed implementation failures, including event fixture field mismatch, SSE heartbeat observability, JavaScript octal escape syntax, and CSP rejection of inline style attributes. Each was resolved before closure.
+
+### What I learned
+
+- A useful scientific UI is organized around addressable evidence and provenance, not editable dashboard cards.
+- Cross-process live updates require authoritative journal-head polling; an in-memory event bus is insufficient.
+- Sequence IDs are the correct common cursor for pagination, SSE resumption, and historical replay.
+
+### What was tricky to build
+
+- Browser payload access had to compose event reachability, artifact visibility, sensitivity policy, valid JSON, and a 256 KiB limit. The server now denies unsafe previews rather than relying on client discipline.
+- SQLite integration needed CGO build tags while preserving the repository's no-CGO contract. Test files follow the same gate as the implementation.
+- The requested visual restraint required removing paper tones, window chrome, shadows, and inline progress geometry while retaining dense scientific navigation.
+
+### What warrants a second pair of eyes
+
+- Review payload-preview reachability and sensitivity checks in `internal/web/server.go`.
+- Review sequence-cursor SSE behavior under long-running, high-volume campaigns.
+- Review projection query bounds before using the current event APIs for very large campaigns.
+
+### What should be done in the future
+
+- Add database-side event pagination, entity-level trajectory routes, exact-sequence replay controls, and large-campaign virtualization in focused follow-up tickets.
+- Keep all mutation endpoints out of this explorer unless a new architecture decision explicitly supersedes the read-only boundary.
+
+### Code review instructions
+
+- Start with the OPTKIT-003 guide and diary, then review `query/service.go`, `store/sqlite/query.go`, and `internal/web/server.go`.
+- Run `OPTKIT-003/scripts/02-validate-explorer.sh` and confirm `EXPLORER_VALIDATION=PASS` and `POST_MUTATION_STATUS=405`.
+- Verify `/api/v1/` has no POST, PUT, PATCH, or DELETE implementation.
+
+### Technical details
+
+- API version: `optkit.query/v1`.
+- Event page default/hard limits: 200/500.
+- Payload preview limit: 256 KiB.
+- Browser routes: `#/campaigns` and `#/campaigns/:id`.
+- OPTKIT-003 validation and closure are the implementation evidence for OPTKIT-002 task `gym7`.
+
+## Step 8: Phase P3 — Add attributable, policy-safe retrieval routes
+
+P3 turns the direct retrieval seam from P2 into an attributable prepared runtime. Every result now names its bundle, corpus, resolved configuration, query transform, retrieval policy, evidence policy, reranker, tool description, and effective limit; every major candidate boundary emits a stable stage record with a content-addressed candidate-set reference.
+
+Checked-in route configuration now becomes serving behavior during customer search preparation. Representation and source-role references fail closed, connected-RAG augmentation is resolved with its semantic identity, the customer server applies a global public-role floor, and candidates are filtered before fusion and before any external reranker.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Continue implementation from Phase 3 and keep printing the required workslips."
+
+**Assistant interpretation:** Resume the gated program at P3, implement the runtime identity and policy boundary, validate it completely, and preserve the work-slip/commit/diary cadence.
+
+**Inferred user intent:** Make RAG treatment execution scientifically comparable and prevent model-controlled inputs from bypassing prepared source policy before beginning deterministic evaluation.
+
+**Commit (RAG-TTC):** `d4c5adab410f351067ffe1b70ade4c6e98239032` — "Add attributable policy-safe retrieval routes"
+
+### What I did
+
+- Reprinted the P3 plan slip before implementation because the earlier slip had been superseded by P2.5.
+- Added `RuntimeIdentity` and deterministic semantic fingerprints for bundle, corpus, resolved configuration, verbatim query transform, retrieval policy, evidence policy, reranker, and tool description.
+- Added explicit effective result limit and source values: `default`, `request`, and `request_clamped`.
+- Added stable stage traces for raw, collapsed, policy-filtered, fused, augmented, policy-rechecked, reranked, hydrated, returned, and admitted candidate sets.
+- Added `ttc-retrieval-candidate-set/v1` content-addressed references to every stage.
+- Added a server-owned customer role floor for `faq`, `page`, `post`, `product`, and `ttc_guide`; route policy can narrow but cannot widen that floor.
+- Added prepared route compilation over verified bundle representations and documents using RagKit representation-kind and source-role searcher wrappers.
+- Added strict representation count, digest, identity, kind, and duplicate checks and explicit unknown source-role rejection.
+- Resolved connected-RAG intent routes during preparation, checked the minimum-subject gate against the connected runtime, and included its semantic digest in route identity.
+- Added bounded optional reranking with provider-result validation, policy-safe candidate pools, fused-order fallback, and visible degraded stages.
+- Added policy, identity, candidate-trace, route compilation, unresolved-role, effective-limit, and reranker-failure tests.
+- Added `scripts/04-validate-p3.sh` and captured the complete passing transcript in `sources/04-p3-validation.txt`.
+
+### Why
+
+- Optkit must reject a measurement when intended and observed treatment identities differ; ambient flags and route names are not enough.
+- Filtering after fusion allows forbidden candidates to influence public ranks, and filtering after reranking leaks forbidden text across an external provider boundary.
+- Checked configuration that never reaches runtime is misleading experiment metadata rather than executable policy.
+- Reranker outages should preserve deterministic fused order while remaining visible to diagnostics.
+
+### What worked
+
+- The policy fixture proves a forbidden rank-1 vector candidate is removed before fusion: the allowed product receives score `2/61`, not the late-filter score `1/61 + 1/62`.
+- The reranker spy receives only the allowed product candidate.
+- Route fingerprints change when RRF semantics change and remain stable when source-role ordering changes.
+- Focused tests, focused race tests, the full RAG-TTC suite, build, vet, golangci-lint, Glazed lint, and both pre-commit hooks pass.
+- Validation ends with `P3_COMMIT=d4c5adab410f351067ffe1b70ade4c6e98239032` and `P3_VALIDATION=PASS`.
+
+### What didn't work
+
+- The first draft of `identity.go` was accidentally written only through the beginning of `semanticID`, leaving a malformed partial return expression. I overwrote it immediately with the complete file before formatting or testing.
+- The first full repository test run failed in the unrelated existing WebSocket timing test with the exact error:
+
+  `--- FAIL: TestWebSocketHeartbeatTimeoutAndServerCloseAreDeterministic (0.04s)`
+
+  `websocket_test.go:86: heartbeat timeout was not observable`
+
+  Running `GOWORK=off go test ./internal/admin/chatserver -run TestWebSocketHeartbeatTimeoutAndServerCloseAreDeterministic -count=5` reproduced the timing failure twice. A subsequent uncached full suite passed, and the pre-commit full suite also passed. No chatserver code was changed.
+
+### What I learned
+
+- The default bundle search path currently considers all indexed representation kinds; its route identity must say `all`, while prepared routes explicitly identify `raw` or `summary`.
+- A route-level role list is not a sufficient security boundary. The immutable server role floor must be intersected into every prepared route.
+- Connected-RAG's configuration is only resolved when an intent actually requests connected facts, avoiding unnecessary database handles for ordinary configurations.
+- A bounded reranker must validate that every returned candidate belonged to the exact pool, not merely somewhere in the larger fused list.
+
+### What was tricky to build
+
+- Representation identity is stored in the immutable bundle's `representations.json`, while `indexbundle.Bundle` intentionally exposes serving indexes rather than the complete representation list. The composition root now reloads that schema-v2 payload, performs strict JSON decoding, checks count/kinds/duplicates, and verifies the vector manifest's representation digest before compiling route wrappers.
+- Connected augmentation predates the direct `search.Service` contract and consumes RagKit's `answering.RetrievalResult`. A narrow application adapter translates the already policy-filtered baseline into that contract, retains its complete trace, then subjects augmented fused candidates to the service's final role-policy recheck.
+- Reranker fallback must preserve the original fused ordering and scores while still attributing the configured reranker identity and a stable error class. Provider failures therefore degrade the rerank stage without failing retrieval.
+- Candidate artifact references are canonical candidate-set digests at this phase; P6 must persist the corresponding trace payloads into Optkit CAS artifacts when episodes are recorded.
+
+### What warrants a second pair of eyes
+
+- Review the hard-coded customer role floor in `internal/customer/ragsearch/ragsearch.go` against all production corpus roles.
+- Review `loadVerifiedRepresentations` for bundle schema evolution and local filesystem time-of-check/time-of-use assumptions.
+- Review connected runtime lifecycle and the adapter's mutation of channel maps.
+- Review reranker result validation, especially score attribution and fused-tail preservation.
+- Confirm that model selection among server-prepared route names is an authorized experiment surface; model input still cannot supply role lists, searchers, stores, or provider settings.
+- Track the unrelated chatserver heartbeat test as a separate flaky-test maintenance issue.
+
+### What should be done in the future
+
+- P4 should persist or project these stage candidate sets and use their digests to classify the first target-loss stage.
+- P6 should convert candidate-set references and traces into durable Optkit episode artifacts.
+- Add a production reranker composer only when a checked configuration names a concrete provider; the optional service contract is ready but no ambient provider is silently enabled.
+
+### Code review instructions
+
+- Start at `pkg/ttc/search/identity.go` and `pkg/ttc/search/service.go`.
+- Review policy ordering in `Service.Retrieve`, then inspect `service_policy_test.go` for the pre-fusion and pre-reranker laws.
+- Review `internal/customer/ragsearch/routes.go`, `connected.go`, and the `Open` lifecycle in `ragsearch.go`.
+- Run `OPTKIT-002/scripts/04-validate-p3.sh` from the Optkit repository and confirm `P3_VALIDATION=PASS`.
+- Compare the RAG-TTC working tree to commit `d4c5adab4`; it should be clean.
+
+### Technical details
+
+- Runtime identity schema is the `RuntimeIdentity` JSON object embedded in `RetrievalResult` and `SearchOutput`.
+- Query transform: `ttc-query-transform/v1;query=verbatim`.
+- Candidate reference schema: `ttc-retrieval-candidate-set/v1`.
+- Server role floor: `faq`, `page`, `post`, `product`, `ttc_guide`.
+- Reranker statuses: `completed`, `skipped`, or `degraded`; current fallback classes include `hydrate_pool`, `provider_error`, and `invalid_result`.
+- Validation transcript: `sources/04-p3-validation.txt`.
+- P3 completion slip: `printed: true`, 384 × 853, two segments, rendered `2026-08-25T01:10:54Z`.

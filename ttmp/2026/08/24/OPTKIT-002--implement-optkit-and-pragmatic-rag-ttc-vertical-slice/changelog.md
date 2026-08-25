@@ -49,3 +49,13 @@ Added P2.5 read-only scientific query plane: CLI/agents own writes; UI owns sear
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/design-doc/01-phased-implementation-plan.md — Read-only UI phase and accepted boundary decision
 
+
+## 2026-08-24
+
+Completed P2.5 through OPTKIT-003 and P3 attributable policy-safe retrieval routes (RAG-TTC commit d4c5adab4); full validation passes.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/search/service.go — Canonical P3 runtime behavior
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/04-p3-validation.txt — Passing P3 command transcript
+
