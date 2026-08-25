@@ -6,4 +6,4 @@
 - [x] Phase 0: freeze schemas and extend canonical cross-layer fixture <!-- t:y8tl -->
 - [x] Phase 1: prove Judgekit sealed-answer conformance <!-- t:8e98 -->
 - [x] Phase 2: implement layered configuration diff and invalidation planner <!-- t:005v -->
-- [ ] Phase F: run final validation and prepare projector/UI handoff <!-- t:avg8 -->
+- [x] Phase F: run final validation and prepare projector/UI handoff <!-- t:avg8 -->

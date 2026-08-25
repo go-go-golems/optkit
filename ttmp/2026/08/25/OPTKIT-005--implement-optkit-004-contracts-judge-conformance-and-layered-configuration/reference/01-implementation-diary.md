@@ -755,3 +755,81 @@ Current fixture identity:
 schema: rag-ttc.optimization-semantic-fixture/v2
 sha256: 1bb7d696b7ecc8971de03a8f38e8cacff75eb0b4a86fa5a43063831ae50e6a2d
 ```
+
+## Step 8: Validate the complete prerequisite stack and hand off to UI projectors
+
+This step completed the ticket with one clean validation sweep over release isolation, public documentation, removed control fields, Phase 0 contracts, Phase 1 Judgekit conformance, and Phase 2 invalidation planning. It also translated the new backend contracts into explicit server-side projector and first-browser-workflow requirements.
+
+The next implementation can begin with campaign cockpit, comparison, pipeline, provenance, and config-diff projections. Screens requiring bundle, answer-campaign, calibration, Pareto, or promotion producers remain explicitly deferred.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 4)
+
+**Assistant interpretation:** Audit every completed phase, preserve exact evidence, and provide a continuation-ready UI handoff before closing the ticket.
+
+**Inferred user intent:** Finish OPTKIT-004 prerequisites as a validated unit and make the next UI ticket immediately actionable.
+
+### What I did
+
+- Added `reference/02-projector-and-specialist-ui-handoff.md` with stable schemas, projector contracts, GET-only route proposals, fixture requirements, screen gating, security constraints, and acceptance tests.
+- Added `scripts/07-validate-final.sh` to run documentation, cleanup, Phase 0, Phase 1, and Phase 2 validators together.
+- Ran clean detached Optkit race tests, builds, and vet without touching the unrelated SQLite edit.
+- Ran full isolated RAG-TTC tests, focused race tests, builds, vet, and golangci-lint.
+- Reverified Judgekit conformance and both canonical fixture digests.
+
+### Why
+
+- A UI handoff must specify server-owned projections and bounded contracts, not merely name desired screens.
+- One combined validator catches integration drift that focused phase tests cannot.
+- Deferred-screen gates prevent the browser from inventing data that current campaign producers do not emit.
+
+### What worked
+
+- Every phase validator passed.
+- Clean Optkit race tests passed across the full module.
+- Full RAG-TTC unit tests and focused TTC/chatserver race tests passed.
+- Builds, vet, lint, fixture synchronization, documentation validation, and source-removal guards passed.
+- Final validation ended with `OPTKIT_005_FINAL_VALIDATION=PASS`.
+
+### What didn't work
+
+- N/A. The final integrated sweep passed on its first run.
+
+### What I learned
+
+- The first useful UI slice can proceed before bundle and answer campaigns if projectors clearly stop at evidence stages that actually exist.
+- Config diff and invalidation planning are now sufficiently explicit for a comparison matrix; graph persistence in campaign facts remains the first producer-side follow-up.
+- A rich deterministic UI fixture is distinct from the Phase 0 schema fixture: it must include a real verified journal, episodes, observations, estimates, and artifact reachability.
+
+### What was tricky to build
+
+- The handoff had to distinguish stable schemas from proposed query DTOs. Stable backend records are ready; `CampaignCockpit`, `ComparisonView`, `PipelineView`, and `ProvenanceView` remain projector contracts for the next ticket.
+- Final Optkit validation still required a detached worktree because preserving the unrelated malformed SQLite edit remains mandatory.
+
+### What warrants a second pair of eyes
+
+- Review projector DTOs before freezing an HTTP API version.
+- Confirm cursor and database-side pagination strategy before implementing large-case routes.
+- Review sensitivity handling for answer, evidence, prompt, and Judgekit report previews.
+- Confirm graph records are journal-reachable before the UI presents them as campaign facts.
+
+### What should be done in the future
+
+- Create the next implementation ticket for the five initial projectors and first read-only specialist workflow.
+- Persist graph, diff, and plan artifacts from real campaigns before adding production comparison screens.
+- Follow OPTKIT-004 Phases 3-5 to unlock chunk, answer, and calibration screens.
+
+### Code review instructions
+
+- Read `reference/02-projector-and-specialist-ui-handoff.md` after the Phase 0-2 implementation.
+- Run `scripts/07-validate-final.sh` and verify the final marker.
+- Confirm all task checkboxes are complete and `docmgr doctor` is clean.
+
+### Technical details
+
+```text
+FINAL_OPTKIT_COMMIT=dd5cdbaf5509aabacf4d5998eaafb5b5099fefb8
+FINAL_RAG_TTC_COMMIT=a6ad69b7535d313efdc3dfaf6a32492f8a22fe47
+OPTKIT_005_FINAL_VALIDATION=PASS
+```

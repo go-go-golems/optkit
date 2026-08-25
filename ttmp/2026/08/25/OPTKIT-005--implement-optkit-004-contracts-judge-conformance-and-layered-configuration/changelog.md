@@ -59,3 +59,17 @@ Phase 2: added typed layered config graph, deterministic diff/invalidation plann
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/optimization/graph.go — Layered identity and dependency authority
 
+
+## 2026-08-25
+
+Phase F: all validators passed and projector/specialist UI handoff completed
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/25/OPTKIT-005--implement-optkit-004-contracts-judge-conformance-and-layered-configuration/reference/02-projector-and-specialist-ui-handoff.md — Next-ticket projector and UI contract
+
+
+## 2026-08-25
+
+Completed release stabilization, OPTKIT-004 Phases 0-2, control-contract cleanup, final validation, and projector/UI handoff
+
