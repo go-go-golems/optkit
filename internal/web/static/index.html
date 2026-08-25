@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Optkit Campaign Explorer</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#/campaigns" aria-label="Optkit campaigns">OPTKIT</a>
+    <label class="global-search">
+      <span class="visually-hidden">Search visible campaigns and events</span>
+      <span aria-hidden="true">⌕</span>
+      <input id="global-search" type="search" placeholder="search ids, kinds, schemas, subjects…" autocomplete="off">
+    </label>
+    <div id="connection-status" class="connection-status">OFFLINE</div>
+  </header>
+
+  <main id="app" tabindex="-1">
+    <section class="loading" aria-live="polite">READING CAMPAIGN JOURNAL…</section>
+  </main>
+
+  <aside id="detail-drawer" class="detail-drawer" hidden aria-label="Evidence details">
+    <button id="drawer-close" class="text-button" type="button">CLOSE ×</button>
+    <div id="drawer-content"></div>
+  </aside>
+
+  <template id="error-template">
+    <section class="empty-state">
+      <p class="eyebrow error-text">QUERY ERROR</p>
+      <h1>Evidence unavailable</h1>
+      <p class="error-message"></p>
+      <a href="#/campaigns">Return to campaigns</a>
+    </section>
+  </template>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

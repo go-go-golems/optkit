@@ -7,16 +7,20 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/go-go-golems/optkit/artifact"
 	"github.com/go-go-golems/optkit/budget"
 	"github.com/go-go-golems/optkit/campaign"
 	"github.com/go-go-golems/optkit/examples/numbergame"
+	webserver "github.com/go-go-golems/optkit/internal/web"
 	"github.com/go-go-golems/optkit/local"
 	"github.com/go-go-golems/optkit/projection"
+	"github.com/go-go-golems/optkit/query"
 	"github.com/go-go-golems/optkit/record"
 )
 
@@ -35,6 +39,8 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 	switch args[0] {
 	case "demo":
 		return runDemo(ctx, args[1:], stdout, stderr)
+	case "serve":
+		return runServe(ctx, args[1:], stdout, stderr)
 	case "campaign":
 		if len(args) < 2 {
 			writeCampaignUsage(stderr)
@@ -62,6 +68,40 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 		writeUsage(stderr)
 		return fmt.Errorf("unknown command %q", args[0])
 	}
+}
+
+func runServe(ctx context.Context, args []string, stdout, stderr io.Writer) error {
+	flags := flag.NewFlagSet("serve", flag.ContinueOnError)
+	flags.SetOutput(stderr)
+	store := flags.String("store", "./tmp/demo", "local store root")
+	listen := flags.String("listen", "127.0.0.1:8080", "HTTP listen address")
+	if err := flags.Parse(args); err != nil {
+		return err
+	}
+	if flags.NArg() != 0 {
+		return fmt.Errorf("serve does not accept positional arguments")
+	}
+	profile, err := local.Open(*store)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = profile.Close() }()
+	handler, err := (webserver.Server{Query: query.Service{Metadata: profile.Metadata, Artifacts: profile.Artifacts}}).Handler()
+	if err != nil {
+		return err
+	}
+	server := &http.Server{Addr: *listen, Handler: handler, ReadHeaderTimeout: 5 * time.Second}
+	go func() {
+		<-ctx.Done()
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = server.Shutdown(shutdownCtx)
+	}()
+	_, _ = fmt.Fprintf(stdout, "optkit explorer: http://%s/ (read-only)\n", *listen)
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		return err
+	}
+	return nil
 }
 
 func runDemo(ctx context.Context, args []string, stdout, stderr io.Writer) error {
@@ -287,6 +327,7 @@ func writeJSON(writer io.Writer, value any) error {
 func writeUsage(writer io.Writer) {
 	fmt.Fprintln(writer, `Usage:
   optkit demo [--store PATH] [--reset]
+  optkit serve [--store PATH] [--listen 127.0.0.1:8080]
   optkit campaign inspect --store PATH --id CAMPAIGN [--tail N]
   optkit campaign verify --store PATH --id CAMPAIGN
   optkit artifact verify --store PATH --digest DIGEST --size BYTES [options]
