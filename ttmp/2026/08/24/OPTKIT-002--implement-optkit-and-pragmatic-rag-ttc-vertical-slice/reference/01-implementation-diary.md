@@ -45,12 +45,18 @@ RelatedFiles:
       Note: P5 reproducible validation gate
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/08-validate-p7.sh
       Note: P7 reproducible cross-repository validation
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/11-validate-final.sh
+      Note: Complete reproducible closure gate
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/08-p7-validation.txt
       Note: P7 archived passing validation transcript
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/09-p8-boundary-and-migration-inventory.md
       Note: P8 retain/delete decisions and RagOpt parity backlog
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/10-p8-validation.txt
       Note: P8 archived passing cross-repository validation
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/11-final-validation-attempt-1.txt
+      Note: Preserved reconnect-observability race failure
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/12-final-validation.txt
+      Note: Passing complete validation and fresh restart campaign
     - Path: ws://go.work
       Note: P6 temporary version-specific unpublished Optkit workspace replacement
     - Path: ws://judgekit/assessment/provenance.go
@@ -63,6 +69,8 @@ RelatedFiles:
       Note: P4 existing-runner integration (commit d7701685d)
     - Path: ws://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/command.go
       Note: P6 Glazed run resume and inspect workflows
+    - Path: ws://rag-ttc/internal/admin/chatserver/observability_test.go
+      Note: Final-gate asynchronous reconnect-observer stabilization
     - Path: ws://rag-ttc/internal/customer/ragsearch/connected.go
       Note: P3 connected-RAG augmentation adapter (commit d4c5adab4)
     - Path: ws://rag-ttc/internal/customer/ragsearch/routes.go
@@ -115,6 +123,7 @@ LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 
@@ -1561,3 +1570,98 @@ The phase also removed the obsolete outer customer tool-registry loop after prov
 - P8 validation transcript: `sources/10-p8-validation.txt`.
 - Retained RagOpt commit validated: `76d5fa2de4871c7bfc5bf07ee5994ad7952c4519`.
 - P8 completion slip: `printed: true`, 384 × 883, two segments, rendered `2026-08-25T20:06:25Z`.
+
+## Step 15: Final validation — recover one asynchronous test and prove the complete vertical slice
+
+The final gate rechecks both accumulated evidence and current executable behavior. It verifies the frozen cross-product fixture, every repository boundary, full unit and race suites, builds, vet, lint, Glazed command structure, static Optkit behavior, and a fresh six-episode campaign whose run, restart, and inspect outputs remain byte-identical.
+
+The first gate exposed one pre-existing asynchronous test race in RAG-TTC observability: the WebSocket subscribed acknowledgement can reach the client before the transport observer increments the reconnect metric. The production sequence was valid, but the test asserted the observer's side effect without waiting for it. The test now waits for both the reconnect metric and structured reconnect log, and the focused race test passes 100 consecutive executions before the full gate is rerun.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Do it. then use the diary and the git history and design docs or whatever to  write a detailed project report for the obsidian vault as a deep dive technical analysis blog post using a textbook writing style (no analogies, see skill).      \n Commit and push the bsidian vault when done (go-go-parc vault)."
+
+**Assistant interpretation:** Complete OPTKIT-002's final validation, delivery, and closure, then author and publish a textbook-style deep technical project report in the go-go-parc Obsidian vault.
+
+**Inferred user intent:** Finish the implementation ticket with reproducible evidence and preserve the architecture, implementation sequence, failures, and engineering lessons as a durable educational article.
+
+**Commit (RAG-TTC test stabilization):** `28e4a6e15f2d8e691d19a6fe67574527a9b7c315` — "Wait for reconnect observability before asserting"
+
+### What I did
+
+- Printed the final validation/delivery/report plan slip before starting; it rendered at `2026-08-25T20:12:17Z`.
+- Added `scripts/11-validate-final.sh` to audit archived phase markers, recheck the frozen semantic fixture, invoke the full P8 cross-repository gate, execute a fresh durable campaign, compare run/resume/inspect output, and test/build Optkit with `CGO_ENABLED=0`.
+- Preserved the failed first attempt as `sources/11-final-validation-attempt-1.txt` rather than overwriting evidence.
+- Reproduced the failure with `go test -race ./internal/admin/chatserver -run TestStructuredOutcomesAndMetricsAreCorrelatedWithoutPayloadLeakage -count=100`.
+- Changed only `observability_test.go`: the test now waits up to two seconds for the asynchronously delivered reconnect metric and matching structured log.
+- Added `"outcome":"reconnect"` to the required log assertions, so the wait strengthens observability coverage instead of merely hiding timing.
+- Proved the fix with 100 race executions and ten complete chatserver package executions.
+- Reran the final gate and archived the passing output as `sources/12-final-validation.txt`.
+- Produced fresh campaign `campaign:5059080a270edd4c1078fe186692d4ee`; it completed six episodes with the expected paired delta, then returned byte-identical JSON from restart and inspect.
+
+### Why
+
+- A final gate must execute current behavior. Merely checking that older phase transcripts contain `PASS` would not detect cross-phase regressions.
+- WebSocket frame delivery and transport-observer telemetry are separate asynchronous effects. Receiving an acknowledgement establishes subscription success; it does not establish that another goroutine has completed telemetry publication.
+- Waiting for the exact side effect under test is more precise than sleeping for a fixed interval or weakening the expected reconnect count.
+- The restart/inspect comparison proves that the campaign result is durable and reconstructed from stored authority rather than process-local state.
+
+### What worked
+
+- Every archived P0 and P3-P8 validation marker is present; P1's canonical fixture still has SHA-256 `2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f` in RAG-TTC and Coinvault.
+- Optkit, RagKit, Judgekit, RagOpt, and RAG-TTC pass full unit and race suites, builds, vet, and golangci-lint as applicable.
+- RAG-TTC passes Glazed's custom vet analyzer.
+- Coinvault's retained RagOpt characterization tests pass.
+- Optkit passes its no-CGO unit suite and static build in a detached clean worktree.
+- The fresh campaign's initial run, resumed run, and read-only inspection are byte-identical.
+- The final transcript ends with `FINAL_VALIDATION=PASS`.
+
+### What didn't work
+
+- First command: `ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/11-validate-final.sh 2>&1 | tee .../sources/11-final-validation.txt`.
+- Exact failure: `observability_test.go:96: outcome metrics = chatserver.MetricsSnapshot{Accepted:0x1, Rejected:0x1, Conflicts:0x1, Canceled:0x1, Failed:0x1, Reconnects:0x0, ProjectionErrors:0x1, TimeToStatus:chatserver.DurationMetricSnapshot{Count:0x1, Total:2561772, Last:2561772}, Retrieval:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}, Model:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}, Validation:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}, TimeToAnswer:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}}`.
+- Focused reproduction failed with the same `Reconnects:0x0` observation under `-race -count=100`.
+- The failure was resolved by synchronizing the assertion with the observer's externally visible metric and log effects; no production code changed.
+
+### What I learned
+
+- Protocol acknowledgement tests must distinguish transport success from asynchronous observer completion.
+- Repeated race execution was necessary: the ordinary full suite had passed in P8, while the next race run exposed the ordering window.
+- Final validation should include a live durable campaign even when all package tests pass; it simultaneously exercises CLI schema, system registration, queue/journal/CAS persistence, observation aggregation, restart reconciliation, and inspection.
+- Clean detached worktrees are sufficient to prove committed Optkit behavior without modifying unrelated user worktree state.
+
+### What was tricky to build
+
+- The primary Optkit worktree still contains the unrelated malformed `store/sqlite/rows.go` edit. Both P8 and final validation create a detached worktree at committed `HEAD`, generate a temporary `go.work` that points RAG-TTC to it, and remove it through a trap. This preserves user state while validating the exact committed dependency.
+- The first final script nests the P8 validator, which creates and removes its own detached worktree. The final campaign then requires a second clean worktree because the P8 cleanup has already removed the first. Separate temporary roots and traps prevent path reuse and leaked worktrees.
+- A fixed sleep would make the observability test probabilistic. Polling exact metric and log conditions with a deadline ties success to the intended behavior and produces diagnostic state on timeout.
+
+### What warrants a second pair of eyes
+
+- Review the two-second observability deadline against slower race-enabled CI hosts; the loop usually completes within a millisecond, but the deadline is a deliberate failure bound.
+- Review whether the transport library should specify whether `OnTransport(Subscribed)` occurs before or after the subscribed frame is observable. The current test intentionally does not assume an ordering contract that the implementation does not provide.
+- Review the final script's nested P8 execution cost. It favors a single auditable closure gate over speed.
+- Review the remaining workspace replacements before release; final validation proves workspace integration, not published-module resolution.
+
+### What should be done in the future
+
+- Publish or pin Optkit and Judgekit, remove the parent workspace's `v0.0.0` replacements, run `go mod tidy`, and restore isolated RAG-TTC release hooks.
+- Execute the OPTKIT-004 roadmap through separate implementation tickets; OPTKIT-002 proves the vertical slice but does not implement adaptive full-pipeline optimization.
+- Replace retained RagOpt paths only after the parity gates in `sources/09-p8-boundary-and-migration-inventory.md` pass.
+
+### Code review instructions
+
+- Start with `scripts/11-validate-final.sh` and the tail of `sources/12-final-validation.txt`.
+- Compare `sources/11-final-validation-attempt-1.txt` with RAG-TTC commit `28e4a6e15` to verify the failure and narrowly scoped test correction.
+- Review `observability_test.go` around `TestStructuredOutcomesAndMetricsAreCorrelatedWithoutPayloadLeakage`.
+- Run `go test -race ./internal/admin/chatserver -run TestStructuredOutcomesAndMetricsAreCorrelatedWithoutPayloadLeakage -count=100` from RAG-TTC.
+- Run `scripts/11-validate-final.sh` from Optkit and confirm `FINAL_VALIDATION=PASS`.
+
+### Technical details
+
+- Final campaign: `campaign:5059080a270edd4c1078fe186692d4ee`.
+- Final Optkit commit under test: `cbd631030f053bf88f5d824d18beac6055547cf7`.
+- Final RAG-TTC commit under test: `28e4a6e15f2d8e691d19a6fe67574527a9b7c315`.
+- Failed transcript: `sources/11-final-validation-attempt-1.txt`.
+- Passing transcript: `sources/12-final-validation.txt`.
+- Result: `FINAL_VALIDATION=PASS`.

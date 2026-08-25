@@ -130,3 +130,14 @@ Printed and recorded the P7 and P8 completion slips after both acceptance gates 
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/reference/01-implementation-diary.md — P7/P8 slip render evidence
 
+
+## 2026-08-25
+
+Final executable validation passed after reproducing and stabilizing an asynchronous reconnect-observability assertion; fresh six-episode run/resume/inspect output is byte-identical.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/internal/admin/chatserver/observability_test.go — Waits for exact asynchronous observer effects
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/11-final-validation-attempt-1.txt — Archived first failure
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/12-final-validation.txt — FINAL_VALIDATION=PASS
+

@@ -1,0 +1,430 @@
+++ git rev-parse --show-toplevel
++ optkit_root=/home/manuel/workspaces/2026-08-24/use-optkit/optkit
+++ cd /home/manuel/workspaces/2026-08-24/use-optkit/optkit/..
+++ pwd
++ workspace_root=/home/manuel/workspaces/2026-08-24/use-optkit
++ ticket_root=/home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice
++ rag_ttc_root=/home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc
++ for phase in 0 3 4 5 6 7 8
++ case "$phase" in
++ evidence=/home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/02-p0-validation.txt
++ grep -q P0_VALIDATION=PASS /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/02-p0-validation.txt
++ for phase in 0 3 4 5 6 7 8
++ case "$phase" in
++ evidence=/home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/04-p3-validation.txt
++ grep -q P3_VALIDATION=PASS /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/04-p3-validation.txt
++ for phase in 0 3 4 5 6 7 8
++ case "$phase" in
++ evidence=/home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/05-p4-validation.txt
++ grep -q P4_VALIDATION=PASS /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/05-p4-validation.txt
++ for phase in 0 3 4 5 6 7 8
++ case "$phase" in
++ evidence=/home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/06-p5-validation.txt
++ grep -q P5_VALIDATION=PASS /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/06-p5-validation.txt
++ for phase in 0 3 4 5 6 7 8
++ case "$phase" in
++ evidence=/home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/07-p6-validation.txt
++ grep -q P6_VALIDATION=PASS /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/07-p6-validation.txt
++ for phase in 0 3 4 5 6 7 8
++ case "$phase" in
++ evidence=/home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/08-p7-validation.txt
++ grep -q P7_VALIDATION=PASS /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/08-p7-validation.txt
++ for phase in 0 3 4 5 6 7 8
++ case "$phase" in
++ evidence=/home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/10-p8-validation.txt
++ grep -q P8_VALIDATION=PASS /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/10-p8-validation.txt
++ /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/03-sync-rag-semantic-fixture.sh --check
+verified /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/search/testdata/rag-semantic-fixture-v1.json
+verified /home/manuel/workspaces/2026-08-24/use-optkit/coinvault/internal/knowledge/testdata/rag-semantic-fixture-v1.json
+sha256=2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f
++ /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/10-validate-p8.sh
+++ git rev-parse --show-toplevel
++ optkit_root=/home/manuel/workspaces/2026-08-24/use-optkit/optkit
+++ cd /home/manuel/workspaces/2026-08-24/use-optkit/optkit/..
+++ pwd
++ workspace_root=/home/manuel/workspaces/2026-08-24/use-optkit
++ ragkit_root=/home/manuel/workspaces/2026-08-24/use-optkit/ragkit
++ judgekit_root=/home/manuel/workspaces/2026-08-24/use-optkit/judgekit
++ ragopt_root=/home/manuel/workspaces/2026-08-24/use-optkit/ragopt
++ rag_ttc_root=/home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc
++ coinvault_root=/home/manuel/workspaces/2026-08-24/use-optkit/coinvault
++ rg -n 'ToolRegistryFactory|buildProviderToolRegistry' /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc --glob '*.go'
+++ grep -v /cmd/rag-ttc/cmds/tooleval/ragopt
+++ rg -l '"github.com/go-go-golems/ragopt/pkg/(candidate|eval|gate|policy|compare|report)' /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc --glob '*.go'
+++ true
++ unexpected_ragopt=
++ test -z ''
+++ mktemp -d
++ tmp_root=/tmp/tmp.qw1OFRg8eY
++ clean_optkit=/tmp/tmp.qw1OFRg8eY/optkit
++ trap cleanup EXIT
++ git -C /home/manuel/workspaces/2026-08-24/use-optkit/optkit worktree add --detach /tmp/tmp.qw1OFRg8eY/optkit HEAD
+Preparing worktree (detached HEAD cbd6310)
++ cd /tmp/tmp.qw1OFRg8eY/optkit
++ GOWORK=off
++ go test ./... -count=1
+ok  	github.com/go-go-golems/optkit/artifact	0.060s
+ok  	github.com/go-go-golems/optkit/artifact/filesystem	0.051s
+?   	github.com/go-go-golems/optkit/artifact/memory	[no test files]
+ok  	github.com/go-go-golems/optkit/budget	0.009s
+ok  	github.com/go-go-golems/optkit/campaign	0.005s
+ok  	github.com/go-go-golems/optkit/cmd/optkit	0.607s
+ok  	github.com/go-go-golems/optkit/episode	0.004s
+ok  	github.com/go-go-golems/optkit/examples/numbergame	0.960s
+ok  	github.com/go-go-golems/optkit/experiment	0.008s
+ok  	github.com/go-go-golems/optkit/internal/archtest	0.018s
+ok  	github.com/go-go-golems/optkit/internal/boundary	0.454s
+ok  	github.com/go-go-golems/optkit/internal/sqlite	0.035s
+ok  	github.com/go-go-golems/optkit/internal/web	2.294s
+?   	github.com/go-go-golems/optkit/local	[no test files]
+ok  	github.com/go-go-golems/optkit/measure	0.006s
+?   	github.com/go-go-golems/optkit/projection	[no test files]
+ok  	github.com/go-go-golems/optkit/query	1.091s
+ok  	github.com/go-go-golems/optkit/record	0.008s
+?   	github.com/go-go-golems/optkit/scheduler	[no test files]
+ok  	github.com/go-go-golems/optkit/space	0.005s
+ok  	github.com/go-go-golems/optkit/store/sqlite	0.143s
+ok  	github.com/go-go-golems/optkit/system	0.005s
++ GOWORK=off
++ go test -race ./... -count=1
+ok  	github.com/go-go-golems/optkit/artifact	1.094s
+ok  	github.com/go-go-golems/optkit/artifact/filesystem	1.069s
+?   	github.com/go-go-golems/optkit/artifact/memory	[no test files]
+ok  	github.com/go-go-golems/optkit/budget	1.076s
+ok  	github.com/go-go-golems/optkit/campaign	1.039s
+ok  	github.com/go-go-golems/optkit/cmd/optkit	3.094s
+ok  	github.com/go-go-golems/optkit/episode	1.079s
+ok  	github.com/go-go-golems/optkit/examples/numbergame	3.036s
+ok  	github.com/go-go-golems/optkit/experiment	1.029s
+ok  	github.com/go-go-golems/optkit/internal/archtest	1.054s
+ok  	github.com/go-go-golems/optkit/internal/boundary	1.325s
+ok  	github.com/go-go-golems/optkit/internal/sqlite	1.046s
+ok  	github.com/go-go-golems/optkit/internal/web	5.261s
+?   	github.com/go-go-golems/optkit/local	[no test files]
+ok  	github.com/go-go-golems/optkit/measure	1.039s
+?   	github.com/go-go-golems/optkit/projection	[no test files]
+ok  	github.com/go-go-golems/optkit/query	2.780s
+ok  	github.com/go-go-golems/optkit/record	1.051s
+?   	github.com/go-go-golems/optkit/scheduler	[no test files]
+ok  	github.com/go-go-golems/optkit/space	1.021s
+ok  	github.com/go-go-golems/optkit/store/sqlite	1.178s
+ok  	github.com/go-go-golems/optkit/system	1.025s
++ GOWORK=off
++ go vet ./...
++ GOWORK=off
++ golangci-lint run ./...
+0 issues.
++ cd /home/manuel/workspaces/2026-08-24/use-optkit/ragkit
++ GOWORK=off
++ go test ./... -count=1
+ok  	github.com/go-go-golems/ragkit	2.290s
+ok  	github.com/go-go-golems/ragkit/digest	0.030s
+ok  	github.com/go-go-golems/ragkit/internal/fsutil	0.030s
+ok  	github.com/go-go-golems/ragkit/internal/jsonutil	0.016s
+ok  	github.com/go-go-golems/ragkit/rag	0.029s
+ok  	github.com/go-go-golems/ragkit/rag/answering	0.020s
+ok  	github.com/go-go-golems/ragkit/rag/chunking	0.021s
+ok  	github.com/go-go-golems/ragkit/rag/content	0.016s
+ok  	github.com/go-go-golems/ragkit/rag/content/sqlite	0.278s
+ok  	github.com/go-go-golems/ragkit/rag/dataset	0.020s
+ok  	github.com/go-go-golems/ragkit/rag/embedding	0.091s
+ok  	github.com/go-go-golems/ragkit/rag/evaluation	0.033s
+ok  	github.com/go-go-golems/ragkit/rag/flowpolicy	0.017s
+ok  	github.com/go-go-golems/ragkit/rag/generation	0.106s
+ok  	github.com/go-go-golems/ragkit/rag/gochunk	0.427s
+ok  	github.com/go-go-golems/ragkit/rag/indexbundle	5.233s
+ok  	github.com/go-go-golems/ragkit/rag/lexical	0.008s
+ok  	github.com/go-go-golems/ragkit/rag/lexical/bleve	0.150s
+ok  	github.com/go-go-golems/ragkit/rag/provider/geppetto	0.030s
+ok  	github.com/go-go-golems/ragkit/rag/representations	0.035s
+ok  	github.com/go-go-golems/ragkit/rag/reranking	0.059s
+ok  	github.com/go-go-golems/ragkit/rag/retrieval	0.013s
+ok  	github.com/go-go-golems/ragkit/rag/vector	0.027s
+ok  	github.com/go-go-golems/ragkit/rag/vector/hnswcandidate	0.033s
+ok  	github.com/go-go-golems/ragkit/rag/vector/sqliteexact	0.108s
+ok  	github.com/go-go-golems/ragkit/text	0.011s
+ok  	github.com/go-go-golems/ragkit/vector	0.014s
++ GOWORK=off
++ go test -race ./... -count=1
+ok  	github.com/go-go-golems/ragkit	3.342s
+ok  	github.com/go-go-golems/ragkit/digest	1.070s
+ok  	github.com/go-go-golems/ragkit/internal/fsutil	1.317s
+ok  	github.com/go-go-golems/ragkit/internal/jsonutil	1.051s
+ok  	github.com/go-go-golems/ragkit/rag	1.053s
+ok  	github.com/go-go-golems/ragkit/rag/answering	1.055s
+ok  	github.com/go-go-golems/ragkit/rag/chunking	1.039s
+ok  	github.com/go-go-golems/ragkit/rag/content	1.036s
+ok  	github.com/go-go-golems/ragkit/rag/content/sqlite	1.380s
+ok  	github.com/go-go-golems/ragkit/rag/dataset	1.033s
+ok  	github.com/go-go-golems/ragkit/rag/embedding	1.190s
+ok  	github.com/go-go-golems/ragkit/rag/evaluation	1.025s
+ok  	github.com/go-go-golems/ragkit/rag/flowpolicy	1.031s
+ok  	github.com/go-go-golems/ragkit/rag/generation	1.362s
+ok  	github.com/go-go-golems/ragkit/rag/gochunk	1.693s
+ok  	github.com/go-go-golems/ragkit/rag/indexbundle	9.368s
+ok  	github.com/go-go-golems/ragkit/rag/lexical	1.088s
+ok  	github.com/go-go-golems/ragkit/rag/lexical/bleve	2.031s
+ok  	github.com/go-go-golems/ragkit/rag/provider/geppetto	1.095s
+ok  	github.com/go-go-golems/ragkit/rag/representations	1.088s
+ok  	github.com/go-go-golems/ragkit/rag/reranking	1.092s
+ok  	github.com/go-go-golems/ragkit/rag/retrieval	1.052s
+ok  	github.com/go-go-golems/ragkit/rag/vector	1.026s
+ok  	github.com/go-go-golems/ragkit/rag/vector/hnswcandidate	1.032s
+ok  	github.com/go-go-golems/ragkit/rag/vector/sqliteexact	1.169s
+ok  	github.com/go-go-golems/ragkit/text	1.053s
+ok  	github.com/go-go-golems/ragkit/vector	1.028s
++ GOWORK=off
++ go build ./...
++ GOWORK=off
++ go vet ./...
++ GOWORK=off
++ golangci-lint run ./...
+0 issues.
++ cd /home/manuel/workspaces/2026-08-24/use-optkit/judgekit
++ GOWORK=off
++ go test ./... -count=1
+ok  	github.com/go-go-golems/judgekit	0.575s
+ok  	github.com/go-go-golems/judgekit/assessment	0.021s
+ok  	github.com/go-go-golems/judgekit/audit	0.030s
+ok  	github.com/go-go-golems/judgekit/calibration	0.012s
+?   	github.com/go-go-golems/judgekit/cmd/judgekit	[no test files]
+ok  	github.com/go-go-golems/judgekit/eval	0.038s
+ok  	github.com/go-go-golems/judgekit/examples/claim-judge	0.011s
+ok  	github.com/go-go-golems/judgekit/internal/canonicaljson	0.013s
+ok  	github.com/go-go-golems/judgekit/internal/identifier	0.011s
+ok  	github.com/go-go-golems/judgekit/internal/strictdecode	0.012s
+ok  	github.com/go-go-golems/judgekit/judging	0.032s
+?   	github.com/go-go-golems/judgekit/pkg/doc	[no test files]
+ok  	github.com/go-go-golems/judgekit/protocol	0.009s
+ok  	github.com/go-go-golems/judgekit/spec	0.019s
+ok  	github.com/go-go-golems/judgekit/suite	0.088s
++ GOWORK=off
++ go test -race ./... -count=1
+ok  	github.com/go-go-golems/judgekit	1.501s
+ok  	github.com/go-go-golems/judgekit/assessment	1.051s
+ok  	github.com/go-go-golems/judgekit/audit	1.237s
+ok  	github.com/go-go-golems/judgekit/calibration	1.044s
+?   	github.com/go-go-golems/judgekit/cmd/judgekit	[no test files]
+ok  	github.com/go-go-golems/judgekit/eval	1.047s
+ok  	github.com/go-go-golems/judgekit/examples/claim-judge	1.037s
+ok  	github.com/go-go-golems/judgekit/internal/canonicaljson	1.032s
+ok  	github.com/go-go-golems/judgekit/internal/identifier	1.018s
+ok  	github.com/go-go-golems/judgekit/internal/strictdecode	1.020s
+ok  	github.com/go-go-golems/judgekit/judging	1.182s
+?   	github.com/go-go-golems/judgekit/pkg/doc	[no test files]
+ok  	github.com/go-go-golems/judgekit/protocol	1.026s
+ok  	github.com/go-go-golems/judgekit/spec	1.041s
+ok  	github.com/go-go-golems/judgekit/suite	1.128s
++ GOWORK=off
++ go build ./...
++ GOWORK=off
++ go vet ./...
++ GOWORK=off
++ golangci-lint run ./...
+0 issues.
++ cd /home/manuel/workspaces/2026-08-24/use-optkit/ragopt
++ GOWORK=off
++ go test ./... -count=1
+?   	github.com/go-go-golems/ragopt	[no test files]
+ok  	github.com/go-go-golems/ragopt/cmd/ragopt	0.051s
+ok  	github.com/go-go-golems/ragopt/cmd/ragopt/commands/candidate	0.031s
+?   	github.com/go-go-golems/ragopt/cmd/ragopt/commands/compare	[no test files]
+?   	github.com/go-go-golems/ragopt/cmd/ragopt/commands/report	[no test files]
+?   	github.com/go-go-golems/ragopt/pkg	[no test files]
+ok  	github.com/go-go-golems/ragopt/pkg/candidate	0.104s
+ok  	github.com/go-go-golems/ragopt/pkg/compare	0.013s
+ok  	github.com/go-go-golems/ragopt/pkg/eval	5.155s
+ok  	github.com/go-go-golems/ragopt/pkg/gate	0.055s
+?   	github.com/go-go-golems/ragopt/pkg/policy	[no test files]
+ok  	github.com/go-go-golems/ragopt/pkg/report	0.076s
+ok  	github.com/go-go-golems/ragopt/pkg/review	0.023s
+ok  	github.com/go-go-golems/ragopt/pkg/runstore	0.518s
++ GOWORK=off
++ go test -race ./... -count=1
+?   	github.com/go-go-golems/ragopt	[no test files]
+ok  	github.com/go-go-golems/ragopt/cmd/ragopt	1.117s
+ok  	github.com/go-go-golems/ragopt/cmd/ragopt/commands/candidate	1.055s
+?   	github.com/go-go-golems/ragopt/cmd/ragopt/commands/compare	[no test files]
+?   	github.com/go-go-golems/ragopt/cmd/ragopt/commands/report	[no test files]
+?   	github.com/go-go-golems/ragopt/pkg	[no test files]
+ok  	github.com/go-go-golems/ragopt/pkg/candidate	1.286s
+ok  	github.com/go-go-golems/ragopt/pkg/compare	1.042s
+ok  	github.com/go-go-golems/ragopt/pkg/eval	7.266s
+ok  	github.com/go-go-golems/ragopt/pkg/gate	1.071s
+?   	github.com/go-go-golems/ragopt/pkg/policy	[no test files]
+ok  	github.com/go-go-golems/ragopt/pkg/report	1.180s
+ok  	github.com/go-go-golems/ragopt/pkg/review	1.117s
+ok  	github.com/go-go-golems/ragopt/pkg/runstore	1.551s
++ GOWORK=off
++ go build ./...
++ GOWORK=off
++ go vet ./...
++ GOWORK=off
++ golangci-lint run ./...
+0 issues.
++ cat
++ cd /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc
++ export GOWORK=/tmp/tmp.qw1OFRg8eY/go.work
++ GOWORK=/tmp/tmp.qw1OFRg8eY/go.work
++ go test ./pkg/ttc/search -run TestCrossProductSemanticFixtureCapturesCurrentSearchAndEvidenceLaws -count=1
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/search	0.006s
++ go test ./pkg/ttc/optkitcampaign ./pkg/ttc/judgeinstrument ./internal/customer/realruntime ./internal/customer/webchatcmd -count=1
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	1.131s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/judgeinstrument	0.022s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/realruntime	0.010s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/webchatcmd	0.031s
++ go test ./... -count=1
+?   	github.com/the-tree-center/rag-ttc	[no test files]
+?   	github.com/the-tree-center/rag-ttc/cmd/generate-sample-data	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc	0.288s
+?   	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/admineval	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/corpus	0.046s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/diagnosticreview	0.044s
+?   	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/answerquality	4.186s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/chunkcompare	0.151s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag	0.041s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/indexes	0.469s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/knowledge	0.151s
+?   	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/queries	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/tooleval	0.347s
+ok  	github.com/the-tree-center/rag-ttc/cmd/ttc-admin	0.217s
+?   	github.com/the-tree-center/rag-ttc/cmd/ttc-garden	[no test files]
+?   	github.com/the-tree-center/rag-ttc/examples/01_chunking	[no test files]
+?   	github.com/the-tree-center/rag-ttc/examples/06_end_to_end_experiment	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/archive	0.649s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/assistant	2.859s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/chatserver	2.729s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/chatserver/pb/ragttc/chat/v1	0.018s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/eval	0.055s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/feedback/annotation	0.658s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/feedback/comment	0.191s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/feedback/judgment	0.236s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/operations	0.034s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/opsruntime	0.108s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/storage	0.028s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/tui	2.868s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/tui/render	0.022s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/tui/theme	0.026s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/appserver	0.181s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/gardenprompt	0.013s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/mockruntime	0.032s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/ragsearch	0.095s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/realchatexport	0.393s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/realruntime	0.059s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/statusintent	0.043s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/ttcwidgets	0.062s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/webapp	0.178s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/webchatcmd	0.167s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/widgetintent	0.050s
+ok  	github.com/the-tree-center/rag-ttc/internal/ragoptassets	0.009s
+ok  	github.com/the-tree-center/rag-ttc/internal/ragprovider/geppetto	0.017s
+ok  	github.com/the-tree-center/rag-ttc/internal/ragprovider/geppetto/codex	0.035s
+?   	github.com/the-tree-center/rag-ttc/internal/ragprovider/geppetto/profile	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/internal/storeconfig	0.012s
+?   	github.com/the-tree-center/rag-ttc/internal/testfixture	[no test files]
+?   	github.com/the-tree-center/rag-ttc/pkg	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/pkg/chatfeedback	0.375s
+ok  	github.com/the-tree-center/rag-ttc/pkg/chatsessions	0.053s
+?   	github.com/the-tree-center/rag-ttc/pkg/mixedttc/agenttrace	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/connected	0.014s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/connectedconfig	0.036s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/diagnostic	0.010s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/knowledge	0.916s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/knowledge/retrieve	0.018s
+ok  	github.com/the-tree-center/rag-ttc/pkg/redact	0.020s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/customerapp	0.059s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/judgeinstrument	0.043s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/knowledgetools	0.024s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	2.364s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/productcatalog	0.306s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/representations	0.662s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/retrievaleval	0.028s
+?   	github.com/the-tree-center/rag-ttc/pkg/ttc/review	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/sampledata	0.018s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/search	0.044s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/toolanswer	0.104s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/toolconfig	0.117s
+?   	github.com/the-tree-center/rag-ttc/pkg/ttc/tooleval	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/scripts/parc-corpus	0.113s
++ go test -race ./... -count=1
+?   	github.com/the-tree-center/rag-ttc	[no test files]
+?   	github.com/the-tree-center/rag-ttc/cmd/generate-sample-data	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc	3.162s
+?   	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/admineval	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/corpus	1.367s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/diagnosticreview	1.203s
+?   	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/answerquality	8.056s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/chunkcompare	2.455s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag	1.291s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/indexes	2.659s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/knowledge	1.845s
+?   	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/queries	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/tooleval	2.182s
+ok  	github.com/the-tree-center/rag-ttc/cmd/ttc-admin	1.854s
+?   	github.com/the-tree-center/rag-ttc/cmd/ttc-garden	[no test files]
+?   	github.com/the-tree-center/rag-ttc/examples/01_chunking	[no test files]
+?   	github.com/the-tree-center/rag-ttc/examples/06_end_to_end_experiment	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/archive	2.084s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/assistant	4.292s
+--- FAIL: TestStructuredOutcomesAndMetricsAreCorrelatedWithoutPayloadLeakage (0.04s)
+    observability_test.go:96: outcome metrics = chatserver.MetricsSnapshot{Accepted:0x1, Rejected:0x1, Conflicts:0x1, Canceled:0x1, Failed:0x1, Reconnects:0x0, ProjectionErrors:0x1, TimeToStatus:chatserver.DurationMetricSnapshot{Count:0x1, Total:2561772, Last:2561772}, Retrieval:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}, Model:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}, Validation:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}, TimeToAnswer:chatserver.DurationMetricSnapshot{Count:0x0, Total:0, Last:0}}
+FAIL
+FAIL	github.com/the-tree-center/rag-ttc/internal/admin/chatserver	2.349s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/chatserver/pb/ragttc/chat/v1	1.129s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/eval	1.111s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/feedback/annotation	1.768s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/feedback/comment	1.413s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/feedback/judgment	1.166s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/operations	1.081s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/opsruntime	1.109s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/storage	1.034s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/tui	4.699s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/tui/render	1.034s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/tui/theme	1.025s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/appserver	1.166s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/gardenprompt	1.027s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/mockruntime	1.058s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/ragsearch	1.212s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/realchatexport	1.413s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/realruntime	1.074s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/statusintent	1.080s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/ttcwidgets	1.086s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/webapp	1.282s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/webchatcmd	1.299s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/widgetintent	1.185s
+ok  	github.com/the-tree-center/rag-ttc/internal/ragoptassets	1.062s
+ok  	github.com/the-tree-center/rag-ttc/internal/ragprovider/geppetto	1.060s
+ok  	github.com/the-tree-center/rag-ttc/internal/ragprovider/geppetto/codex	1.044s
+?   	github.com/the-tree-center/rag-ttc/internal/ragprovider/geppetto/profile	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/internal/storeconfig	1.031s
+?   	github.com/the-tree-center/rag-ttc/internal/testfixture	[no test files]
+?   	github.com/the-tree-center/rag-ttc/pkg	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/pkg/chatfeedback	1.188s
+ok  	github.com/the-tree-center/rag-ttc/pkg/chatsessions	1.036s
+?   	github.com/the-tree-center/rag-ttc/pkg/mixedttc/agenttrace	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/connected	1.047s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/connectedconfig	1.127s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/diagnostic	1.031s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/knowledge	1.365s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/knowledge/retrieve	1.036s
+ok  	github.com/the-tree-center/rag-ttc/pkg/redact	1.031s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/customerapp	1.073s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/judgeinstrument	1.155s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/knowledgetools	1.108s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	4.525s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/productcatalog	1.320s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/representations	3.435s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/retrievaleval	1.135s
+?   	github.com/the-tree-center/rag-ttc/pkg/ttc/review	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/sampledata	1.086s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/search	1.174s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/toolanswer	1.081s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/toolconfig	1.119s
+?   	github.com/the-tree-center/rag-ttc/pkg/ttc/tooleval	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/scripts/parc-corpus	1.098s
+FAIL
++ cleanup
++ git -C /home/manuel/workspaces/2026-08-24/use-optkit/optkit worktree remove --force /tmp/tmp.qw1OFRg8eY/optkit
++ rm -rf /tmp/tmp.qw1OFRg8eY
