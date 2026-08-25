@@ -35,7 +35,7 @@ This ticket implements the prerequisites for the OPTKIT-004 specialist UI. It st
 
 Current status: **active**
 
-Current phase: **Phase R — release and isolated-module stabilization**
+Current phase: **Phase 0 — contract freeze and fixtures**
 
 ## Topics
 
