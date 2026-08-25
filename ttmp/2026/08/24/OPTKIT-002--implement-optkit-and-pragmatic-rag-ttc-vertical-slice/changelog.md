@@ -59,3 +59,13 @@ Completed P2.5 through OPTKIT-003 and P3 attributable policy-safe retrieval rout
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/search/service.go — Canonical P3 runtime behavior
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/04-p3-validation.txt — Passing P3 command transcript
 
+
+## 2026-08-24
+
+Completed P4 deterministic stage-aware retrieval evaluation with treatment verification and answer-quality runner artifacts (RAG-TTC commit d7701685d).
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/retrievaleval/evaluate.go — Canonical P4 evaluator
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/05-p4-validation.txt — Passing P4 command transcript
+

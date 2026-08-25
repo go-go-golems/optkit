@@ -31,10 +31,20 @@ RelatedFiles:
       Note: Complete P0 validation and smoke workflow
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/04-validate-p3.sh
       Note: P3 reproducible validation gate
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/05-validate-p4.sh
+      Note: P4 reproducible validation gate
+    - Path: ws://rag-ttc/cmd/rag-ttc/cmds/experiments/answerquality/stageaware.go
+      Note: P4 existing-runner integration (commit d7701685d)
     - Path: ws://rag-ttc/internal/customer/ragsearch/connected.go
       Note: P3 connected-RAG augmentation adapter (commit d4c5adab4)
     - Path: ws://rag-ttc/internal/customer/ragsearch/routes.go
       Note: P3 verified configured-route compiler (commit d4c5adab4)
+    - Path: ws://rag-ttc/pkg/ttc/retrievaleval/diagnose.go
+      Note: P4 stage normalization rank movement and target-loss diagnosis (commit d7701685d)
+    - Path: ws://rag-ttc/pkg/ttc/retrievaleval/evaluate.go
+      Note: P4 treatment verification metrics and denominators (commit d7701685d)
+    - Path: ws://rag-ttc/pkg/ttc/retrievaleval/types.go
+      Note: P4 versioned suite and report contracts (commit d7701685d)
     - Path: ws://rag-ttc/pkg/ttc/search/identity.go
       Note: P3 runtime identity and semantic fingerprints (commit d4c5adab4)
     - Path: ws://rag-ttc/pkg/ttc/search/service.go
@@ -47,6 +57,7 @@ LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 
@@ -800,3 +811,109 @@ Checked-in route configuration now becomes serving behavior during customer sear
 - Reranker statuses: `completed`, `skipped`, or `degraded`; current fallback classes include `hydrate_pool`, `provider_error`, and `invalid_result`.
 - Validation transcript: `sources/04-p3-validation.txt`.
 - P3 completion slip: `printed: true`, 384 × 853, two segments, rendered `2026-08-25T01:10:54Z`.
+
+## Step 9: Phase P4 — Build deterministic stage-aware retrieval evaluation
+
+P4 adds a strict TTC-owned evaluator over P3 search outputs. Versioned cases distinguish positive retrieval, authorization-negative, and answer/judge-only modes; target resolution is preflighted before execution; query failures remain rows under an explicit denominator policy; and every successful row retains treatment verification, per-stage rankings, rank movement, target-loss diagnosis, retrieval metrics, latency, and provider-call counts.
+
+The existing answer-quality runner now emits canonical stage-aware JSON and concise Markdown for every arm. This integration is deliberately an application-side adapter over the legacy RagKit answering result, while the evaluator's primary contract consumes the complete P3 `SearchOutput` identity and stages directly.
+
+### Prompt Context
+
+**User prompt (verbatim):**
+
+> continue
+>
+> [REMINDER] Output a <summary>...</summary> block at the VERY END of your response. This is mandatory.
+
+**Assistant interpretation:** Continue immediately from the completed P3 gate into P4, preserving the required plan-slip, implementation, validation, commit, diary, and completion-slip sequence.
+
+**Inferred user intent:** Keep advancing the executable vertical slice rather than stopping after explanation or one phase.
+
+**Commit (RAG-TTC):** `d7701685ddbf4b7a273c924e157fbb08914be889` — "Add deterministic stage-aware retrieval evaluation"
+
+### What I did
+
+- Printed the P4 plan slip before implementation; it rendered at `2026-08-25T01:11:31Z`.
+- Added `pkg/ttc/retrievaleval` with strict suite loading, validation, target resolver identity, execution, treatment verification, stage normalization, diagnostics, metrics, and report rendering.
+- Added schemas `ttc-retrieval-suite/v1`, `ttc-retrieval-report/v1`, and evaluator identity `ttc-retrieval-evaluator/v1`.
+- Added case modes `positive`, `authorization_negative`, and `answer_or_judge_only`.
+- Added denominator policies `count_as_zero` and `exclude`; executor failures remain explicit case rows with latency/provider-call evidence.
+- Added detailed lexical/vector raw, collapsed, and policy-filtered rankings plus fused, augmented, policy-rechecked, reranked, returned, and admitted rankings.
+- Added first-loss diagnosis, missing-at-raw groups, relevant-candidate rank movement, and post-policy forbidden-candidate detection.
+- Added macro recall, precision, MRR, nDCG, required-group coverage, source-document diversity, mean latency, provider calls, treatment mismatch counts, and authorization violation counts.
+- Added strict intended/observed comparison for route, bundle, corpus, resolved config, query transform, retrieval policy, evidence policy, reranker, tool description when supplied, effective limit, and limit source.
+- Added canonical indented JSON and concise Markdown report projections.
+- Added the checked-in four-mode deterministic suite at `pkg/ttc/retrievaleval/testdata/ttc-retrieval-suite-v1.json`.
+- Integrated the evaluator into the existing answer-quality runner; each arm now writes `results/stage-aware-<arm>.json` and `.md`.
+- Added an answer-quality target resolver for chunk, representation, document, and evaluation-unit judgments and content-addressed identities for the in-memory bundle, selected suite, settings, query transform, retrieval policy, and evidence policy.
+- Added `scripts/05-validate-p4.sh` and captured `sources/05-p4-validation.txt`.
+
+### Why
+
+- Aggregate recall alone cannot distinguish absent targets from policy removal, fusion loss, reranking loss, return-limit truncation, or evidence admission.
+- Authorization-negative cases must not share positive-case denominators or reward retrieval of forbidden evidence.
+- A treatment score is invalid when intended and observed identities differ, even if the numerical ranking looks good.
+- Query errors must not silently shrink denominators.
+- Existing answer-quality experiments need the new report now, but replacing their entire retrieval pipeline would violate P4's narrow integration task and preempt P5/P8 boundaries.
+
+### What worked
+
+- The deterministic suite identifies the comparison guide's first loss at `returned` while retaining product evidence.
+- The policy case detects a forbidden chunk reintroduced after an initially clean policy-filtered stage.
+- Treatment mismatch and execution failure tests both count as zero under the configured denominator instead of disappearing.
+- The answer-quality sample run writes stage-aware JSON/Markdown for BM25, vector, and RRF arms with five positive rows, zero query failures, and zero treatment mismatches.
+- Focused tests, focused race tests, the full repository suite, build, vet, golangci-lint, Glazed lint, and pre-commit hooks pass.
+- Validation ends with `P4_COMMIT=d7701685ddbf4b7a273c924e157fbb08914be889` and `P4_VALIDATION=PASS`.
+
+### What didn't work
+
+- The first stage-normalization sketch merged lexical and vector raw rankings into one `raw` list. That lost the channel-specific evidence required by the phase plan. I changed retained report stages to `lexical_raw`, `vector_raw`, and corresponding collapsed/policy stages, while diagnostics use a separate deterministic union funnel.
+- The first answer-quality resolver handled document, chunk, and representation targets but corpus inspection showed the full TTC dataset uses `target: unit`. I added evaluation-unit-to-chunk resolution before running the integration suite.
+- The first answer-quality suite ID was a constant. That could label different query selections as the same suite, so it now includes a digest of corpus identity and exact selected cases.
+- No test or validation command failed after these design corrections.
+
+### What I learned
+
+- Required evidence groups are alternatives: retrieving any chunk in a document or evaluation-unit group satisfies that group. Recall and nDCG must therefore credit groups rather than penalize a system for not returning every alternative chunk.
+- A report needs both channel-specific rankings for evidence and an ordered union funnel for meaningful first-loss diagnosis.
+- Target-resolution errors are suite preparation errors, not query outcomes; all targets are preflighted before executor calls.
+- The legacy answer-quality runner can provide useful stage-aware evidence, but its adapter identity must remain distinct from the canonical P3 service identity.
+
+### What was tricky to build
+
+- nDCG over alternative evidence groups needs one gain for the first retrieved member of each group. Resolved groups are required to be disjoint so one chunk cannot receive multiple gains and produce nDCG above one.
+- Rank movement is only meaningful between adjacent logical funnel stages, not between lexical and vector channel lists. The evaluator retains detailed channel stages but computes movement over normalized raw/collapsed/policy unions.
+- Authorization checks begin at policy filtering and inspect every later stage, catching forbidden evidence added by augmentation or reintroduced before return.
+- The answer-quality adapter supports old BM25/vector/RRF/query-strategy results without pretending they are native P3 service executions. It generates a separate in-memory bundle and adapter policy identity and leaves provider-call counts at observed values rather than inventing calls.
+
+### What warrants a second pair of eyes
+
+- Review group-based nDCG and precision semantics in `pkg/ttc/retrievaleval/evaluate.go`.
+- Review stage ordering and union behavior in `diagnose.go`, especially augmentation and policy recheck.
+- Review whether treatment mismatches should always count as zero or become a hard report error in later Optkit instruments.
+- Review the legacy answer-quality adapter identities; actual reranker provider/model identity remains more precise on the native P3 path than on this compatibility integration.
+- Review artifact filename sanitization in `writeRetrievalArtifacts` even though current arm names are checked constants.
+
+### What should be done in the future
+
+- P5 should expose direct answer outcomes while retaining the same retrieval report inputs.
+- P6 should write native P3 stage traces and candidate sets into Optkit artifacts rather than relying on the answer-quality adapter.
+- Add provider-call instrumentation to executors that actually cross embedding, generation, reranking, or judge boundaries; the evaluator already aggregates it.
+
+### Code review instructions
+
+- Start with `pkg/ttc/retrievaleval/types.go`, then `evaluate.go` and `diagnose.go`.
+- Review `evaluate_test.go` for target loss, policy violation, treatment mismatch, denominator, latency, provider-call, and deterministic-rendering laws.
+- Review `cmd/rag-ttc/cmds/experiments/answerquality/stageaware.go` as an application adapter, not a second evaluator.
+- Run `OPTKIT-002/scripts/05-validate-p4.sh` and confirm `P4_VALIDATION=PASS`.
+
+### Technical details
+
+- Deterministic CI suite: `ttc-cross-product-deterministic-v1`.
+- Native target resolver: `ttc-target-resolver/chunk-id/v1`.
+- Answer-quality resolver: `ttc-target-resolver/answer-quality/v1`.
+- Positive final-stage preference: admitted, returned, reranked, policy-rechecked, augmented, fused, policy-filtered, collapsed, raw.
+- Rank movement delta is `from_rank - to_rank`; positive values mean improvement.
+- Validation transcript: `sources/05-p4-validation.txt`.
+- P4 completion slip: `printed: true`, 384 × 831, two segments, rendered `2026-08-25T01:30:56Z`.
