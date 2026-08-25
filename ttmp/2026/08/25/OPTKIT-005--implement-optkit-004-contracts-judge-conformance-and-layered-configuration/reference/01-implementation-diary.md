@@ -245,6 +245,8 @@ The old ADR, implementation diary, and placeholder component-journal directory w
 
 **Inferred user intent:** Replace stale implementation-era documentation with a durable, discoverable, field-level contract that lets maintainers distinguish enforced behavior from unused declarations before freezing UI schemas.
 
+**Commit (docs):** `367d7b06081c7271a820b3def855148a895bbcc2` — "Docs: publish Optkit control model reference"
+
 ### What I did
 
 - Read `glaze help how-to-write-good-documentation-pages` and `glaze help writing-help-entries` in full.
