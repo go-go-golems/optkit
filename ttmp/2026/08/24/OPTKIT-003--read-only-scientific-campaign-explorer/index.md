@@ -55,4 +55,5 @@ This ticket explains and implements a first read-only scientific explorer for CL
 - Research and design: complete.
 - Working v0 implementation: complete.
 - Documentation and diary: complete.
-- Docmgr validation and reMarkable delivery: pending.
+- Docmgr validation: clean.
+- reMarkable delivery: uploaded to `/ai/2026/08/25/OPTKIT-003`.

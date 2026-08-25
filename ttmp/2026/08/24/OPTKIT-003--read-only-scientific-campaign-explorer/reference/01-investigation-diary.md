@@ -255,3 +255,90 @@ The visual design is a flat white scientific document with retro Macintosh restr
 - Browser routes: `#/campaigns`, `#/campaigns/:id`.
 - Static files: directly embedded; no build step.
 - Final validation marker: `EXPLORER_VALIDATION=PASS`.
+
+## Step 3: Enforce pure white surfaces and deliver the bundle
+
+The final pass removed the remaining paper metaphor from CSS names and values, reran the complete validation workflow, validated ticket health, and uploaded the architecture package to reMarkable. The implementation and documentation now consistently describe a pure-white, flat, dependency-free explorer.
+
+The uploaded bundle contains the ticket index, 1,575-line intern guide, diary through implementation, and 709-line generated Numbergame evidence capture. The local ticket remains authoritative for this delivery receipt and the full validation transcript.
+
+### Prompt Context
+
+**User prompt (verbatim):**
+
+> white background, no paper
+>
+> [REMINDER] Output a <summary>...</summary> block at the VERY END of your response. This is mandatory.
+
+**Assistant interpretation:** Remove off-white/paper styling completely while retaining the retro monochrome structure, modern typography, and text-only color accents.
+
+**Inferred user intent:** Avoid nostalgic skeuomorphism and keep the explorer visually clean, white, technical, and contemporary.
+
+### What I did
+
+- Replaced off-white surface values with pure `#ffffff`.
+- Removed `paper` token names from the CSS implementation.
+- Kept all structural rules/progress graphics black or gray and all non-monochrome accents textual.
+- Added CGO build constraints to integration tests that require the local SQLite profile.
+- Reran `scripts/02-validate-explorer.sh` successfully.
+- Ran `docmgr doctor --ticket OPTKIT-003 --stale-after 30` successfully.
+- Committed the complete guide, diary, scripts, generated evidence, validation report, relations, tasks, changelog, and vocabulary.
+- Ran a successful reMarkable bundle dry-run.
+- Uploaded `OPTKIT-003 Scientific Campaign Explorer Guide.pdf` to `/ai/2026/08/25/OPTKIT-003`.
+
+### Why
+
+- Visual token names should match the actual design to prevent future contributors from reintroducing beige/paper simulation.
+- Integration tests should state their SQLite/CGO dependency rather than breaking the declared no-CGO package gate.
+- The dry-run validates document inclusion and destination before cloud mutation.
+
+### What worked
+
+- The complete validation transcript ends with `EXPLORER_VALIDATION=PASS`.
+- POST mutation check returns 405.
+- Full tests, no-CGO tests, race tests, vet, build, and lint pass.
+- Browser smoke validation showed the expected Numbergame views with zero fresh console errors.
+- Docmgr doctor reported all checks passed.
+- The real upload returned:
+
+  `OK: uploaded OPTKIT-003 Scientific Campaign Explorer Guide.pdf -> /ai/2026/08/25/OPTKIT-003`
+
+### What didn't work
+
+- The first complete validation run failed under `CGO_ENABLED=0` because the newly added query and web integration tests opened SQLite-backed local profiles. The code itself compiled without CGO; the tests required persistence. I added `//go:build cgo` to those integration files and reran the complete validation successfully.
+
+### What I learned
+
+- Build portability and integration-test capability are separate contracts. The no-CGO gate should compile/query packages while SQLite behavioral tests run only where the system binding exists.
+- Direct embedding keeps the final visual correction extremely small: one CSS commit and server restart.
+- A 6,715-word guide plus generated evidence remains navigable as a single ToC-equipped reMarkable bundle.
+
+### What was tricky to build
+
+- The final bundle must be uploaded before the diary can contain the upload receipt. The reMarkable copy therefore contains the diary through Step 2; this local Step 3 records delivery. Overwriting the new PDF solely to include its own receipt would require force and risk future annotations, so it was not justified.
+- The repository date path remains `2026/08/24`, while actual final delivery occurred after midnight on `2026/08/25`; the remote directory uses the actual delivery date.
+
+### What warrants a second pair of eyes
+
+- Open the PDF on-device and confirm large code/API sections and diagrams remain readable.
+- Review the final CSS on high-contrast and reduced-motion settings.
+- Review whether confidential/internal preview policy should become configurable before serving real RAG campaigns.
+
+### What should be done in the future
+
+- Continue with entity routes, trajectory navigation, replay slider, structured search, and large-campaign pagination as separate focused tickets.
+- Upload a new versioned PDF rather than forcing replacement after reviewers annotate this document.
+
+### Code review instructions
+
+- Review commits `1b09c3c`, `d90ae43`, and `368ca45` before the documentation commit.
+- Run `scripts/02-validate-explorer.sh` and inspect `sources/02-explorer-validation.txt`.
+- Run `docmgr doctor --ticket OPTKIT-003 --stale-after 30`.
+- Launch with `optkit serve` and verify the campaign list, Numbergame dashboard, global event search, and evidence drawer.
+
+### Technical details
+
+- Delivery directory: `/ai/2026/08/25/OPTKIT-003`.
+- PDF: `OPTKIT-003 Scientific Campaign Explorer Guide.pdf`.
+- Bundle inputs: index, primary guide, investigation diary, Numbergame evidence capture.
+- Documentation commit before delivery: `4a14d23b99d445e46ea6f8e0dbb7d39f7d50aabf`.
