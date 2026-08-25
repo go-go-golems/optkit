@@ -157,3 +157,13 @@ Closed OPTKIT-002: FINAL_VALIDATION=PASS, all phase/final slips printed, and the
 
 Ticket closed
 
+
+## 2026-08-25
+
+Published the 6,111-word Optkit/RAG-TTC technical deep dive to go-go-parc and pushed vault commit 810cc8b; printed the report publication slip.
+
+### Related Files
+
+- /home/manuel/code/wesen/go-go-golems/go-go-parc/Projects/2026/08/25/PROJECT REPORT - Optkit and RAG-TTC - Durable Attributed RAG Experiments.md — Durable post-closure project analysis
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/reference/01-implementation-diary.md — Post-closure report research, validation, commit, push, and slip evidence
+

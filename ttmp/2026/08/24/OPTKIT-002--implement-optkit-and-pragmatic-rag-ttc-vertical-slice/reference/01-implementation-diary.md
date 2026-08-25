@@ -15,6 +15,8 @@ DocType: reference
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: abs:///home/manuel/code/wesen/go-go-golems/go-go-parc/Projects/2026/08/25/PROJECT REPORT - Optkit and RAG-TTC - Durable Attributed RAG Experiments.md
+      Note: Published textbook-style technical deep dive at go-go-parc commit 810cc8b
     - Path: repo://.goreleaser.yaml
       Note: Normalized release and Homebrew cask metadata
     - Path: repo://Makefile
@@ -123,6 +125,7 @@ LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 
@@ -1679,3 +1682,89 @@ Do it. then use the diary and the git history and design docs or whatever to  wr
 - Result: `FINAL_VALIDATION=PASS`.
 - reMarkable destination: `/ai/2026/08/25/OPTKIT-002/OPTKIT-002 Pragmatic RAG TTC Vertical Slice.pdf`.
 - Final slip: `printed: true`, 384 × 850, two segments, rendered `2026-08-25T20:23:41Z`.
+
+## Step 16: Publish the textbook-style project deep dive to the Obsidian vault
+
+After ticket closure, I converted the implementation record into a durable technical project report rather than copying the diary into the vault. The report explains the completed system from first principles, then follows the actual retrieval, application, campaign, reconciliation, measurement, query, and boundary paths with real APIs, state transitions, evidence, and failure modes.
+
+The article is 6,111 words across 21 numbered technical sections. It distinguishes properties proved by OPTKIT-002 from the future OPTKIT-004 roadmap, uses no analogies, and links to the existing RAG-TTC and Judgekit vault reports so it extends rather than duplicates the knowledge base.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 15)
+
+**Assistant interpretation:** Use the completed diary, repository histories, source code, architecture documents, and validation evidence to publish a detailed textbook-style project analysis in go-go-parc, then commit and push only the intended vault note.
+
+**Inferred user intent:** Preserve the reasoning and mechanics of the completed multi-repository vertical slice in a form that can teach future contributors how the system works and why its boundaries exist.
+
+**Commit (go-go-parc):** `810cc8b89f337f75a1535aac524a98ff866a6c41` — "Add Optkit RAG TTC vertical slice deep dive"
+
+### What I did
+
+- Read the full 1,600-line implementation diary and complete phased design document.
+- Inspected the phase commit histories and aggregate change sizes across Optkit, RAG-TTC, RagKit, Judgekit, and Coinvault.
+- Read the canonical retrieval service, stage evaluator, direct customer service, Optkit system registry, durable campaign/reconciliation code, sealed-answer adapter, Judgekit instrument/provenance code, query service, HTTP server, dependency guard, and RagOpt migration inventory.
+- Read existing vault reports on RAG-TTC architecture, RAG-TTC simplification, and Judgekit to avoid repeating their scope and to match vault conventions.
+- Added `Projects/2026/08/25/PROJECT REPORT - Optkit and RAG-TTC - Durable Attributed RAG Experiments.md` to go-go-parc.
+- Wrote 21 numbered sections covering ownership, fixture characterization, canonical retrieval, policy order, runtime identity, stage diagnostics, direct applications, Optkit execution, durable reconciliation, epochs, historical judging, the read-only explorer, parity-first deletion, failures, validation, operation, and future work.
+- Included real Go contracts, exact stage names, command lines, campaign results, a Mermaid dependency diagram, state-transition pseudocode, validation tables, and links to related vault notes.
+- Ran structural checks for balanced code fences, required validation/campaign evidence, frontmatter, section count, trailing whitespace, and analogy vocabulary.
+- Staged only the new report, committed it on go-go-parc `main`, and pushed `fc9a605..810cc8b` to `origin/main`.
+- Printed the report publication slip; it rendered at `2026-08-25T20:30:15Z`.
+
+### Why
+
+- The diary is chronological operational evidence; a project report must reorganize that evidence around system concepts and execution paths.
+- Existing vault notes describe the prior plain-Go RAG experiment system and Judgekit separately. This report documents the new cross-repository composition, durable campaign semantics, and historical measurement boundary.
+- Real code and traces make the article useful for implementation and review rather than only historical recall.
+
+### What worked
+
+- The vault was clean before the new report was created.
+- The finished report contains 887 lines, 6,111 words, 64 balanced code-fence markers, 21 numbered sections, and one architecture diagram.
+- The no-analogy vocabulary scan returned no matches for the prohibited explanatory patterns.
+- `git diff --check` and the report-specific structural validator passed.
+- The vault commit contains exactly one new file.
+- `git push origin main` completed successfully.
+
+### What didn't work
+
+- N/A. Report drafting, validation, commit, push, and thermal publication receipt all succeeded.
+
+### What I learned
+
+- The completed project has one central technical result: treatment identity, execution durability, and measurement attribution remain separate contracts that RAG-TTC composes.
+- The strongest explanatory sequence starts with ownership and characterization, then follows one query through retrieval stages, direct application behavior, durable campaign state, and historical measurement.
+- The existing vault already contains extensive pre-Optkit RAG-TTC and Judgekit explanations; the new article is most useful when it emphasizes what changed at the integration and durability boundaries.
+
+### What was tricky to build
+
+- The report had to remain detailed without turning into a commit log. I grouped implementation history by correctness property and used commit hashes only as evidence anchors.
+- The article needed to explain retained RagOpt code without describing P8 as incomplete. The exact distinction is behavioral: only the dead outer customer loop was superseded; I5 candidate/gate/report and historical-reader parity remain future gates.
+- The source material spans six repositories and several historical architecture states. I used final source code for current mechanics, the diary for implementation failures, and the design documents for accepted scope and future boundaries.
+
+### What warrants a second pair of eyes
+
+- Review whether the 6,111-word depth is appropriate for the vault's project-report index or whether a shorter project overview should later link to it.
+- Review future edits for continued separation between the completed fixed-arm vertical slice and the proposed adaptive full-pipeline optimization workbench.
+- Verify internal wikilinks if any related note is renamed.
+
+### What should be done in the future
+
+- Create separate implementation tickets for the OPTKIT-004 roadmap and link their eventual reports from this article.
+- Add a concise project index note only if navigation data shows the deep dive is difficult to discover through existing RAG-TTC notes.
+
+### Code review instructions
+
+- Open the report in Obsidian reading view and verify the summary callout, Mermaid graph, tables, code blocks, and wikilinks.
+- Review Sections 2, 6, 12, 14, 16, and 20 for the ownership, policy, durability, measurement, migration, and future-scope claims.
+- Inspect vault commit `810cc8b89f337f75a1535aac524a98ff866a6c41`; it must contain exactly the report file.
+
+### Technical details
+
+- Vault: `/home/manuel/code/wesen/go-go-golems/go-go-parc`.
+- Report: `Projects/2026/08/25/PROJECT REPORT - Optkit and RAG-TTC - Durable Attributed RAG Experiments.md`.
+- Commit: `810cc8b89f337f75a1535aac524a98ff866a6c41`.
+- Push: `main -> origin/main`, `fc9a605..810cc8b`.
+- Report validation: `REPORT_VALIDATION=PASS`.
+- Publication slip: `printed: true`, 384 × 864, two segments, rendered `2026-08-25T20:30:15Z`.
