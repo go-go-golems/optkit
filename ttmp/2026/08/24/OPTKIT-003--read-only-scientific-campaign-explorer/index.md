@@ -1,7 +1,7 @@
 ---
 Title: Read-Only Scientific Campaign Explorer
 Ticket: OPTKIT-003
-Status: active
+Status: complete
 Topics:
     - optkit
     - ui
@@ -16,10 +16,11 @@ Owners: []
 RelatedFiles: []
 ExternalSources: []
 Summary: Architecture, implementation, validation, and onboarding package for the dependency-free read-only Optkit campaign explorer.
-LastUpdated: 2026-08-25T00:45:00-04:00
+LastUpdated: 2026-08-24T20:28:09.384619363-04:00
 WhatFor: Navigate the explorer guide, diary, implementation evidence, scripts, and delivery state.
 WhenToUse: Start here before reviewing or extending the Optkit query API or scientific explorer.
 ---
+
 
 # Read-Only Scientific Campaign Explorer
 

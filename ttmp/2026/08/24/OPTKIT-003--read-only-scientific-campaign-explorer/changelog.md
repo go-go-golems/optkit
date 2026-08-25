@@ -31,3 +31,8 @@ Uploaded validated explorer guide bundle to /ai/2026/08/25/OPTKIT-003 and record
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-003--read-only-scientific-campaign-explorer/reference/01-investigation-diary.md — Final delivery receipt and validation evidence
 
+
+## 2026-08-24
+
+Ticket closed
+
