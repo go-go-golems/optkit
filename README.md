@@ -74,7 +74,7 @@ make race           # race detector over the complete module
 make demo           # reset and run ./tmp/demo
 ```
 
-The detailed engineering record, including failed commands, design changes, review risks, and commit hashes, is in [`docs/implementation-diary.md`](docs/implementation-diary.md).
+The field-level ownership and lifecycle reference is [`docs/01-optkit-records-artifacts-and-control-model.md`](docs/01-optkit-records-artifacts-and-control-model.md). Historical implementation diaries, ADRs, and journals live in ticket workspaces under `ttmp/`; they are not product documentation.
 
 ## Deliberate boundaries
 

@@ -10,6 +10,14 @@ DocType: reference
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: repo://optkit/budget/types.go
+      Note: Defines enforced resource accounting contrasted with scheduler claims
+    - Path: repo://optkit/campaign/event.go
+      Note: Defines control-event identity and unused causation/correlation fields
+    - Path: repo://optkit/docs/01-optkit-records-artifacts-and-control-model.md
+      Note: Public Glazed-style field ownership and lifecycle reference
+    - Path: repo://optkit/scheduler/types.go
+      Note: Defines work, lease, and removal-candidate fields documented by the audit
     - Path: repo://optkit/ttmp/2026/08/25/OPTKIT-005--implement-optkit-004-contracts-judge-conformance-and-layered-configuration/scripts/01-validate-release.sh
       Note: Reproduces Phase R isolated validation
     - Path: repo://rag-ttc/go.mod
@@ -22,6 +30,7 @@ LastUpdated: 2026-08-25T16:55:00-04:00
 WhatFor: Record implementation decisions, commands, failures, commits, review risks, and continuation guidance.
 WhenToUse: Read before resuming OPTKIT-005 or reviewing its implementation.
 ---
+
 
 
 # Diary
@@ -220,4 +229,105 @@ GOWORK=off go build ./...
 GOWORK=off go vet ./...
 GOWORK=off golangci-lint run
 GOWORK=off go test -race ./pkg/ttc/... ./internal/admin/chatserver/... -count=1
+```
+
+## Step 3: Publish the field-level Optkit model and relocate bootstrap history
+
+This step converted the scheduler-field audit into permanent product documentation. The new Glazed-style help entry covers every public layer from record identities and artifact custody through typed configuration, episodes, measurements, experiments, campaign control, leases, budgets, projections, and the query API. Every record table explains purpose, writer, reader, enforcement status, and failure behavior.
+
+The old ADR, implementation diary, and placeholder component-journal directory were not product documentation. They now live under this ticket's `sources/legacy-bootstrap-docs/` tree so the historical record remains attributable without presenting implementation chronology as current API guidance.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, ths is great, actually write a full document in optkit about all these fields and structs (not just the ones above). DOcument the ones that are slated for removal as well, but clearly mark why they are removed. Store it in optkit/docs, use the glazed writing help entries standard. Remove the adr / journals / diary (move those to ttmp, they are leftovers from our first implementer who didn't have ttmp / docmgr)"
+
+**Assistant interpretation:** Create a comprehensive public Optkit data-model reference using Glazed help-page conventions, clearly register pre-release removals, and relocate legacy implementation-history documents into docmgr-managed ticket storage.
+
+**Inferred user intent:** Replace stale implementation-era documentation with a durable, discoverable, field-level contract that lets maintainers distinguish enforced behavior from unused declarations before freezing UI schemas.
+
+### What I did
+
+- Read `glaze help how-to-write-good-documentation-pages` and `glaze help writing-help-entries` in full.
+- Inventoried exported types across `record`, `artifact`, `space`, `system`, `episode`, `measure`, `experiment`, `campaign`, `scheduler`, `budget`, `projection`, `query`, `local`, and SQLite composition.
+- Authored `docs/01-optkit-records-artifacts-and-control-model.md` with Glazed frontmatter, concept-first sections, writer/reader tables, failure modes, troubleshooting, and cross-references.
+- Added an explicit removal register for scheduler resource claims, the unwired heartbeat method, scheduler failure evidence, campaign causation/correlation fields, matching query fields, and `CorrelationID`.
+- Moved the legacy ADR, 741-line bootstrap diary, and component-journal placeholder into `sources/legacy-bootstrap-docs/` with Git history preserved.
+- Updated `README.md` to link the public model reference and direct historical engineering records to `ttmp/`.
+- Validated exact Glazed frontmatter keys, `GeneralTopic`, unique intended slug, absence of a Markdown H1, troubleshooting, and See Also sections.
+
+### Why
+
+- Public documentation should describe current contracts and operational ownership, not preserve chronological implementation notes at the product-doc root.
+- Writer/reader/enforcement columns make declared-only fields visible before they become accidental compatibility commitments.
+- The ticket source tree is the correct custody location for historical ADRs and diaries because it retains provenance, chronology, and review context.
+
+### What worked
+
+- The new document contains 728 lines and 7,532 words.
+- Frontmatter validation ended with `GLAZED_FRONTMATTER=PASS`.
+- The only remaining references to old `docs/adr`, `docs/journals`, or `docs/implementation-diary` paths are preserved historical evidence under `ttmp/`.
+- Git recognized all three legacy files as renames rather than delete-and-recreate operations.
+
+### What didn't work
+
+- N/A. The documentation move and format validation succeeded on the first attempt.
+
+### What I learned
+
+- The strongest cleanup candidates are not merely unused by RAG-TTC; they have writers and storage but no behavioral reader. That distinction identified `ResourceClaims` as more misleading than implemented Numbergame-only paths such as queue failure and budget release.
+- Glazed help pages intentionally omit a top-level Markdown heading because the renderer supplies the frontmatter title.
+- Optkit's current CLI uses the standard `flag` package rather than Cobra/Glazed, so this step follows Glazed's document contract without adding a large command-framework migration to a field-reference task.
+
+### What was tricky to build
+
+- “All fields and structs” spans several authorities that intentionally share vocabulary. The document had to distinguish episode failure evidence from scheduler failure evidence, resource usage from budget claims, and lease authority from campaign facts rather than grouping fields by similar names.
+- Causation and correlation are unused but participate in the current control-event identity shape. The removal register therefore marks a journal-version consequence instead of presenting deletion as a harmless struct edit.
+- The historical diary contains stale paths by design. Editing them after relocation would rewrite source evidence, so they remain verbatim under the ticket source tree.
+
+### What warrants a second pair of eyes
+
+- Review the removal register before code deletion, especially the event-identity implications of removing causation and correlation.
+- Confirm whether the Optkit CLI should later migrate to Cobra/Glazed and load this page at runtime; that migration is intentionally outside this documentation commit.
+- Verify the writer/reader classifications for Numbergame-only behavior remain accurate if the example is reduced later.
+
+### What should be done in the future
+
+- Update the document in the same commit whenever exported record fields or ownership semantics change.
+- Add runtime Glazed help integration only as a dedicated CLI migration with command-parity tests.
+- Preserve the moved bootstrap documents as historical sources; do not copy them back into `docs/`.
+
+### Code review instructions
+
+- Start with `docs/01-optkit-records-artifacts-and-control-model.md`, especially “Durable work scheduling,” “Campaign commands, events, and state,” and “Removal register.”
+- Compare tables against `scheduler/types.go`, `scheduler/queue.go`, `campaign/event.go`, `budget/types.go`, and `query/service.go`.
+- Verify `docs/` contains only current public help entries.
+- Run the frontmatter validation command recorded below and `docmgr doctor --ticket OPTKIT-005 --stale-after 30`.
+
+### Technical details
+
+Glazed document validation:
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+import yaml
+text = Path('docs/01-optkit-records-artifacts-and-control-model.md').read_text()
+_, frontmatter, body = text.split('---\\n', 2)
+data = yaml.safe_load(frontmatter)
+assert data['SectionType'] == 'GeneralTopic'
+assert not any(line.startswith('# ') for line in body.splitlines())
+assert '## Troubleshooting' in body
+assert '## See Also' in body
+print('GLAZED_FRONTMATTER=PASS')
+PY
+```
+
+Legacy source destination:
+
+```text
+ttmp/2026/08/25/OPTKIT-005--implement-optkit-004-contracts-judge-conformance-and-layered-configuration/
+  sources/legacy-bootstrap-docs/
+    adr/0001-clean-slate-local-vertical-slice.md
+    implementation-diary.md
+    journals/README.md
 ```
