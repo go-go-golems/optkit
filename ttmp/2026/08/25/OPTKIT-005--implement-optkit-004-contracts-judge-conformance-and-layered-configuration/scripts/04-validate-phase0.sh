@@ -31,12 +31,12 @@ PHASE2="$OPTKIT/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-t
     ./pkg/ttc/optkitcampaign
 )
 
-fixture="$RAG_TTC/pkg/ttc/optimization/testdata/rag-optimization-semantic-fixture-v1.json"
+fixture="$RAG_TTC/pkg/ttc/optimization/testdata/rag-optimization-semantic-fixture-v2.json"
 digest=$(sha256sum "$fixture" | awk '{print $1}')
 constant=$(awk -F'"' '/const OptimizationFixtureSHA256/ {print $2}' "$RAG_TTC/pkg/ttc/optimization/fixture.go")
 [[ "$digest" == "$constant" ]]
 
-printf 'OPTIMIZATION_FIXTURE_SCHEMA=rag-ttc.optimization-semantic-fixture/v1\n'
+printf 'OPTIMIZATION_FIXTURE_SCHEMA=rag-ttc.optimization-semantic-fixture/v2\n'
 printf 'OPTIMIZATION_FIXTURE_SHA256=%s\n' "$digest"
 printf 'BASE_RETRIEVAL_FIXTURE_SHA256=2fa045999a8a89039e00dd60b3fec2bc17b732d557eb00746e207620a5fbdc7f\n'
 printf 'PHASE_0_VALIDATION=PASS\n'

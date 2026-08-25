@@ -35,7 +35,7 @@ This ticket implements the prerequisites for the OPTKIT-004 specialist UI. It st
 
 Current status: **active**
 
-Current phase: **Phase 2 — layered configuration graph**
+Current phase: **Phase F — final validation and UI handoff**
 
 ## Topics
 

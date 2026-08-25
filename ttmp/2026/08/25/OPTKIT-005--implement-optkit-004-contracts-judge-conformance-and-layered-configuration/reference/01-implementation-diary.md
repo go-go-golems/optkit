@@ -637,3 +637,121 @@ CACHE_BYPASS_PROBE=PASS
 TYPED_MISSING_FAILURE_STATES=PASS
 PHASE_1_VALIDATION=PASS
 ```
+
+## Step 7: Implement deterministic layered invalidation
+
+This step completed OPTKIT-004 Phase 2 with a product-owned configuration graph. Each RAG layer now has its own typed value schema and local semantic identity; graph resolution combines local identity with resolved upstream dependencies; diffing distinguishes direct changes from transitive invalidation; and plans state exactly which layers can be reused or must be recomputed.
+
+A promotion manifest skeleton links candidate, campaign, baseline graph, candidate graph, policy identity, and sorted evidence digests. It is deliberately fixed to `proposed` and contains no approval or deployment authority.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 4)
+
+**Assistant interpretation:** Implement Phase 2's typed identities, DAG validation, semantic diff, deterministic invalidation planner, and attributable promotion envelope.
+
+**Inferred user intent:** Let specialist UI comparisons explain what changed, what was reused, and why downstream work must rerun before bundle and answer campaigns are added.
+
+**Commit (RAG-TTC code):** `a6ad69b7535d313efdc3dfaf6a32492f8a22fe47` — "Optimization: add layered invalidation planner"
+
+### What I did
+
+- Added content-derived local config refs with explicit typed value schemas.
+- Added complete graph construction, canonical layer ordering, unique layer/identity checks, upstream-only dependency validation, duplicate-edge rejection, and resolved dependency digests.
+- Added safe `ReplaceLayer` rewiring for direct dependants.
+- Added deterministic `ConfigDiff` and `InvalidationPlan` records with `reuse`, `direct_change`, and `upstream_change` explanations.
+- Proved judge-only, answer-only, reranker-only, fusion-only, and chunker-change invalidation laws.
+- Added an attributable, evidence-bearing `PromotionManifest` skeleton with deterministic evidence ordering and no approval state.
+- Upgraded the optimization fixture and layered-ref schema to v2 so each config ref exposes its value schema instead of hiding type information inside its digest.
+- Added `scripts/06-validate-phase2.sh` and archived `sources/07-phase2-validation.txt`.
+
+### Why
+
+- A digest alone cannot tell the UI or planner what type of configuration it identifies. Typed value schemas must be explicit on each layer reference.
+- Local identities distinguish direct changes; resolved identities include upstream meaning and expose transitive invalidation.
+- Product-owned RAG layers keep chunking, fusion, evidence, answer, and judge vocabulary out of domain-neutral Optkit.
+- Promotion references are needed for provenance now, while gates, review, and mutation authority remain correctly deferred.
+
+### What worked
+
+- Judge-only changes recompute only judge.
+- Answer-only changes reuse admitted evidence and recompute answer plus judge.
+- Reranker-only changes reuse fusion output and recompute reranking onward.
+- Fusion-only changes reuse retrieval channel outputs and recompute fusion onward.
+- Chunker changes reuse corpus and recompute every downstream layer.
+- Ten repeated planner test runs, race tests, vet, full RAG-TTC tests, lint, and Glazed vet passed.
+- The validator ended with `PHASE_2_VALIDATION=PASS`.
+
+### What didn't work
+
+- The first transitive invalidation test failed after sequential replacement scenarios:
+
+  ```text
+  layer "representations" depends on unknown identity "config:f7088c6bd67d9e7ba89c6957a6f50c6265901f37a1f2501dcb8d5b4883c46a8b"
+  ```
+
+  `ReplaceLayer` copied `ConfigRef` values but shared their `DependsOn` slice backing arrays. Rewiring a candidate graph mutated the baseline graph. The fix deep-copies every dependency slice before rewriting edges.
+
+- The first commit attempt failed the repository lint hook:
+
+  ```text
+  pkg/ttc/optimization/invalidation.go:61:53: QF1008: could remove embedded field "ConfigRef" from selector
+  ```
+
+  Changing `left.ConfigRef.Schema` and `right.ConfigRef.Schema` to promoted selectors `left.Schema` and `right.Schema` resolved it; the second commit passed.
+
+- Phase 2 exposed a Phase 0 contract omission: v1 `ConfigRef` recorded only the envelope schema, not the typed value schema. Rather than hide type information in a digest or add a compatibility shim, the pre-release fixture and ref contracts were replaced with v2 and Phase 0 validation was rerun.
+
+### What I learned
+
+- Graph replacement must deep-copy slice-bearing records even when outer structs are value types.
+- Direct semantic identity and resolved dependency identity are different and both are necessary: one explains the changed knob, the other explains invalidated materialization.
+- A promotion manifest can be useful before promotion logic if its status remains non-authoritative and its evidence ordering is canonical.
+- Contract freeze is only credible when the next consumer can use the contract; Phase 2 correctly forced the missing value-schema field into the Phase 0 fixture before UI work.
+
+### What was tricky to build
+
+- Replacing one layer changes the identity referenced by its direct dependants, but should not mark those dependants as direct semantic changes. `ReplaceLayer` rewires direct edges while preserving each dependant's local identity; resolved digests then propagate invalidation transitively.
+- Dependencies are identity references rather than layer names. This permits explicit multi-input nodes while requiring uniqueness and canonical upstream ordering.
+- Evidence order must not change promotion-manifest identity, so constructor-owned sorting occurs before both identity derivation and storage.
+
+### What warrants a second pair of eyes
+
+- Review the canonical layer order and direct edge model before bundle-build systems rely on it.
+- Confirm `retrieval -> fusion -> reranking -> evidence` captures reuse boundaries needed by planned campaigns.
+- Review whether graph IDs should later become a shared Optkit concept only after a second non-RAG domain proves the abstraction.
+- Confirm the promotion skeleton contains enough references for UI provenance without implying acceptance.
+
+### What should be done in the future
+
+- Phase 3 systems should key materialized outputs by resolved layer digest.
+- Projectors should expose both direct layer diffs and full invalidation steps.
+- Add graph persistence as artifacts when the first campaign executes a layered plan.
+- Keep approval, holdout gates, and deployment commands out of the manifest until Phase 8.
+
+### Code review instructions
+
+- Start with `optimization/graph.go`, especially `NewConfigRef`, `NewGraph`, and `ReplaceLayer`.
+- Review `invalidation.go` for direct versus transitive reasons and deterministic ordering.
+- Review `promotion.go` for evidence sorting and non-authoritative status.
+- Run `scripts/06-validate-phase2.sh` and inspect all seven acceptance markers.
+
+### Technical details
+
+```text
+JUDGE_ONLY_REUSES_UPSTREAM=PASS
+ANSWER_ONLY_REUSES_EVIDENCE=PASS
+RERANK_ONLY_REUSES_FUSION=PASS
+FUSION_ONLY_REUSES_CHANNELS=PASS
+CHUNKER_INVALIDATES_DOWNSTREAM=PASS
+DETERMINISTIC_PLANNER=PASS
+PROMOTION_MANIFEST_SKELETON=PASS
+PHASE_2_VALIDATION=PASS
+```
+
+Current fixture identity:
+
+```text
+schema: rag-ttc.optimization-semantic-fixture/v2
+sha256: 1bb7d696b7ecc8971de03a8f38e8cacff75eb0b4a86fa5a43063831ae50e6a2d
+```

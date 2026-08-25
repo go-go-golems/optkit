@@ -50,3 +50,12 @@ Phase 1: audited Judgekit conformance and proved two epochs preserve exact seale
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/judgeinstrument/instrument_test.go — Historical remeasurement acceptance proof
 
+
+## 2026-08-25
+
+Phase 2: added typed layered config graph, deterministic diff/invalidation planning, and promotion manifest skeleton (RAG-TTC a6ad69b75)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/optimization/graph.go — Layered identity and dependency authority
+
