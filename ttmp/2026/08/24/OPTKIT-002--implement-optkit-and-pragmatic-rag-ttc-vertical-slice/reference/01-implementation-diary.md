@@ -23,6 +23,10 @@ RelatedFiles:
       Note: Filesystem CAS cleanup and durability normalization
     - Path: repo://campaign/reducer.go
       Note: Explicit lifecycle and evidence-event projection behavior
+    - Path: repo://system/registry.go
+      Note: P6 domain-neutral system preparation registry (commit b8e233e86)
+    - Path: repo://system/registry_test.go
+      Note: P6 registry identity cancellation and race laws (commit b8e233e86)
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/design-doc/01-phased-implementation-plan.md
       Note: Controls phase gates and work-slip cadence
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/01-import-optkit-baseline.sh
@@ -69,6 +73,7 @@ LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 
@@ -1044,3 +1049,88 @@ The provider webchat composition now wraps this direct service in a one-method e
 - Search call history is detached and ordered; stage candidate slices and contribution slices are copied.
 - Validation transcript: `sources/06-p5-validation.txt`.
 - P5 completion slip: `printed: true`, 384 × 853, two segments, rendered `2026-08-25T01:47:51Z`.
+
+## Step 11: Phase P6 kickoff — Add the domain-neutral system registry
+
+P6 began with the smallest Optkit-core prerequisite: a registry that binds immutable snapshots to product-owned executable factories. The registry stores only factories in process memory; snapshots retain canonical configuration artifacts, while provider handles and credentials remain in the composition root.
+
+This is an intentionally partial P6 checkpoint, not phase completion. The real RAG-TTC adapter, fixed-arm campaign, durable stage artifacts, restart tests, estimates, and CLI remain open, so task `qlyz` is not checked and no P6 completion slip has been printed.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 9)
+
+**Assistant interpretation:** Continue into the durable campaign phase after completing and documenting P5.
+
+**Inferred user intent:** Reach the first real Optkit product campaign rather than stopping at service extraction.
+
+**Commit (Optkit):** `b8e233e86c5f01144d4d12c408200bd74ff48253` — "Add domain-neutral executable system registry"
+
+### What I did
+
+- Printed the P6 plan slip before implementation; it rendered `2026-08-25T01:48:18Z`.
+- Mapped Numbergame scheduling, leases, budgets, episode execution, measurements, estimates, decisions, and campaign event seams.
+- Added `system.Factory`, `system.Prepared`, and a concurrency-safe `system.Registry`.
+- Made factories declare exact system, configuration-schema, and case-schema identities.
+- Made preparation accept an immutable `space.SnapshotRecord` and artifact store, keeping process-local providers outside snapshots.
+- Made prepared execution consume a case artifact reference, deterministic seed, and `episode.Sink`.
+- Added duplicate registration, unknown system, schema mismatch, prepared-identity mismatch, cancellation, preparation failure, deterministic listing, focused race, full race, full tests, and lint validation.
+- Confirmed the Optkit module currently has no published version and the remote task branch is not present, which affects where the product-owned RAG-TTC integration can compile under `GOWORK=off`.
+
+### Why
+
+- Optkit core needs a domain-neutral way to resolve durable system identity into process-local execution behavior.
+- Provider clients, credentials, and open bundle handles must never enter snapshots or queue payloads.
+- The product adapter should implement this contract from RAG-TTC rather than teaching Optkit core about RAG.
+
+### What worked
+
+- The registry validates every declared identity and verifies that prepared output matches the requested system, snapshot, and case schema.
+- Full Optkit tests, full race tests, vet, and lint pass after the new package.
+- The registry adds no dependency from Optkit to RagKit or RAG-TTC.
+
+### What didn't work
+
+- The first vet run failed because Optkit's module targets Go 1.23 while the tests used `testing.T.Context`, which vet correctly reports as requiring Go 1.24:
+
+  `system/registry_test.go:53:33: testing.Context requires go1.24 or later (file is go1.23)`
+
+  The same diagnostic appeared at five additional lines. Replacing those calls with `context.Background()` restored the Go 1.23 contract; focused tests, race, and vet then passed.
+- `GOWORK=off go list -m -versions github.com/go-go-golems/optkit` returned the module path with no versions, and `git ls-remote ... refs/heads/task/use-optkit` returned no branch. A product-owned RAG-TTC package therefore cannot yet depend on these local Optkit commits through a normal released module version.
+
+### What I learned
+
+- Numbergame contains the complete durability mechanics P6 needs, but its orchestration is example-specific and should not be copied into a general registry.
+- The registry boundary can stay very small: factory preparation plus prepared case execution is enough to bridge snapshots, queue work, and episode sinks.
+- Cross-repository product integration needs an explicit module publication or integration-module strategy; silently adding a sibling `replace` would make isolated CI non-reproducible.
+
+### What was tricky to build
+
+- Heterogeneous systems cannot be stored behind Go generic interfaces in one registry. The durable boundary therefore uses artifact references and declared schemas, while each product factory performs typed decoding internally.
+- Preparation identity must be checked after the factory returns. Validating only the input snapshot would allow a buggy factory to execute the wrong snapshot or case schema.
+- The implementation must be concurrency-safe because workers may prepare different systems while a composition root registers factories during startup; registration is documented and tested as setup behavior.
+
+### What warrants a second pair of eyes
+
+- Review whether `Prepared.Run` should receive the complete `experiment.EpisodeSpec` rather than only case artifact plus seed; the current contract keeps trial/arm metadata in queue and episode orchestration.
+- Review the module-publication choice before adding a sibling `replace` to RAG-TTC.
+- Review whether registry registration should become immutable after first preparation; current locking permits later nonduplicate registration.
+
+### What should be done in the future
+
+- Decide the reproducible product-integration packaging strategy: publish the Optkit branch/version, create a dedicated integration module with explicit CI, or adopt another reviewed boundary.
+- Implement the RAG-TTC factory, typed config/case codecs, and prepared executable after that decision.
+- Continue all remaining P6 tasks before checking the phase or printing its completion slip.
+
+### Code review instructions
+
+- Review `system/registry.go` and its identity checks first.
+- Run `GOWORK=off go test ./system -count=1`, `GOWORK=off go test -race ./system -count=1`, and the full Optkit test/race/lint gates.
+- Confirm no Optkit package imports RagKit or RAG-TTC.
+
+### Technical details
+
+- Registry package: `github.com/go-go-golems/optkit/system`.
+- Process-local contract: `Factory.Prepare(...) (Prepared, error)`.
+- Durable execution inputs: snapshot record, case artifact reference, deterministic seed, episode sink.
+- P6 plan slip: `printed: true`, 384 × 809, two segments, rendered `2026-08-25T01:48:18Z`.

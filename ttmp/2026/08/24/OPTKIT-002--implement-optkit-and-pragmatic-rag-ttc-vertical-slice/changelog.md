@@ -79,3 +79,12 @@ Completed P5 canonical direct customer application service and switched provider
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/customerapp/service.go — Canonical P5 domain turn
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/06-p5-validation.txt — Passing P5 command transcript
 
+
+## 2026-08-24
+
+P6 checkpoint: added domain-neutral executable system registry (Optkit commit b8e233e86); real RAG-TTC campaign remains in progress pending reproducible cross-module integration.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/system/registry.go — P6 foundation checkpoint
+
