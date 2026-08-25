@@ -88,3 +88,13 @@ P6 checkpoint: added domain-neutral executable system registry (Optkit commit b8
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/system/registry.go — P6 foundation checkpoint
 
+
+## 2026-08-25
+
+P6 complete: durable six-episode TTC retrieval campaign, stage artifacts, deterministic observations/estimates, restart reconciliation, and Glazed run/inspect commands (Optkit b8e233e86; RAG-TTC daacadaad and 2bb1c21af).
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/optkitcampaign/campaign.go — Durable campaign implementation
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/07-p6-validation.txt — P6 acceptance evidence
+

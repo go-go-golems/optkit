@@ -24,7 +24,9 @@ RelatedFiles:
     - Path: repo://campaign/reducer.go
       Note: Explicit lifecycle and evidence-event projection behavior
     - Path: repo://system/registry.go
-      Note: P6 domain-neutral system preparation registry (commit b8e233e86)
+      Note: |-
+        P6 domain-neutral system preparation registry (commit b8e233e86)
+        P6 domain-neutral executable factory registry (commit b8e233e86)
     - Path: repo://system/registry_test.go
       Note: P6 registry identity cancellation and race laws (commit b8e233e86)
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/design-doc/01-phased-implementation-plan.md
@@ -39,8 +41,12 @@ RelatedFiles:
       Note: P4 reproducible validation gate
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/06-validate-p5.sh
       Note: P5 reproducible validation gate
+    - Path: ws://go.work
+      Note: P6 temporary version-specific unpublished Optkit workspace replacement
     - Path: ws://rag-ttc/cmd/rag-ttc/cmds/experiments/answerquality/stageaware.go
       Note: P4 existing-runner integration (commit d7701685d)
+    - Path: ws://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/command.go
+      Note: P6 Glazed run resume and inspect workflows
     - Path: ws://rag-ttc/internal/customer/ragsearch/connected.go
       Note: P3 connected-RAG augmentation adapter (commit d4c5adab4)
     - Path: ws://rag-ttc/internal/customer/ragsearch/routes.go
@@ -55,6 +61,12 @@ RelatedFiles:
       Note: P5 direct-served parity and redaction laws (commit 8853613a4)
     - Path: ws://rag-ttc/pkg/ttc/customerapp/types.go
       Note: P5 request result event failure and trajectory contracts (commit 8853613a4)
+    - Path: ws://rag-ttc/pkg/ttc/optkitcampaign/campaign.go
+      Note: P6 durable complete-block runner and reconciliation
+    - Path: ws://rag-ttc/pkg/ttc/optkitcampaign/campaign_test.go
+      Note: P6 lease result observation and cancellation restart laws
+    - Path: ws://rag-ttc/pkg/ttc/optkitcampaign/system.go
+      Note: P6 typed product adapter and stage trajectory emission
     - Path: ws://rag-ttc/pkg/ttc/retrievaleval/diagnose.go
       Note: P4 stage normalization rank movement and target-loss diagnosis (commit d7701685d)
     - Path: ws://rag-ttc/pkg/ttc/retrievaleval/evaluate.go
@@ -63,6 +75,8 @@ RelatedFiles:
       Note: P4 versioned suite and report contracts (commit d7701685d)
     - Path: ws://rag-ttc/pkg/ttc/search/identity.go
       Note: P3 runtime identity and semantic fingerprints (commit d4c5adab4)
+    - Path: ws://rag-ttc/pkg/ttc/search/semantic_fixture.go
+      Note: P6 canonical real retrieval fixture preparation
     - Path: ws://rag-ttc/pkg/ttc/search/service.go
       Note: P3 policy-safe stage-traced retrieval and reranker fallback (commit d4c5adab4)
     - Path: ws://rag-ttc/pkg/ttc/search/service_policy_test.go
@@ -73,6 +87,7 @@ LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 
@@ -1134,3 +1149,137 @@ This is an intentionally partial P6 checkpoint, not phase completion. The real R
 - Process-local contract: `Factory.Prepare(...) (Prepared, error)`.
 - Durable execution inputs: snapshot record, case artifact reference, deterministic seed, episode sink.
 - P6 plan slip: `printed: true`, 384 × 809, two segments, rendered `2026-08-25T01:48:18Z`.
+
+## Step 12: Phase P6 complete — Run a restartable Optkit TTC retrieval campaign
+
+P6 now runs the canonical deterministic TTC retrieval service as a real Optkit system. Product-owned integration materializes typed retrieval snapshots and cases, expands a two-arm complete block, persists every retrieval stage in sealed episode trajectories, records deterministic measurement epochs and observations, computes arm means and paired differences, and exposes start/resume/inspect workflows through Glazed commands.
+
+The durability tests deliberately interrupt at lease, terminal queue result, observation, and in-execution cancellation boundaries. A resumed process reconciles queue truth into the journal, avoids duplicate semantic execution, verifies the journal, and rebuilds an identical terminal summary.
+
+### Prompt Context
+
+**User prompt (verbatim):** "build with go work, it's fine. We'll do the GOWORK later on"
+
+**Assistant interpretation:** Use the parent Go workspace for the unpublished Optkit dependency and defer isolated-module publication cleanup.
+
+**Inferred user intent:** Keep P6 moving with local sibling modules rather than blocking the product slice on module release mechanics.
+
+**Commit (Optkit registry):** `b8e233e86c5f01144d4d12c408200bd74ff48253` — "Add domain-neutral executable system registry"
+
+**Commit (RAG-TTC campaign):** `daacadaad331dd0f7149066b16bf1a7746bbd594` — "Run durable Optkit retrieval campaigns"
+
+**Commit (RAG-TTC CLI):** `2bb1c21afeb50a16de7795c07d7cd96ce4595de0` — "Expose Optkit campaign commands through Glazed"
+
+**Commit (RAG-TTC validation hygiene):** `231b6e59d5d8440256e4ef4c2472aa364cd4ce2f` — "Stabilize heartbeat observability assertion"
+
+### What I did
+
+- Added `github.com/go-go-golems/optkit v0.0.0` to RAG-TTC and a version-specific parent `go.work` replacement to the local Optkit checkout.
+- Added strict codecs for `RetrievalConfig` and `RetrievalCase`; configuration names only a prepared runtime, checked route, and result limit.
+- Implemented the Optkit system factory and prepared executable around a process-local `Executor`; snapshots contain no clients, credentials, indexes, or open handles.
+- Promoted the canonical semantic fixture loader into non-test search code and verified its frozen SHA-256 before constructing a real `search.SearchTool`.
+- Added a fixed `limit-1` versus `limit-2` complete-block campaign over three deterministic fixture cases.
+- Persisted `retrieval.input`, one `retrieval.stage` event per stage, `retrieval.completed`, sealed trajectory, terminal episode result, usage, and deterministic target-coverage observation artifacts.
+- Added a fixed measurement epoch, per-arm means, and paired mean delta; the fixture campaign produces six completed episodes and paired delta `+0.16666666666666666`.
+- Added SQLite queue, filesystem CAS, budget reservations/commits, short leases, terminal-result reconciliation, and journal verification.
+- Added restart tests after lease, after terminal queue result, after the first observation, and after a canceled in-flight execution; reruns retain exactly four semantic executions in the focused fixture test.
+- Added `rag-ttc experiment optkit-rag run` and `inspect` as Glazed structured-output commands with tests for domain and universal output flags, row emission, and processor error propagation.
+- Stabilized the unrelated heartbeat observability assertion exposed by the full validation run by waiting for the asynchronous transport callback rather than reading it immediately.
+- Added and executed `scripts/07-validate-p6.sh`; the final transcript ends in `P6_VALIDATION=PASS` at RAG-TTC commit `2bb1c21af`.
+- Printed the P6 completion slip after the acceptance gate passed.
+
+### Why
+
+- A scientific campaign must survive process loss between queue, artifact, journal, measurement, and projection commits.
+- Product-owned code is the correct place to import both Optkit and TTC retrieval contracts while Optkit remains RAG-neutral.
+- Persisting every retrieval stage makes the intervention and loss funnel inspectable instead of retaining only a final score.
+- Complete-block pairing controls case difficulty while the deliberately small arm set keeps the first product slice reviewable.
+
+### What worked
+
+- The workspace build resolves local Optkit and RAG-TTC packages without publishing an interim module.
+- Both full repositories pass ordinary and race tests under workspace mode.
+- RAG-TTC passes build, vet, golangci-lint, and the Glazed vet analyzer under workspace mode; Optkit passes full tests, race, vet, and lint.
+- The run, resume, and inspect commands emit byte-identical JSON rows for a terminal campaign.
+- Journal verification passes after every simulated restart boundary.
+- Queue completion and budget commit APIs are idempotent enough for reconciliation to resume safely after terminal result persistence.
+
+### What didn't work
+
+- A plain workspace requirement initially still attempted to resolve `v0.0.0`. An all-version workspace replacement then failed with:
+
+  `go: workspace module github.com/go-go-golems/optkit is replaced at all versions in the go.work file. To fix, remove the replacement from the go.work file or specify the version at which to replace the module.`
+
+  Replacing only `github.com/go-go-golems/optkit v0.0.0 => ./optkit` fixed workspace builds.
+- `go mod tidy` still attempted the unpublished revision and failed with repeated diagnostics ending in:
+
+  `github.com/go-go-golems/optkit@v0.0.0: reading github.com/go-go-golems/optkit/go.mod at revision v0.0.0: unknown revision v0.0.0`
+
+  Per the user decision, isolated `GOWORK=off` tidy/release work is deferred.
+- The first CLI smoke redirected output inside the store root while passing `--reset`; reset correctly removed the open output pathname, and Python reported:
+
+  `FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmp.mzMNrnC4IV/run.json'`
+
+  Moving command output to a separate temporary directory fixed the test.
+- The first full non-race run hit the asynchronous heartbeat assertion:
+
+  `websocket_test.go:86: heartbeat timeout was not observable`
+
+  The race run passed; a bounded `waitFor` assertion made twenty repeated focused runs and subsequent full runs pass.
+- Focused lint found:
+
+  `pkg/ttc/optkitcampaign/campaign.go:458:5: ineffectual assignment to observationStopped (ineffassign)`
+
+  Removing the dead assignment fixed it.
+- Repository `make lint`, `make test`, and the pre-commit hook force `GOWORK=off`, so they fail on the intentionally unpublished Optkit dependency. Commits used `LEFTHOOK=0` only after equivalent workspace tests, race, vet, build, golangci-lint, and Glazed lint passed and were captured in the validation transcript.
+- The first P6 validation run failed Glazed lint because the new commands used raw Cobra flags:
+
+  `define CLI flags with cmds.WithFlags(fields.New(...)) instead of raw Cobra/pflag/flag APIs`
+
+  Refactoring both commands to `cmds.GlazeCommand`, structured rows, and `cli.BuildCobraCommandFromCommand` fixed all five findings.
+
+### What I learned
+
+- Go workspace `use` entries and a synthetic unpublished requirement needed a version-specific workspace replacement in this repository layout.
+- Durable execution is a reconciliation problem: the queue's terminal result can exist before its journal fact, and replay must repair that gap without rerunning the retrieval call.
+- An expired retry may encounter a journal episode already in `leased` or `running` state. The worker must avoid emitting an invalid duplicate lease/attempt transition while still consuming the new queue lease.
+- Glazed lint is an architectural guard, not cosmetic lint; command fields belong in command descriptions and outputs belong in structured rows.
+
+### What was tricky to build
+
+- The queue and campaign journal have separate transactions. The worker therefore commits a terminal queue result containing the canonical completion artifact first, while reconciliation idempotently commits budget use and appends `UsageCommitted`, `EpisodeCompleted`, and `ObservationRecorded`. This ordering lets restart recover the exact result rather than rerunning providers.
+- Campaign state has no explicit lease-expired event. After a crash at the lease boundary, a replacement queue lease can correspond to a journal episode still marked leased. Recovery preserves the prior journal transition and starts execution from that state; after cancellation in the running state, it skips a duplicate attempt transition and completes from the retained running state.
+- Heterogeneous product configuration cannot place runtime search objects in Optkit snapshots. The factory retains only an `Executor` interface in process memory, while strict snapshots identify preparation, route, and limit.
+- Observation identity must remain stable across replay. Its semantic identity uses construct, epoch, subject, value, evidence, and repeat rather than replay time, so a resumed process recognizes the existing observation.
+
+### What warrants a second pair of eyes
+
+- Review split-brain behavior if two controllers reconcile the same terminal work concurrently; current local SQLite operations and optimistic journal versions protect commits, but the runner does not retry version conflicts.
+- Review whether a future campaign event should represent lease expiry/retry explicitly instead of preserving the previous lease transition.
+- Review the current budget ceiling of 100 retrieval results per episode; it is safe for this fixture but should become a compiled policy bound for production campaigns.
+- Review whether all per-arm estimates should receive separate `EstimateRecorded` events; they are currently durable inside the terminal campaign payload while paired comparisons receive explicit estimate facts.
+- Review the temporary `v0.0.0` requirement and workspace replacement before any release or isolated CI run.
+
+### What should be done in the future
+
+- P7 should add Judgekit as an Optkit instrument over sealed historical trajectories without rerunning retrieval.
+- Later module stabilization should publish or otherwise pin Optkit, remove the workspace replacement, run `go mod tidy`, and restore `GOWORK=off` hooks.
+- A future Optkit controller can generalize queue-to-journal reconciliation and explicit retry transitions now proven by the product slice.
+
+### Code review instructions
+
+- Start at `pkg/ttc/optkitcampaign/system.go` for the snapshot/runtime boundary, then `campaign.go` for initialization, execution, reconciliation, measurements, and replay.
+- Review `campaign_test.go` for all four interruption boundaries and no-duplicate execution assertions.
+- Review `pkg/ttc/search/semantic_fixture.go` to confirm the campaign uses the real canonical retrieval service rather than a synthetic score generator.
+- Review `cmd/rag-ttc/cmds/experiments/optkitrag/command.go` for Glazed field and structured-output conventions.
+- Run the ticket-local `scripts/07-validate-p6.sh` from the Optkit repository with the parent workspace active.
+
+### Technical details
+
+- Final validation campaign: `campaign:6b0774bcec9e331e1419217567684b77`.
+- Final fixture result: six completed episodes; `limit-1` mean `0.8333333333333334`; `limit-2` mean `1.0`; paired delta `+0.16666666666666666`.
+- Workspace replacement: `github.com/go-go-golems/optkit v0.0.0 => ./optkit`.
+- CLI start: `go run ./cmd/rag-ttc experiment optkit-rag run --store ./tmp/optkit-rag --reset --format json`.
+- CLI resume: `go run ./cmd/rag-ttc experiment optkit-rag run --store ./tmp/optkit-rag --campaign <id> --format json`.
+- CLI inspect: `go run ./cmd/rag-ttc experiment optkit-rag inspect --store ./tmp/optkit-rag --campaign <id> --format json`.
+- P6 completion slip: `printed: true`, 384 × 772, two segments, rendered `2026-08-25T16:26:17Z`.
