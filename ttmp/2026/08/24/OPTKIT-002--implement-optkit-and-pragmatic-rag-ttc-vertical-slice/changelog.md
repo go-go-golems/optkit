@@ -109,3 +109,15 @@ P7 complete: attributed Judgekit reports now remeasure sealed TTC answer traject
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/judgeinstrument/instrument.go — Historical measurement adapter
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/08-p7-validation.txt — P7_VALIDATION=PASS
 
+
+## 2026-08-25
+
+P8 complete: guarded Optkit/RagKit/Judgekit ownership, deleted the superseded outer customer tool loop, retained only non-parity RagOpt orchestration and active historical readers, and passed cross-repository validation.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/internal/customer/realruntime/composer.go — Single canonical customer application path
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/internal/boundary/boundary_test.go — Optkit ownership guard
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/09-p8-boundary-and-migration-inventory.md — Retention and migration evidence
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/10-p8-validation.txt — P8_VALIDATION=PASS
+

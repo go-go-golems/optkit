@@ -10,6 +10,6 @@
 - [x] P5 Extract the direct answer application service and contracts <!-- t:r0sp -->
 - [x] P6 Register and run a durable Optkit RAG-TTC campaign <!-- t:qlyz -->
 - [x] P7 Integrate Judgekit with lightweight research attribution <!-- t:t1k3 -->
-- [ ] P8 Stabilize Optkit-RagKit boundaries and delete superseded orchestration paths <!-- t:o795 -->
+- [x] P8 Stabilize Optkit-RagKit boundaries and delete superseded orchestration paths <!-- t:o795 -->
 - [ ] Final validation, documentation, and reMarkable delivery <!-- t:yvpg -->
 - [x] P2.5 Build the read-only campaign query plane and UI navigation contract <!-- t:gym7 -->

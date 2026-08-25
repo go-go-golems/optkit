@@ -19,7 +19,7 @@ RelatedFiles:
       Note: P2 canonical direct retrieval service (commit ea6c629be)
 ExternalSources: []
 Summary: Phase-gated implementation of the Optkit foundation and a Coinvault-informed, RagKit-backed RAG-TTC product campaign.
-LastUpdated: 2026-08-24T22:55:00-04:00
+LastUpdated: 2026-08-25T20:04:00Z
 WhatFor: Navigate the implementation plan, phase status, diary, scripts, and validation evidence for OPTKIT-002.
 WhenToUse: Start here before implementing, reviewing, or resuming any OPTKIT-002 phase.
 ---
@@ -41,17 +41,22 @@ This ticket implements the architecture assessed in OPTKIT-001. Optkit remains a
 - [P0 validation script](scripts/02-validate-p0.sh)
 - [P0 archive manifest](sources/01-optkit-baseline-manifest.txt)
 - [P0 validation transcript](sources/02-p0-validation.txt)
+- [P7 validation script](scripts/08-validate-p7.sh)
+- [P7 validation transcript](sources/08-p7-validation.txt)
+- [P8 boundary and migration inventory](sources/09-p8-boundary-and-migration-inventory.md)
+- [P8 validation script](scripts/10-validate-p8.sh)
+- [P8 validation transcript](sources/10-p8-validation.txt)
 
 ## Current status
 
-- Overall plan slip: printed.
-- P0 plan slip: printed.
-- **P0 Optkit baseline:** complete and green.
-- **P1 semantic RAG fixtures:** complete and green.
-- **P2 canonical retrieval service:** complete and green.
-- P2.5 read-only campaign query plane: next.
-- P3 runtime identity, routes, and policy: queued after UI bootstrap.
-- P4-P8 and final delivery: pending.
+- Overall and per-phase P0-P8 plan/completion slips: printed through P7; P8 completion slip follows its documentation commit.
+- **P0-P2:** baseline import, semantic fixtures, and canonical retrieval service complete.
+- **P2.5:** read-only campaign query plane complete.
+- **P3-P5:** runtime identity/policy, deterministic evaluation, and direct customer application complete.
+- **P6:** restartable durable TTC retrieval campaign complete.
+- **P7:** attributed historical Judgekit measurement complete; `P7_VALIDATION=PASS`.
+- **P8:** dependency boundaries stabilized and superseded outer customer tool-loop path deleted; `P8_VALIDATION=PASS`.
+- **Next:** final validation, documentation audit, reMarkable delivery, and ticket closure.
 
 ## P0 result
 

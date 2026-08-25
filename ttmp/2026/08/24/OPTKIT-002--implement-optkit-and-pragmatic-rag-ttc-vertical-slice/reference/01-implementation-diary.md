@@ -23,6 +23,8 @@ RelatedFiles:
       Note: Filesystem CAS cleanup and durability normalization
     - Path: repo://campaign/reducer.go
       Note: Explicit lifecycle and evidence-event projection behavior
+    - Path: repo://internal/boundary/boundary_test.go
+      Note: P8 executable Optkit domain-neutrality guard
     - Path: repo://system/registry.go
       Note: |-
         P6 domain-neutral system preparation registry (commit b8e233e86)
@@ -45,10 +47,16 @@ RelatedFiles:
       Note: P7 reproducible cross-repository validation
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/08-p7-validation.txt
       Note: P7 archived passing validation transcript
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/09-p8-boundary-and-migration-inventory.md
+      Note: P8 retain/delete decisions and RagOpt parity backlog
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/10-p8-validation.txt
+      Note: P8 archived passing cross-repository validation
     - Path: ws://go.work
       Note: P6 temporary version-specific unpublished Optkit workspace replacement
     - Path: ws://judgekit/assessment/provenance.go
       Note: P7 sealed Judgekit run provenance contract
+    - Path: ws://judgekit/boundary_test.go
+      Note: P8 executable Judgekit product integration guard
     - Path: ws://judgekit/judging/claimjudge.go
       Note: P7 restricted extraction, current identity, model binding, and prompt execution attribution
     - Path: ws://rag-ttc/cmd/rag-ttc/cmds/experiments/answerquality/stageaware.go
@@ -60,9 +68,13 @@ RelatedFiles:
     - Path: ws://rag-ttc/internal/customer/ragsearch/routes.go
       Note: P3 verified configured-route compiler (commit d4c5adab4)
     - Path: ws://rag-ttc/internal/customer/realruntime/composer.go
-      Note: P5 transport composition switch (commit 8853613a4)
+      Note: |-
+        P5 transport composition switch (commit 8853613a4)
+        P8 canonical single customer application composition path
     - Path: ws://rag-ttc/internal/customer/webchatcmd/run.go
-      Note: P5 provider serving uses direct application (commit 8853613a4)
+      Note: |-
+        P5 provider serving uses direct application (commit 8853613a4)
+        P8 production caller after dead outer registry deletion
     - Path: ws://rag-ttc/pkg/ttc/customerapp/service.go
       Note: P5 canonical direct customer turn (commit 8853613a4)
     - Path: ws://rag-ttc/pkg/ttc/customerapp/service_test.go
@@ -95,12 +107,15 @@ RelatedFiles:
       Note: P3 policy-safe stage-traced retrieval and reranker fallback (commit d4c5adab4)
     - Path: ws://rag-ttc/pkg/ttc/search/service_policy_test.go
       Note: P3 identity policy fusion and fallback laws (commit d4c5adab4)
+    - Path: ws://ragkit/boundary_test.go
+      Note: P8 executable RagKit product/orchestration guard
 ExternalSources: []
 Summary: Chronological implementation record for the Optkit and pragmatic RAG-TTC vertical slice, including phase slips, commands, commits, failures, decisions, and review instructions.
 LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 
@@ -1432,3 +1447,115 @@ Judge changes no longer require retrieval or answer generation to run again. The
 - Built-in constructs: `faithfulness` and `answer_relevance`.
 - Report sensitivity: confidential; observation sensitivity: internal.
 - Validation transcript: `sources/08-p7-validation.txt`.
+
+## Step 14: Phase P8 complete — Stabilize boundaries and delete only proven superseded orchestration
+
+P8 makes ownership executable rather than aspirational. New dependency guards prevent Optkit from importing product/RAG/measurement domains, prevent RagKit from importing products or campaign orchestration, and preserve Judgekit as an independent measurement library. RAG-TTC remains the composition root that may import all three.
+
+The phase also removed the obsolete outer customer tool-registry loop after proving that P5's direct `customerapp.EngineAdapter` is the only production provider path. RagOpt was not deleted wholesale: the inventory demonstrates that its frozen I5 runner and historical report/read models still lack complete Optkit parity, so they are retained under a precise migration gate instead of being mislabeled as superseded.
+
+### Prompt Context
+
+**User prompt (verbatim):** (same as Step 13)
+
+**Assistant interpretation:** Complete the final boundary/deletion phase without violating the parity-first constraint or collapsing RagKit and Judgekit into Optkit.
+
+**Inferred user intent:** End the vertical slice with intentional package ownership, no dead duplicate serving path, and an honest account of the remaining RagOpt migration rather than unsafe bulk deletion.
+
+**Commit (Optkit guard):** `a155700c785c6ac00299b6b9b6eba1f34263bd74` — "Guard Optkit domain-neutral package boundary"
+
+**Commit (Optkit boundary docs):** `27c3ca5b0afc87c4716543da6f7cd6a26ea704bf` — "Document Optkit domain-neutral boundary"
+
+**Commit (RagKit guard):** `9f669ee578af1deb3fefeeca57ee6ecfe40d634d` — "Guard RagKit product and orchestration boundary"
+
+**Commit (RagKit boundary docs):** `0bd945aeb63d6ba539c9314ac9fbd070fedf27b5` — "Document RagKit orchestration boundary"
+
+**Commit (Judgekit guard):** `870fd3bb83914a20adf9f4c8ef6144f21f45d430` — "Guard Judgekit product integration boundary"
+
+**Commit (RAG-TTC deletion):** `40bbec5383810bcf36eb2c29288827bf55564dd0` — "Delete superseded outer customer tool loop"
+
+**Commit (RAG-TTC boundary docs):** `ed40df67c0872ec2056913d0cea0acd647c4fdf3` — "Document retained Optkit and RagOpt boundaries"
+
+### What I did
+
+- Printed the P8 plan slip before the import/caller inventory; it rendered at `2026-08-25T19:51:09Z`.
+- Scanned direct and transitive package ownership across Optkit, RagKit, Judgekit, RagOpt, RAG-TTC, and Coinvault.
+- Added `optkit/internal/boundary/boundary_test.go`, which scans every production/test import and rejects Coinvault, Judgekit, RagKit, RagOpt, and RAG-TTC dependencies.
+- Extended RagKit's boundary tests with an all-package guard rejecting Coinvault, Judgekit, Optkit, RagOpt, and RAG-TTC while retaining the separate Geppetto provider-adapter allowance.
+- Extended Judgekit's core guard to reject Optkit and RAG-TTC in addition to its existing sibling-product/framework/provider restrictions.
+- Confirmed P5 left `buildProviderToolRegistry` and `ToolRegistryFactory` with test-only callers.
+- Deleted the dead factory from `realruntime.ComposerOptions`, `ResolverOptions`, composer state, and the outer enginebuilder registry branch.
+- Deleted `webchatcmd.buildProviderToolRegistry` and its tests; production provider serving now has one path through `ApplicationEngineFactory`, `ragsearch.Handle.NewApplicationEngine`, and `customerapp.EngineAdapter`.
+- Preserved `widgetintent`, `statusintent`, frontend widget renderers, historical entities, and source-result presentation because those are product capabilities/projections with separate ownership, not duplicate campaign orchestration.
+- Inventoried every active RAG-TTC and Coinvault RagOpt caller.
+- Retained the frozen I5 candidate/eval command because P6/P7 do not yet reproduce its candidate asset locking, full answer execution, gate/report, and historical run-directory semantics.
+- Retained active RagOpt `runstore` and `review` readers/projections until equivalent Optkit historical projectors exist and callers switch.
+- Updated Optkit, RagKit, and RAG-TTC READMEs with the final ownership model and parity-first migration rule.
+- Added `sources/09-p8-boundary-and-migration-inventory.md` and `scripts/10-validate-p8.sh`.
+- Captured the complete cross-repository gate in `sources/10-p8-validation.txt`.
+
+### Why
+
+- Repository count is not an architecture. Dependency direction determines whether libraries remain reusable and whether product policy leaks into infrastructure.
+- A static guard prevents a future convenience import from silently turning Optkit into a RAG framework or RagKit into a product control plane.
+- The old outer customer tool loop was dead and duplicated the direct application service, so retaining it would create two plausible serving paths.
+- The old I5 RagOpt command is not dead: it is the only code that can reproduce a retained promotion run with its current locked candidate/gate/report semantics. Deleting it before parity would destroy behavior rather than consolidate it.
+
+### What worked
+
+- The new Optkit boundary test passes in a clean detached worktree under ordinary and race suites.
+- RagKit and Judgekit guards pass in isolated `GOWORK=off` unit/race suites.
+- Removing the outer registry seam reduced RAG-TTC by 78 lines while focused realruntime, webchatcmd, and customerapp unit/race/lint tests remained green.
+- The canonical semantic fixture, durable Optkit campaign, P7 judge instrument, and customer serving tests all pass together.
+- Full Optkit, RagKit, Judgekit, RagOpt, and RAG-TTC unit/race/build/vet/lint gates pass; Glazed vet passes for RAG-TTC.
+- Coinvault's active RagOpt characterization tests pass, proving the retained repository remains consumable.
+- Final output records `P8_VALIDATION=PASS` and the exact five repository commits used by the gate.
+
+### What didn't work
+
+- N/A. P8's implementation and archived validation passed on the first execution.
+- The inventory did disprove an unsafe assumption: the remaining RAG-TTC `tool-eval optimize` path is not behaviorally superseded by P6/P7. It was therefore not deleted. This is an intentional parity-gate result, not an incomplete deletion.
+
+### What I learned
+
+- RAG-TTC's direct RagOpt orchestration use is concentrated in one frozen I5 command, but RagOpt's runstore/review APIs still have multiple active product and historical-query callers.
+- Coinvault still uses the broader candidate/eval/gate/policy/report stack, so retiring the RagOpt repository is a cross-product migration rather than a TTC-local cleanup.
+- The truly superseded product seam was in customer serving, not the frozen experiment command: `ToolRegistryFactory` had only tests after the direct application cutover.
+- Boundary tests should inspect test imports as well as production imports; otherwise a fixture can normalize a forbidden ownership direction before it reaches runtime code.
+
+### What was tricky to build
+
+- “Delete RagOpt” conflicted with the accepted “only after behavioral parity” rule. I resolved the conflict by enumerating exact behaviors. P6 covers durable fixed-arm retrieval, and P7 covers historical judge epochs; neither covers I5 candidate manifests, full answer cells, gate policy, promotion report, or old run directories. The inventory converts this from opinion into a reviewable parity checklist.
+- Optkit's working tree contains an unrelated malformed unstaged edit. The P8 validator checks the committed boundary code in a detached worktree, then composes RAG-TTC against that exact clean path without stashing or changing user state.
+- Boundary rules differ by repository. RagKit permits Geppetto only in provider adapters but forbids products everywhere; Judgekit core forbids provider SDKs and sibling domains; Optkit forbids all RAG/product/measurement domains throughout the module.
+
+### What warrants a second pair of eyes
+
+- Review whether the frozen I5 command should be explicitly labeled `legacy` in CLI help before parity, without changing its current command path.
+- Review the planned typed-widget migration: the direct customer application currently owns the only tool loop, so widget/status tool registration must move inside its per-session registry rather than reviving an outer loop.
+- Review whether test imports in Optkit should be allowed to use a separate black-box fixture module in the future; the current guard intentionally forbids direct domain imports even in tests.
+- Review the parity checklist before any future deletion of RagOpt runstore or review packages.
+
+### What should be done in the future
+
+- Implement full answer/context campaigns and promotion decisions from the OPTKIT-004 roadmap before replacing the frozen I5 command.
+- Add historical RagOpt run import/projectors before switching TUI and report readers.
+- Migrate Coinvault only after equivalent Optkit candidate/gate/report behavior passes its retained fixtures.
+- Publish/pin Optkit and Judgekit, then remove the workspace-only `v0.0.0` replacements and run RAG-TTC `go mod tidy`.
+
+### Code review instructions
+
+- Start with `sources/09-p8-boundary-and-migration-inventory.md`; it states every retain/delete decision and parity gate.
+- Review `optkit/internal/boundary/boundary_test.go`, `ragkit/boundary_test.go`, and `judgekit/boundary_test.go` as the executable ownership policy.
+- Review RAG-TTC commit `40bbec538` to confirm only the dead outer registry seam was removed.
+- Trace production composition from `webchatcmd/run.go` to `realruntime.Composer`, `ragsearch.NewApplicationEngine`, and `customerapp.EngineAdapter`.
+- Run `OPTKIT-002/scripts/10-validate-p8.sh` and confirm `P8_VALIDATION=PASS`.
+
+### Technical details
+
+- Deleted symbols: `ToolRegistryFactory`, `Composer.toolRegistryFactory`, and `buildProviderToolRegistry`.
+- Retained RagOpt orchestration caller: `cmd/rag-ttc/cmds/tooleval/ragopt.go`.
+- Retained RagOpt reader/projection packages: `pkg/runstore` and `pkg/review`.
+- P8 boundary inventory: `sources/09-p8-boundary-and-migration-inventory.md`.
+- P8 validation transcript: `sources/10-p8-validation.txt`.
+- Retained RagOpt commit validated: `76d5fa2de4871c7bfc5bf07ee5994ad7952c4519`.

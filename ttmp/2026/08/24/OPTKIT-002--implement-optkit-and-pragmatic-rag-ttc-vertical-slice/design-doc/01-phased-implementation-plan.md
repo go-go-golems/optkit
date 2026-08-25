@@ -15,12 +15,16 @@ DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/09-p8-boundary-and-migration-inventory.md
+      Note: P8 completion outcome and remaining parity gates
     - Path: ws://coinvault/internal/knowledge/semantic_fixture_test.go
       Note: P1 authorization and evidence reference laws
     - Path: ws://coinvault/internal/knowledge/service.go
       Note: Cross-product RAG behavioral reference
     - Path: ws://judgekit/judging/claimjudge.go
       Note: P7 measurement integration boundary
+    - Path: ws://rag-ttc/README.md
+      Note: Final product integration and retained legacy boundaries
     - Path: ws://rag-ttc/pkg/ttc/search/search.go
       Note: P2 extraction starting point
     - Path: ws://rag-ttc/pkg/ttc/search/semantic_fixture_test.go
@@ -35,6 +39,7 @@ LastUpdated: 2026-08-24T22:45:00-04:00
 WhatFor: Define phase boundaries, concrete tasks, tests, commits, work-slip checkpoints, and acceptance gates for OPTKIT-002.
 WhenToUse: Before starting or reviewing any implementation phase in the Optkit and RAG-TTC vertical-slice program.
 ---
+
 
 
 
@@ -488,6 +493,16 @@ Make repository ownership intentional without moving RagKit primitives into Optk
 - No new compatibility shim exists.
 - Superseded RagOpt/product orchestration has no callers and is deleted.
 - Products retain their policies and application services.
+
+### P8 completion outcome
+
+P8 classified and guarded the final repository boundaries. Optkit rejects imports of RagKit, RagOpt, Judgekit, Coinvault, and RAG-TTC; RagKit rejects product and experiment-orchestration imports; Judgekit rejects Optkit and RAG-TTC core imports. Product integration remains in RAG-TTC.
+
+The now-unused outer customer `ToolRegistryFactory` and `buildProviderToolRegistry` path was deleted after P5 made `customerapp.EngineAdapter` authoritative. No compatibility path was added.
+
+The frozen I5 RagOpt candidate/evaluation command and historical `runstore`/`review` readers are explicitly retained, not classified as superseded. P6/P7 prove durable retrieval and historical judge measurement, but not yet the old command's candidate asset locks, full answer execution, gate/report behavior, and historical run-directory parity. Deleting it would violate the accepted parity-first decision. The exact migration gates and all active callers are recorded in `sources/09-p8-boundary-and-migration-inventory.md`.
+
+Validation across Optkit, RagKit, Judgekit, RagOpt, RAG-TTC, and Coinvault ends in `P8_VALIDATION=PASS`.
 
 ## 15. Final validation and delivery
 
