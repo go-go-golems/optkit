@@ -1,3 +1,5 @@
+//go:build cgo
+
 package query_test
 
 import (
