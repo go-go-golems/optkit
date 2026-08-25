@@ -41,8 +41,16 @@ RelatedFiles:
       Note: P4 reproducible validation gate
     - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/06-validate-p5.sh
       Note: P5 reproducible validation gate
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/scripts/08-validate-p7.sh
+      Note: P7 reproducible cross-repository validation
+    - Path: repo://ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/08-p7-validation.txt
+      Note: P7 archived passing validation transcript
     - Path: ws://go.work
       Note: P6 temporary version-specific unpublished Optkit workspace replacement
+    - Path: ws://judgekit/assessment/provenance.go
+      Note: P7 sealed Judgekit run provenance contract
+    - Path: ws://judgekit/judging/claimjudge.go
+      Note: P7 restricted extraction, current identity, model binding, and prompt execution attribution
     - Path: ws://rag-ttc/cmd/rag-ttc/cmds/experiments/answerquality/stageaware.go
       Note: P4 existing-runner integration (commit d7701685d)
     - Path: ws://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/command.go
@@ -61,6 +69,12 @@ RelatedFiles:
       Note: P5 direct-served parity and redaction laws (commit 8853613a4)
     - Path: ws://rag-ttc/pkg/ttc/customerapp/types.go
       Note: P5 request result event failure and trajectory contracts (commit 8853613a4)
+    - Path: ws://rag-ttc/pkg/ttc/judgeinstrument/instrument.go
+      Note: P7 Judgekit-to-Optkit epoch and observation integration
+    - Path: ws://rag-ttc/pkg/ttc/judgeinstrument/instrument_test.go
+      Note: P7 remeasurement, repeatability, failure, and missing-output acceptance evidence
+    - Path: ws://rag-ttc/pkg/ttc/judgeinstrument/record.go
+      Note: P7 historical answer trajectory and admitted-evidence adapter
     - Path: ws://rag-ttc/pkg/ttc/optkitcampaign/campaign.go
       Note: P6 durable complete-block runner and reconciliation
     - Path: ws://rag-ttc/pkg/ttc/optkitcampaign/campaign_test.go
@@ -87,6 +101,7 @@ LastUpdated: 2026-08-24T22:50:00-04:00
 WhatFor: Preserve enough operational and technical context to review, reproduce, or continue every OPTKIT-002 phase.
 WhenToUse: Read before starting a phase, reviewing a phase commit, debugging validation, or preparing final delivery.
 ---
+
 
 
 
@@ -1283,3 +1298,137 @@ The durability tests deliberately interrupt at lease, terminal queue result, obs
 - CLI resume: `go run ./cmd/rag-ttc experiment optkit-rag run --store ./tmp/optkit-rag --campaign <id> --format json`.
 - CLI inspect: `go run ./cmd/rag-ttc experiment optkit-rag inspect --store ./tmp/optkit-rag --campaign <id> --format json`.
 - P6 completion slip: `printed: true`, 384 × 772, two segments, rendered `2026-08-25T16:26:17Z`.
+
+## Step 13: Phase P7 complete — Remeasure sealed answers with attributed Judgekit epochs
+
+P7 adds a lightweight but explicit research-attribution boundary between sealed TTC answer episodes, Judgekit, and Optkit measurements. The integration consumes only a verified historical Optkit trajectory, reconstructs the current Judgekit instance identity from question, answer, admitted evidence, and active contract, stores the report as a confidential artifact, and emits one typed Optkit observation per construct.
+
+Judge changes no longer require retrieval or answer generation to run again. The characterization test measures one sealed answer under two protocol digests, proves the instance artifact remains identical, proves the measurement epoch changes, and proves the original observations remain byte-for-byte unchanged.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Ok, do P7 and P8 OPTKIT-002. commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill). Do the brutalist slips"
+
+**Assistant interpretation:** Complete the two remaining implementation phases with semantic commits, strict diary evidence, full validation, and a printed plan/completion slip around each phase.
+
+**Inferred user intent:** Finish the pragmatic vertical slice rather than moving prematurely to the broader OPTKIT-004 roadmap, while preserving a reviewable scientific and operational record.
+
+**Commit (Judgekit):** `282e347e7f768f33a90f8fed8aac5f08eb7717f5` — "Bind Judgekit reports to attributed runs"
+
+**Commit (RAG-TTC instrument):** `c84a6feb1af9e45bf88864cf621f1486f9bcefea` — "Measure sealed answers with Judgekit"
+
+**Commit (RAG-TTC validation hygiene):** `915cf164341a712db3b7e610fa80287a62946877` — "Wait for subscription denial telemetry"
+
+### What I did
+
+- Printed the P7 plan slip before inspecting or changing implementation; it rendered at `2026-08-25T19:26:33Z`.
+- Added Judgekit `ClaimExtractionInput`, whose type exposes input, candidate, and metadata but not evidence, reference answers, or required facts.
+- Changed `ClaimProtocol.ExtractPrompt` to accept that restricted input and migrated the example, tests, tutorial, and developer reference without a compatibility alias.
+- Added `eval.BindCurrentIdentity` to recompute evidence-set and instance identities from current content at judge execution instead of trusting a stale caller digest.
+- Added exact expected-versus-observed model validation over provider, model, revision, and settings before generated output enters cache or report state.
+- Changed Judgekit cache entries from raw strings to attributed `GenerationResult` values so cache hits retain observed model, token counts, and duration.
+- Added `assessment.RunProvenance` and per-attempt prompt execution records to sealed reports: contract, protocol, current instance, template digests, rendered prompt digests, expected/observed model, cache mode, hit status, usage, and duration.
+- Included run provenance in report validation and semantic report identity.
+- Added `rag-ttc/pkg/ttc/judgeinstrument` with bounded content-bearing sealed answer records, separately retained deterministic contract events, historical trajectory loading, TTC faithfulness prompts/contract/protocol, Judgekit instance construction, report persistence, failure persistence, and Optkit observation mapping.
+- Added `FromCustomerResult` to project only evidence admitted by the canonical customer application into the historical answer record.
+- Added cache-bypass, historical remeasurement, new-epoch isolation, old-observation immutability, deterministic-evidence separation, judge failure, missing output, and admitted-evidence projection tests.
+- Added the unpublished local Judgekit dependency to RAG-TTC and a version-specific parent workspace replacement, following the P6 workspace-first decision.
+- Added `scripts/08-validate-p7.sh`; it uses a detached clean Optkit worktree so unrelated local Optkit changes cannot alter or block cross-repository validation.
+- Captured the final run in `sources/08-p7-validation.txt`.
+
+### Why
+
+- Changing a judge, prompt protocol, or cache mode should not rerun costly and stochastic retrieval/answer behavior.
+- Claim discovery must not see support evidence; otherwise the judge can preferentially extract only claims it already knows how to support.
+- Provider/model identity observed at execution must match the protocol before attribution is accepted.
+- Deterministic answer-contract measurements and probabilistic Judgekit measurements answer different questions and must remain separate artifacts and observations.
+- Missing judge output is not a numeric zero, and judge failure is not poor answer quality; both need explicit typed statuses.
+
+### What worked
+
+- A single sealed answer trajectory produces two confidential Judgekit report artifacts under distinct protocol/epoch identities without changing its instance artifact or old observations.
+- Cache bypass causes fresh extract and support calls and records `cache_mode=bypass` with no cache-hit flags.
+- A provider failure becomes `StatusFailed` observations and a confidential failure artifact rather than aborting historical campaign reconciliation.
+- A valid report missing one configured construct produces `StatusUnknown` with `missing_output` while other constructs remain measured.
+- Judgekit passes isolated full unit, race, build, vet, and golangci-lint gates.
+- RAG-TTC passes focused/full unit, race, build, vet, golangci-lint, and Glazed vet gates against a clean Optkit worktree.
+- Final validation records `P7_JUDGEKIT_COMMIT=282e347e7f768f33a90f8fed8aac5f08eb7717f5`, `P7_RAG_TTC_COMMIT=915cf164341a712db3b7e610fa80287a62946877`, and `P7_VALIDATION=PASS`.
+
+### What didn't work
+
+- The first Judgekit full test run failed because existing assessment fixtures did not yet provide the newly required run provenance:
+
+  `report_test.go:42: Seal: report provenance: instance_digest must be a sha256: digest`
+
+  `report_test.go:64: rejected insufficient verdict without evidence: report provenance: contract_digest must be a sha256: digest`
+
+  `report_test.go:128: seal r1: report provenance: protocol_digest must be a sha256: digest`
+
+  Updating the central `sampleReport` fixture with a valid attributed generation fixed all three and preserved strict report validation.
+- The first RAG-TTC package compile failed with:
+
+  `pkg/ttc/judgeinstrument/record.go:11:2: "time" imported and not used`
+
+  Removing the stale import fixed the focused build.
+- The first two focused lint runs found capitalized Go error strings, initially at lines 72, 81, and 179, then at lines 182, 186, and 189, for example:
+
+  `pkg/ttc/judgeinstrument/instrument.go:72:21: ST1005: error strings should not be capitalized (staticcheck)`
+
+  I searched the package for every capitalized `fmt.Errorf` literal, corrected the complete set, and reran lint successfully.
+- The first full workspace test was blocked by an unrelated unstaged Optkit edit:
+
+  `../optkit/store/sqlite/rows.go:59:1: syntax error: non-declaration statement outside function body`
+
+  I did not alter that file. Validation now creates a detached clean Optkit worktree and a temporary absolute-path `go.work`, tests against it, and removes it through a shell trap.
+- The first archived P7 validation run exposed a second asynchronous transport assertion:
+
+  `websocket_test.go:73: subscription denial was not observable`
+
+  The error frame and telemetry callback are asynchronous. Reusing the existing bounded `transportRecorder.waitFor` helper fixed the assertion; 50 ordinary and 20 race repetitions passed before the separate hygiene commit.
+
+### What I learned
+
+- Judgekit's earlier design documents already identified restricted extraction, current-content identity, observed-model binding, and report provenance as the intended lightweight guarantee; P7 closed the remaining implementation gap rather than inventing a hardened custody layer.
+- Cache values must retain model attribution. Storing only generated text makes a cache hit impossible to attribute to the observed model that originally produced it.
+- One report can contain multiple prompt executions because structural repair retries are distinct rendered prompts. Provenance therefore records an ordered attempt list rather than one digest per stage.
+- The product adapter should own conversion from admitted TTC citations to Judgekit evidence while Judgekit continues to treat evidence kinds and provenance as application-defined data.
+
+### What was tricky to build
+
+- The extraction and support stages intentionally receive different types. Extraction gets a restricted compile-time view; support receives the full instance only after the claim list is fixed. This prevents accidental evidence leakage without signatures, sandboxing, or typestate.
+- Current identity requires recomputing the nested evidence-set digest before the instance digest. Recomputing only the outer instance would preserve a stale nested identity and then fail strict validation.
+- A cached generation still needs exact observed-model validation and prompt attribution. Cache entries now store `GenerationResult`, and every report attempt records whether that value came from cache.
+- Historical answer content is confidential while deterministic contract facts are internal. `SealAnswerEpisode` emits the deterministic contract as its own event, includes its reference in the answer record, and Judgekit observations deliberately do not absorb that reference as judge evidence.
+- Full validation had to prove the committed Optkit API without touching an unrelated malformed working-tree edit. The ticket script uses a detached worktree rather than temporarily editing or stashing user state.
+
+### What warrants a second pair of eyes
+
+- Review whether `ClaimExtractionInput.Metadata` should remain available to product prompt renderers or be reduced further to input and candidate only.
+- Review whether failed-judge artifacts should retain the full provider error message under confidential sensitivity or store a bounded error class plus a separately restricted diagnostic.
+- Review whether a future generalized Optkit instrument interface should emerge only after a second non-RAG product integration proves the shape.
+- Review whether Judgekit's report schema should receive a new API-version string before an external release because run provenance is now required.
+- Review the bounded answer/evidence limit of 256 KiB per item and 64 admitted items against production context policies.
+
+### What should be done in the future
+
+- Publish or pin Judgekit and Optkit, remove both temporary `v0.0.0` workspace replacements, run `go mod tidy`, and restore isolated RAG-TTC hooks during release stabilization.
+- Add a live provider smoke experiment when a checked evaluator profile is available; P7 intentionally uses a deterministic fake generator.
+- Expose historical judge observations through the future RAG-specific query projectors described by OPTKIT-004.
+
+### Code review instructions
+
+- Start with `judgekit/judging/claimjudge.go` and `judgekit/assessment/provenance.go` to verify the extraction boundary and report attribution.
+- Review `rag-ttc/pkg/ttc/judgeinstrument/record.go` for confidential sealed-answer content and deterministic-artifact separation.
+- Review `instrument.go` for current instance construction, report validation, epoch creation, failure/missing semantics, and observation evidence.
+- Review `instrument_test.go`, especially `TestHistoricalAnswerCanBeRemeasuredUnderNewEpoch`, `TestCacheBypassProducesFreshAttributedRepeat`, and `TestJudgeFailureAndMissingDimensionBecomeTypedObservations`.
+- Run `OPTKIT-002/scripts/08-validate-p7.sh` and confirm `P7_VALIDATION=PASS`.
+
+### Technical details
+
+- Historical answer schema: `rag-ttc.answer-evaluation/v1`.
+- Deterministic contract schema: `rag-ttc.answer-contract-measurement/v1`.
+- Instrument identity: `rag-ttc.judgekit-claim-instrument/v1`.
+- Built-in prompt version: `rag-ttc.faithfulness-prompts/v1`.
+- Built-in constructs: `faithfulness` and `answer_relevance`.
+- Report sensitivity: confidential; observation sensitivity: internal.
+- Validation transcript: `sources/08-p7-validation.txt`.

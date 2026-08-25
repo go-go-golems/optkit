@@ -98,3 +98,14 @@ P6 complete: durable six-episode TTC retrieval campaign, stage artifacts, determ
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/optkitcampaign/campaign.go — Durable campaign implementation
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/07-p6-validation.txt — P6 acceptance evidence
 
+
+## 2026-08-25
+
+P7 complete: attributed Judgekit reports now remeasure sealed TTC answer trajectories under distinct Optkit epochs without rerunning retrieval or generation; cache-bypass, failure, missing-output, and old-observation isolation tests pass.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../judgekit/assessment/provenance.go — Required report attribution
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/../rag-ttc/pkg/ttc/judgeinstrument/instrument.go — Historical measurement adapter
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/24/OPTKIT-002--implement-optkit-and-pragmatic-rag-ttc-vertical-slice/sources/08-p7-validation.txt — P7_VALIDATION=PASS
+
