@@ -185,6 +185,15 @@ func run(root, out string) error {
 				return err
 			}
 			result.Episodes = append(result.Episodes, row)
+		case campaign.PlanCompiled, campaign.CampaignStarted, campaign.CampaignPaused,
+			campaign.CampaignResumed, campaign.CampaignStopping, campaign.CampaignStopped,
+			campaign.CampaignFailed, campaign.CampaignCompleted, campaign.TrialPlanned,
+			campaign.EpisodeScheduled, campaign.EpisodeLeaseGranted, campaign.EpisodeAttemptStarted,
+			campaign.EpisodeFailed, campaign.ObservationRecorded, campaign.EstimateRecorded,
+			campaign.DecisionRecorded, campaign.BudgetReserved, campaign.UsageCommitted,
+			campaign.BudgetReleased:
+			// The bundle preserves these events in Journal; they do not populate
+			// an additional typed summary field.
 		}
 	}
 
