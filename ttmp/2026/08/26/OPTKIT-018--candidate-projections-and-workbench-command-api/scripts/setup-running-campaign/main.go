@@ -1,3 +1,7 @@
+//go:build ignore
+
+// This evidence-only helper imports RAG-TTC. It is intentionally excluded
+// from Optkit package discovery and invoked explicitly by the smoke script.
 package main
 
 import (

@@ -126,7 +126,11 @@ INSERT INTO campaign_events(
 }
 
 func (s *Store) Read(ctx context.Context, campaignID record.CampaignID, from uint64) ([]campaign.ControlEvent, error) {
-	rows, err := s.db.Query(ctx, eventSelect+` WHERE campaign_id = ? AND seq > ? ORDER BY seq`, string(campaignID), int64(from))
+	sequence, err := sqliteSequence(from)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := s.db.Query(ctx, eventSelect+` WHERE campaign_id = ? AND seq > ? ORDER BY seq`, string(campaignID), sequence)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +193,15 @@ const eventSelect = `SELECT
 FROM campaign_events`
 
 func readEventsConn(ctx context.Context, conn *sqlitedb.Conn, campaignID record.CampaignID, from, through uint64) ([]campaign.ControlEvent, error) {
-	rows, err := conn.Query(ctx, eventSelect+` WHERE campaign_id = ? AND seq > ? AND seq <= ? ORDER BY seq`, string(campaignID), int64(from), int64(through))
+	fromSequence, err := sqliteSequence(from)
+	if err != nil {
+		return nil, err
+	}
+	throughSequence, err := sqliteSequence(through)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := conn.Query(ctx, eventSelect+` WHERE campaign_id = ? AND seq > ? AND seq <= ? ORDER BY seq`, string(campaignID), fromSequence, throughSequence)
 	if err != nil {
 		return nil, err
 	}

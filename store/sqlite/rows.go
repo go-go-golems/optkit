@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"fmt"
+	"math"
 
 	sqlitedb "github.com/go-go-golems/optkit/internal/sqlite"
 )
@@ -30,6 +31,13 @@ func nullableText(row sqlitedb.Row, name string) (*string, error) {
 	}
 	out := value.Text
 	return &out, nil
+}
+
+func sqliteSequence(value uint64) (int64, error) {
+	if value > math.MaxInt64 {
+		return 0, fmt.Errorf("sequence %d exceeds SQLite's signed integer range", value)
+	}
+	return int64(value), nil
 }
 
 func integer(row sqlitedb.Row, name string) (int64, error) {

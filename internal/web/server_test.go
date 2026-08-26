@@ -87,6 +87,16 @@ func TestCampaignAPIReportsVerifiedNumbergame(t *testing.T) {
 	}
 }
 
+func TestUintToIntRejectsValuesOutsideThePlatformIntRange(t *testing.T) {
+	maximum := uint64(^uint(0) >> 1)
+	if _, err := uintToInt(maximum); err != nil {
+		t.Fatalf("maximum supported page limit: %v", err)
+	}
+	if _, err := uintToInt(maximum + 1); err == nil {
+		t.Fatal("out-of-range page limit unexpectedly accepted")
+	}
+}
+
 func TestSSEReplaysAfterCursor(t *testing.T) {
 	server, summary := testServer(t)
 	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, server.URL+"/api/v1/campaigns/"+string(summary.Campaign)+"/stream?after=80", nil)

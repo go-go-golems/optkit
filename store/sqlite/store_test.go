@@ -92,6 +92,9 @@ func TestJournalIdempotencyVersioningAndReopen(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if _, err := store.Read(ctx, campaignID, ^uint64(0)); err == nil {
+		t.Fatal("out-of-range SQLite sequence unexpectedly accepted")
+	}
 	overview, err := projection.RebuildOverview(campaignID, events)
 	if err != nil {
 		t.Fatal(err)
