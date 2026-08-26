@@ -72,11 +72,13 @@ type Candidate struct {
 // snapshot, patch, and catalog identities. Manifest resolution uses this before
 // any durable materialization occurs.
 func (intent CandidateIntent) Validate() error {
-	_, err := normalizeCandidateIntent(intent)
+	_, err := NormalizeCandidateIntent(intent)
 	return err
 }
 
-func normalizeCandidateIntent(intent CandidateIntent) (CandidateIntent, error) {
+// NormalizeCandidateIntent validates intent and canonicalizes set-like groups
+// and motivating case IDs for semantic request identity and candidate creation.
+func NormalizeCandidateIntent(intent CandidateIntent) (CandidateIntent, error) {
 	if err := intent.Proposer.Validate(); err != nil {
 		return CandidateIntent{}, err
 	}
@@ -130,7 +132,7 @@ func NewCandidate(parent record.SnapshotID, patch record.PatchID, child record.S
 	if err := record.ValidateID("snapshot", string(child)); err != nil {
 		return Candidate{}, fmt.Errorf("candidate child: %w", err)
 	}
-	normalizedIntent, err := normalizeCandidateIntent(intent)
+	normalizedIntent, err := NormalizeCandidateIntent(intent)
 	if err != nil {
 		return Candidate{}, err
 	}

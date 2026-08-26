@@ -82,6 +82,13 @@ func TestCandidateIntentValidatesWithoutDurableIdentities(t *testing.T) {
 	if err := intent.Validate(); err != nil {
 		t.Fatalf("valid candidate intent rejected: %v", err)
 	}
+	normalized, err := NormalizeCandidateIntent(intent)
+	if err != nil {
+		t.Fatalf("normalize valid candidate intent: %v", err)
+	}
+	if normalized.Motivation.CaseIDs[0] != "case-01" || normalized.ExpectedImprovement.Groups[0] != "development" {
+		t.Fatalf("standalone intent normalization failed: %+v", normalized)
+	}
 	intent.Hypothesis = ""
 	if err := intent.Validate(); err == nil {
 		t.Fatal("incomplete candidate intent accepted")
