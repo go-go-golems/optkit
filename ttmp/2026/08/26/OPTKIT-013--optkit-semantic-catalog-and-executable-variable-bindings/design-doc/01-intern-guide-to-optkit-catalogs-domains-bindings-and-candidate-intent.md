@@ -15,22 +15,25 @@ RelatedFiles:
       Note: |-
         Complete generic proof case for variables patches candidates and campaign events
         Complete generic proof consumer
+        Implemented serialized mutation and sealed catalog proof
+    - Path: repo://optkit/space/binding.go
+      Note: Implemented typed binding erasure and registry construction
     - Path: repo://optkit/space/candidate.go
-      Note: Candidate intent and identity model to extend
+      Note: |-
+        Candidate intent and identity model to extend
+        Implemented candidate intent identity v2
+    - Path: repo://optkit/space/catalog.go
+      Note: Implemented immutable two-level catalog identity
     - Path: repo://optkit/space/domain.go
       Note: |-
         Existing integer and lossy choice domains to extend
         Lossy current domain descriptors to replace
-    - Path: repo://optkit/space/patch.go
-      Note: |-
-        Canonical durable typed assignment path that bindings must invoke
-        Durable typed assignment path bindings must preserve
+        Implemented lossless typed domain specifications
     - Path: repo://optkit/space/variable.go
       Note: |-
         Existing typed variable and descriptor implementation
         Typed variable declaration extended by catalog metadata
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
-      Note: Parent program goals dependencies exclusions and exit gates
+        Implemented complete descriptor and derived metadata validation
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
       Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
 ExternalSources: []
@@ -39,6 +42,8 @@ LastUpdated: 2026-08-26T14:20:21.132009032-04:00
 WhatFor: Teach a new Optkit contributor how to make variables discoverable and remotely invocable without creating a parallel mutation mechanism.
 WhenToUse: Implement after OPTKIT-012 contracts are accepted and before RAG-TTC registers application variables.
 ---
+
+
 
 
 
@@ -448,7 +453,23 @@ GOWORK=off go test -race ./space ./examples/numbergame -count=1
 - Candidate schema changes alter new identities. Record the schema/version change, not just the struct diff.
 - Asset sensitivity is a policy input; a boolean may eventually be insufficient, but do not generalize beyond the accepted artifact contract in this ticket.
 
-## 14. Out of scope
+## 14. Implementation outcome
+
+Implemented on 2026-08-26 in five production commits plus ticket-close documentation:
+
+- `space/valuespec.go` and `space/domain.go` provide strict discriminated `int`, finite `float`, `bool`, pattern `string`, canonical `choice`, and schema-constrained `artifact_ref` metadata.
+- `space.NewVariable` derives the `ValueSpec` and canonical default from the same typed domain/codec used during execution. `Variable.Validate` rejects metadata/domain drift.
+- `space/catalog.go` computes `schema:optkit.catalog-semantic/v1` and `schema:optkit.catalog/v1` digests, preserves declared order, returns detached views, and verifies identities during strict JSON decode.
+- `space/binding.go` implements immutable `Registry[C]` and private `typedBinding[C,V]`; registration creates the descriptor/binding pair once and rejects unknown sections, duplicate IDs/keys, and drift.
+- `space/candidate.go` advances directly to `schema:optkit.candidate-identity/v2` with structured proposer, expected improvement, motivation, ordered risks, and semantic catalog provenance. No v1 alias or dual `Targets` field remains.
+- Numbergame declares a two-section registry, compiles a serialized mutation purely, replays it durably, asserts identical child/patch identity, and seals the exact catalog in `schema:numbergame.candidate-proposal/v2`.
+- `cmd/numbergame-demo` exports `numbergame.lab-bundle/v2` and exhaustively distinguishes projected from journal-only campaign events.
+
+The implementation uses `IntegerRange`, `FloatRange`, `String`, and `Artifact` payload objects inside `ValueSpec` rather than many top-level optional bound fields. This remains the accepted discriminated contract: exactly the payload selected by `Kind` is legal. Catalog internals are intentionally unexported; `Sections()` and `Lookup()` return deep copies.
+
+Validation evidence includes focused tests, the complete CGO and non-CGO suite, race tests, `go vet`, `go build`, `gofmt` checking, golangci-lint, and a fresh eight-episode numbergame export whose candidate semantic catalog digest is present and whose decision is eligible.
+
+## 15. Out of scope
 
 - RAG `PipelineConfig` and variables (OPTKIT-014/015);
 - proposal compilation orchestration (OPTKIT-016);
@@ -457,7 +478,7 @@ GOWORK=off go test -race ./space ./examples/numbergame -count=1
 - gate-policy unification;
 - moving optimization abstractions to Ragkit.
 
-## 15. Exit criteria
+## 16. Exit criteria
 
 - Catalog and value-spec JSON are stable and tested.
 - Every registered descriptor has one executable binding.
@@ -467,7 +488,7 @@ GOWORK=off go test -race ./space ./examples/numbergame -count=1
 - Full Optkit tests pass.
 - Diary, changelog, relations, doctor, and reMarkable delivery are complete.
 
-## 16. File reference map
+## 17. File reference map
 
 - `optkit/space/variable.go:10-57` — current ID, descriptor, variable, validation.
 - `optkit/space/domain.go:8-73` — current descriptor, int range, choice loss.

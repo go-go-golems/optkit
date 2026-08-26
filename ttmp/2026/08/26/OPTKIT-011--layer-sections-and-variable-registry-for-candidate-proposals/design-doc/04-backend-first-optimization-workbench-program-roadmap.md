@@ -333,7 +333,7 @@ The ticket index and `tasks.md` of each child ticket are authoritative for local
 | Ticket | Program role | Entry dependency | Current state |
 | --- | --- | --- | --- |
 | OPTKIT-012 | Architecture contracts | OPTKIT-011 | complete — contracts accepted, proven, and pinned to OPTKIT-013–018 (`b1fcf17`) |
-| OPTKIT-013 | Generic catalog and bindings | OPTKIT-012 | guide validated and delivered; implementation pending |
+| OPTKIT-013 | Generic catalog and bindings | OPTKIT-012 | complete — six value kinds, catalog identities, typed registry, candidate v2, and numbergame proof |
 | OPTKIT-014 | Aggregate RAG configuration | OPTKIT-012/013 | guide validated and delivered; implementation pending |
 | OPTKIT-015 | First real RAG variables | OPTKIT-013/014 | guide validated and delivered; implementation pending |
 | OPTKIT-016 | Pure compiler and CLI | OPTKIT-013–015 | guide validated and delivered; implementation pending |

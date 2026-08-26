@@ -1,7 +1,7 @@
 ---
 Title: Optkit Semantic Catalog and Executable Variable Bindings
 Ticket: OPTKIT-013
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -13,10 +13,11 @@ Owners: []
 RelatedFiles: []
 ExternalSources: []
 Summary: Add discoverable semantic catalogs and serialized-to-typed executable bindings without replacing Optkit's existing variable and patch algebra.
-LastUpdated: 2026-08-26T14:20:21.132009032-04:00
+LastUpdated: 2026-08-26T15:22:36.815355804-04:00
 WhatFor: Let manifests, CLIs, and UIs enumerate and safely apply the same typed variables used by Go code.
 WhenToUse: Implement after OPTKIT-012 and before registering RAG variables or compiling proposals.
 ---
+
 
 # Optkit Semantic Catalog and Executable Variable Bindings
 
@@ -36,7 +37,7 @@ This ticket provides the domain-neutral framework beneath every optimization sur
 
 ## Status
 
-Current status: **active**
+Current status: **complete** — production catalog, value-domain, binding registry, candidate v2, and numbergame proof are implemented and fully validated.
 
 ## Topics
 
