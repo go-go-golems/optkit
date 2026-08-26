@@ -98,6 +98,31 @@ func TestPatchOrderIsCanonicalAndConflictsFail(t *testing.T) {
 	}
 }
 
+func TestVerifySnapshotValueRejectsRecordValueDrift(t *testing.T) {
+	ctx := context.Background()
+	store := memory.New()
+	codec := NewJSONCodec[testConfig]("schema:test.config/v1")
+	base, err := MaterializeSnapshot(ctx, store, "system:test/v1", codec, testConfig{Multiplier: 2, Mode: "none"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := VerifySnapshotValue(base, codec); err != nil {
+		t.Fatalf("verify materialized snapshot: %v", err)
+	}
+
+	drifted := base
+	drifted.Value.Multiplier = 3
+	if err := VerifySnapshotValue(drifted, codec); err == nil {
+		t.Fatal("snapshot value drift unexpectedly verified")
+	}
+
+	forged := base
+	forged.ID = "snapshot:forged"
+	if err := VerifySnapshotValue(forged, codec); err == nil {
+		t.Fatal("forged snapshot identity unexpectedly verified")
+	}
+}
+
 func TestPatchRejectsOutOfDomainValue(t *testing.T) {
 	ctx := context.Background()
 	store := memory.New()

@@ -37,28 +37,81 @@ func MaterializeSnapshot[C any](ctx context.Context, store artifact.Store, syste
 	if err != nil {
 		return Snapshot[C]{}, fmt.Errorf("store snapshot config: %w", err)
 	}
-	identity := struct {
-		System record.SystemID `json:"system"`
-		Schema record.SchemaID `json:"schema"`
-		Config record.Digest   `json:"config_digest"`
-	}{System: system, Schema: codec.Schema(), Config: configRef.Digest}
-	digest, _, err := record.SemanticDigest("schema:optkit.snapshot-identity/v1", identity)
-	if err != nil {
-		return Snapshot[C]{}, err
-	}
-	rawID, err := record.ContentID("snapshot", digest)
+	rawID, err := snapshotContentID(system, codec.Schema(), configRef.Digest)
 	if err != nil {
 		return Snapshot[C]{}, err
 	}
 	return Snapshot[C]{
 		SnapshotRecord: SnapshotRecord{
-			ID:     record.SnapshotID(rawID),
+			ID:     rawID,
 			System: system,
 			Schema: codec.Schema(),
 			Config: configRef,
 		},
 		Value: config,
 	}, nil
+}
+
+// VerifySnapshotValue verifies a loaded snapshot record against its in-memory
+// value without reading or writing an artifact store. Proposal compilation uses
+// this to reject forged or stale parent/value pairs while remaining pure.
+func VerifySnapshotValue[C any](snapshot Snapshot[C], codec Codec[C]) error {
+	if err := record.ValidateID("system", string(snapshot.System)); err != nil {
+		return fmt.Errorf("snapshot system: %w", err)
+	}
+	if err := record.ValidateID("snapshot", string(snapshot.ID)); err != nil {
+		return fmt.Errorf("snapshot ID: %w", err)
+	}
+	if snapshot.Schema != codec.Schema() {
+		return fmt.Errorf("snapshot schema %s does not match codec schema %s", snapshot.Schema, codec.Schema())
+	}
+	if err := snapshot.Config.Validate(); err != nil {
+		return fmt.Errorf("snapshot config ref: %w", err)
+	}
+	if snapshot.Config.MediaType != "application/vnd.optkit.record+json" {
+		return fmt.Errorf("snapshot config media type %q is unsupported", snapshot.Config.MediaType)
+	}
+	if snapshot.Config.Sensitivity != artifact.SensitivityInternal {
+		return fmt.Errorf("snapshot config sensitivity %q is unsupported", snapshot.Config.Sensitivity)
+	}
+	if snapshot.Config.Schema == nil || *snapshot.Config.Schema != codec.Schema() {
+		return fmt.Errorf("snapshot config schema does not match codec schema %s", codec.Schema())
+	}
+	bytesValue, err := codec.EncodeCanonical(snapshot.Value)
+	if err != nil {
+		return fmt.Errorf("encode snapshot config: %w", err)
+	}
+	if got := record.SumBytes(bytesValue); got != snapshot.Config.Digest {
+		return fmt.Errorf("snapshot config digest mismatch: got %s, want %s", got, snapshot.Config.Digest)
+	}
+	if int64(len(bytesValue)) != snapshot.Config.Size {
+		return fmt.Errorf("snapshot config size mismatch: got %d, want %d", len(bytesValue), snapshot.Config.Size)
+	}
+	expectedID, err := snapshotContentID(snapshot.System, snapshot.Schema, snapshot.Config.Digest)
+	if err != nil {
+		return err
+	}
+	if snapshot.ID != expectedID {
+		return fmt.Errorf("snapshot identity mismatch: got %s, want %s", snapshot.ID, expectedID)
+	}
+	return nil
+}
+
+func snapshotContentID(system record.SystemID, schema record.SchemaID, config record.Digest) (record.SnapshotID, error) {
+	identity := struct {
+		System record.SystemID `json:"system"`
+		Schema record.SchemaID `json:"schema"`
+		Config record.Digest   `json:"config_digest"`
+	}{System: system, Schema: schema, Config: config}
+	digest, _, err := record.SemanticDigest("schema:optkit.snapshot-identity/v1", identity)
+	if err != nil {
+		return "", err
+	}
+	rawID, err := record.ContentID("snapshot", digest)
+	if err != nil {
+		return "", err
+	}
+	return record.SnapshotID(rawID), nil
 }
 
 func LoadSnapshot[C any](ctx context.Context, store artifact.Store, rec SnapshotRecord, codec Codec[C]) (Snapshot[C], error) {
