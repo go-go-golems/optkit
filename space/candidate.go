@@ -18,8 +18,8 @@ const (
 )
 
 type Proposer struct {
-	Kind     ProposerKind    `json:"kind"`
-	Identity record.ActorRef `json:"identity"`
+	Kind     ProposerKind    `json:"kind" yaml:"kind"`
+	Identity record.ActorRef `json:"identity" yaml:"identity"`
 }
 
 func (p Proposer) Validate() error {
@@ -35,22 +35,22 @@ func (p Proposer) Validate() error {
 }
 
 type ExpectedImprovement struct {
-	Metric string   `json:"metric"`
-	Groups []string `json:"groups,omitempty"`
+	Metric string   `json:"metric" yaml:"metric"`
+	Groups []string `json:"groups,omitempty" yaml:"groups,omitempty"`
 }
 
 type Motivation struct {
-	CaseIDs          []string      `json:"case_ids,omitempty"`
-	DiagnosticDigest record.Digest `json:"diagnostic_digest,omitempty"`
+	CaseIDs          []string      `json:"case_ids,omitempty" yaml:"case_ids,omitempty"`
+	DiagnosticDigest record.Digest `json:"diagnostic_digest,omitempty" yaml:"diagnostic_digest,omitempty"`
 }
 
 type CandidateIntent struct {
-	Proposer            Proposer            `json:"proposer"`
-	Strategy            string              `json:"strategy"`
-	Hypothesis          string              `json:"hypothesis"`
-	ExpectedImprovement ExpectedImprovement `json:"expected_improvement"`
-	Risks               []string            `json:"risks,omitempty"`
-	Motivation          Motivation          `json:"motivation,omitempty"`
+	Proposer            Proposer            `json:"proposer" yaml:"proposer"`
+	Strategy            string              `json:"strategy" yaml:"strategy"`
+	Hypothesis          string              `json:"hypothesis" yaml:"hypothesis"`
+	ExpectedImprovement ExpectedImprovement `json:"expected_improvement" yaml:"expected_improvement"`
+	Risks               []string            `json:"risks,omitempty" yaml:"risks,omitempty"`
+	Motivation          Motivation          `json:"motivation,omitempty" yaml:"motivation,omitempty"`
 }
 
 type Candidate struct {
