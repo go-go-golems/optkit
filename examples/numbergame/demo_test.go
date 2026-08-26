@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-go-golems/optkit/artifact"
 	"github.com/go-go-golems/optkit/campaign"
 	"github.com/go-go-golems/optkit/episode"
 	"github.com/go-go-golems/optkit/local"
@@ -57,6 +58,28 @@ func TestRunDemoPersistsAndReplaysCompleteCampaign(t *testing.T) {
 	defer profile.Close()
 	if err := profile.Metadata.Verify(context.Background(), summary.Campaign); err != nil {
 		t.Fatal(err)
+	}
+	events, err := profile.Metadata.Read(context.Background(), summary.Campaign, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var proposal CandidateProposal
+	for _, event := range events {
+		if event.Kind == campaign.CandidateProposed {
+			if err := artifact.DecodeJSON(context.Background(), profile.Artifacts, event.Payload, &proposal); err != nil {
+				t.Fatal(err)
+			}
+			break
+		}
+	}
+	if proposal.Candidate.ID == "" {
+		t.Fatal("persisted candidate proposal not found")
+	}
+	if err := proposal.Catalog.Validate(); err != nil {
+		t.Fatalf("persisted catalog invalid: %v", err)
+	}
+	if proposal.Candidate.SemanticCatalogID != proposal.Catalog.SemanticID {
+		t.Fatalf("candidate/catalog provenance mismatch: %s != %s", proposal.Candidate.SemanticCatalogID, proposal.Catalog.SemanticID)
 	}
 	trajectory, err := episode.LoadTrajectory(context.Background(), profile.Artifacts, summary.SampleTrajectory)
 	if err != nil {

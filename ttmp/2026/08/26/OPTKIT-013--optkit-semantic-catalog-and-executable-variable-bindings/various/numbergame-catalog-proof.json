@@ -1,0 +1,749 @@
+{
+  "schema": "numbergame.lab-bundle/v2",
+  "campaign": "campaign:ba27f8415854e4341b3c42121118a3cb",
+  "candidate": {
+    "id": "candidate:2e7656e87e1307589c47db75476e33f05f3ec07c4eb21972cd54a76c83610d9e",
+    "parent": "snapshot:abaf1354710a5858ba594c40937e06bf535ae3d9754d2b43f646109521a0b2e1",
+    "patch": "patch:95d9160627d523946057f28f01fdcfa315e57a42accca582dfa8d38de7bcd491",
+    "child": "snapshot:d0073b9e4ab569008367851937c9397363238c4dcb2b9d1d217f128981ea95ec",
+    "proposer": {
+      "kind": "human",
+      "identity": "actor:demo"
+    },
+    "strategy": "manual-coordinate/v1",
+    "hypothesis": "Set the multiplier to three so outputs match the target relation on all development cases.",
+    "expected_improvement": {
+      "metric": "target.accuracy",
+      "groups": [
+        "development",
+        "exact-target"
+      ]
+    },
+    "risks": [
+      "a fixed multiplier may overfit other target relations"
+    ],
+    "motivation": {
+      "case_ids": [
+        "case-01",
+        "case-02",
+        "case-03",
+        "case-04"
+      ]
+    },
+    "semantic_catalog_id": "sha256:f9150e2ac397b7e701d091e10b42a5f79ba6d81ceb0ab28c8327148ccaf40359",
+    "created_at": "2026-08-26T09:00:00Z"
+  },
+  "baseline_config": {
+    "multiplier": 2,
+    "noise": "none"
+  },
+  "challenger_config": {
+    "multiplier": 3,
+    "noise": "none"
+  },
+  "cases": [
+    {
+      "id": "case-01",
+      "input": 1,
+      "target": 3
+    },
+    {
+      "id": "case-02",
+      "input": 2,
+      "target": 6
+    },
+    {
+      "id": "case-03",
+      "input": 4,
+      "target": 12
+    },
+    {
+      "id": "case-04",
+      "input": 7,
+      "target": 21
+    }
+  ],
+  "episodes": [
+    {
+      "episode": "episode:12ab347f87c9009a82b6413b9c4078304387ffcf5b367f61f09b5a1ada910ba1",
+      "arm": "baseline",
+      "case": "case-01",
+      "repeat": 0,
+      "score": 0.5,
+      "absolute_error": 1,
+      "intervention_satisfied": true,
+      "judge_label": "needs_improvement",
+      "judge_rationale": "Deterministic fake judge: absolute error is 1."
+    },
+    {
+      "episode": "episode:d61fe6b7eaf6ee06889a7d15b9084759c502692d265b43a1fd81ec4203c72a1f",
+      "arm": "challenger",
+      "case": "case-01",
+      "repeat": 0,
+      "score": 1,
+      "absolute_error": 0,
+      "intervention_satisfied": true,
+      "judge_label": "exact",
+      "judge_rationale": "Deterministic fake judge: absolute error is 0."
+    },
+    {
+      "episode": "episode:f67a57c5a2e6dfe1d0d21c3543f59e981ad8caa505177f6f995d27dd2fc0ed2e",
+      "arm": "baseline",
+      "case": "case-02",
+      "repeat": 0,
+      "score": 0.333333,
+      "absolute_error": 2,
+      "intervention_satisfied": true,
+      "judge_label": "needs_improvement",
+      "judge_rationale": "Deterministic fake judge: absolute error is 2."
+    },
+    {
+      "episode": "episode:b4c54b1edb5ecec34d55170212c72e95f0a2f401224b1156f06581b69bd62ac1",
+      "arm": "challenger",
+      "case": "case-02",
+      "repeat": 0,
+      "score": 1,
+      "absolute_error": 0,
+      "intervention_satisfied": true,
+      "judge_label": "exact",
+      "judge_rationale": "Deterministic fake judge: absolute error is 0."
+    },
+    {
+      "episode": "episode:9e32c98093ea391c1c2e7ba89dda29f29ebad2cc1963175106c592b84d9948be",
+      "arm": "baseline",
+      "case": "case-03",
+      "repeat": 0,
+      "score": 0.2,
+      "absolute_error": 4,
+      "intervention_satisfied": true,
+      "judge_label": "needs_improvement",
+      "judge_rationale": "Deterministic fake judge: absolute error is 4."
+    },
+    {
+      "episode": "episode:ed10febc1658b5170f8977165fcaa18254154326c01fe48b68b314ee4ac62fb5",
+      "arm": "challenger",
+      "case": "case-03",
+      "repeat": 0,
+      "score": 1,
+      "absolute_error": 0,
+      "intervention_satisfied": true,
+      "judge_label": "exact",
+      "judge_rationale": "Deterministic fake judge: absolute error is 0."
+    },
+    {
+      "episode": "episode:a6eb91f286136e1eebb6b9c193c3bfd31377bd2d77c9ca2b14e7b93a028285f5",
+      "arm": "baseline",
+      "case": "case-04",
+      "repeat": 0,
+      "score": 0.125,
+      "absolute_error": 7,
+      "intervention_satisfied": true,
+      "judge_label": "needs_improvement",
+      "judge_rationale": "Deterministic fake judge: absolute error is 7."
+    },
+    {
+      "episode": "episode:1b8d31e186897e58a3aa00fdf51a4893a2c8f867bd04e5af0d0d0bf1e81c5f7d",
+      "arm": "challenger",
+      "case": "case-04",
+      "repeat": 0,
+      "score": 1,
+      "absolute_error": 0,
+      "intervention_satisfied": true,
+      "judge_label": "exact",
+      "judge_rationale": "Deterministic fake judge: absolute error is 0."
+    }
+  ],
+  "estimate": {
+    "value": 0.71041675,
+    "sample_size": 4,
+    "missing": 0
+  },
+  "decision": {
+    "policy": "numbergame.lexicographic/v1",
+    "status": "eligible",
+    "paired_accuracy_delta": 0.71041675,
+    "all_interventions_exercised": true,
+    "budget_violated": false,
+    "reason": "Every intervention was exercised and paired target accuracy improved."
+  },
+  "budget": [
+    {
+      "resource": "episodes",
+      "limit": 8,
+      "committed": 8,
+      "available": 0
+    },
+    {
+      "resource": "numbergame.operations",
+      "limit": 8,
+      "committed": 8,
+      "available": 0
+    }
+  ],
+  "journal": [
+    {
+      "seq": 1,
+      "kind": "CampaignCreated",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.001Z"
+    },
+    {
+      "seq": 2,
+      "kind": "PlanCompiled",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.002Z"
+    },
+    {
+      "seq": 3,
+      "kind": "CampaignStarted",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.003Z"
+    },
+    {
+      "seq": 4,
+      "kind": "CandidateProposed",
+      "subject": "candidate:2e7656e87e1307589c47db75476e33f05f3ec07c4eb21972cd54a76c83610d9e",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.004Z"
+    },
+    {
+      "seq": 5,
+      "kind": "SnapshotMaterialized",
+      "subject": "snapshot:d0073b9e4ab569008367851937c9397363238c4dcb2b9d1d217f128981ea95ec",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.005Z"
+    },
+    {
+      "seq": 6,
+      "kind": "TrialPlanned",
+      "subject": "trial:3347f0684e4c8e061316284058e903cfc0e6618231294a474c0f688c5d3e6619",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.006Z"
+    },
+    {
+      "seq": 7,
+      "kind": "BudgetReserved",
+      "subject": "work:63725151ceeac9a22de3a942b8aef5adf410c112a5bb434823950c4bc62dabcc",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.009Z"
+    },
+    {
+      "seq": 8,
+      "kind": "EpisodeScheduled",
+      "subject": "episode:12ab347f87c9009a82b6413b9c4078304387ffcf5b367f61f09b5a1ada910ba1",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.01Z"
+    },
+    {
+      "seq": 9,
+      "kind": "BudgetReserved",
+      "subject": "work:d3377a32802fb65e7fa0b7050dc0bf2e5b4f2abd0b5ba3459c8f9a3c81690d78",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.013Z"
+    },
+    {
+      "seq": 10,
+      "kind": "EpisodeScheduled",
+      "subject": "episode:d61fe6b7eaf6ee06889a7d15b9084759c502692d265b43a1fd81ec4203c72a1f",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.014Z"
+    },
+    {
+      "seq": 11,
+      "kind": "BudgetReserved",
+      "subject": "work:a6ab8ae035d4a2077113f3aaf501f60fc07acf74a4b57e2ebff413cadbec4ec5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.017Z"
+    },
+    {
+      "seq": 12,
+      "kind": "EpisodeScheduled",
+      "subject": "episode:f67a57c5a2e6dfe1d0d21c3543f59e981ad8caa505177f6f995d27dd2fc0ed2e",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.018Z"
+    },
+    {
+      "seq": 13,
+      "kind": "BudgetReserved",
+      "subject": "work:4cec22ccbec589d880d1c0d864c671535c1276c34099839c17b61b5b39834756",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.021Z"
+    },
+    {
+      "seq": 14,
+      "kind": "EpisodeScheduled",
+      "subject": "episode:b4c54b1edb5ecec34d55170212c72e95f0a2f401224b1156f06581b69bd62ac1",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.022Z"
+    },
+    {
+      "seq": 15,
+      "kind": "BudgetReserved",
+      "subject": "work:6fa780ded28f1bcd2891daf0ded3b3654bdfe3808bec537b3dea7f02fbdeeb95",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.025Z"
+    },
+    {
+      "seq": 16,
+      "kind": "EpisodeScheduled",
+      "subject": "episode:9e32c98093ea391c1c2e7ba89dda29f29ebad2cc1963175106c592b84d9948be",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.026Z"
+    },
+    {
+      "seq": 17,
+      "kind": "BudgetReserved",
+      "subject": "work:7bae8171934ba35d59aaf66cea8264cb49aede5d24d1ff9b3a433f73ab7d5bdd",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.029Z"
+    },
+    {
+      "seq": 18,
+      "kind": "EpisodeScheduled",
+      "subject": "episode:ed10febc1658b5170f8977165fcaa18254154326c01fe48b68b314ee4ac62fb5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.03Z"
+    },
+    {
+      "seq": 19,
+      "kind": "BudgetReserved",
+      "subject": "work:50a33485c6ec80a1a35f50510dfd30284418693b22f6ec9a16c238490ba136a6",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.033Z"
+    },
+    {
+      "seq": 20,
+      "kind": "EpisodeScheduled",
+      "subject": "episode:a6eb91f286136e1eebb6b9c193c3bfd31377bd2d77c9ca2b14e7b93a028285f5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.034Z"
+    },
+    {
+      "seq": 21,
+      "kind": "BudgetReserved",
+      "subject": "work:65342775aad944564cf3d27802cba7601fe52fe8281f7f5b084e45c30ae857f3",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.037Z"
+    },
+    {
+      "seq": 22,
+      "kind": "EpisodeScheduled",
+      "subject": "episode:1b8d31e186897e58a3aa00fdf51a4893a2c8f867bd04e5af0d0d0bf1e81c5f7d",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.038Z"
+    },
+    {
+      "seq": 23,
+      "kind": "EpisodeLeaseGranted",
+      "subject": "episode:12ab347f87c9009a82b6413b9c4078304387ffcf5b367f61f09b5a1ada910ba1",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.041Z"
+    },
+    {
+      "seq": 24,
+      "kind": "EpisodeAttemptStarted",
+      "subject": "episode:12ab347f87c9009a82b6413b9c4078304387ffcf5b367f61f09b5a1ada910ba1",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.042Z"
+    },
+    {
+      "seq": 25,
+      "kind": "UsageCommitted",
+      "subject": "work:63725151ceeac9a22de3a942b8aef5adf410c112a5bb434823950c4bc62dabcc",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.053Z"
+    },
+    {
+      "seq": 26,
+      "kind": "EpisodeCompleted",
+      "subject": "episode:12ab347f87c9009a82b6413b9c4078304387ffcf5b367f61f09b5a1ada910ba1",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.054Z"
+    },
+    {
+      "seq": 27,
+      "kind": "ObservationRecorded",
+      "subject": "observation:232b6d523f1c1d34c63ca6f0024b571c3125215ecad0bd32f961ff8a37f8249a",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.055Z"
+    },
+    {
+      "seq": 28,
+      "kind": "ObservationRecorded",
+      "subject": "observation:42b25bf7e987850d1c45f2b4aba721767ea58df7f79d4073e9d706bf60b223fd",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.056Z"
+    },
+    {
+      "seq": 29,
+      "kind": "ObservationRecorded",
+      "subject": "observation:3aad0cde7fbf728cc13d2340e897a727cc567f542125dfd3801c0242bd78f128",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.057Z"
+    },
+    {
+      "seq": 30,
+      "kind": "EpisodeLeaseGranted",
+      "subject": "episode:d61fe6b7eaf6ee06889a7d15b9084759c502692d265b43a1fd81ec4203c72a1f",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.058Z"
+    },
+    {
+      "seq": 31,
+      "kind": "EpisodeAttemptStarted",
+      "subject": "episode:d61fe6b7eaf6ee06889a7d15b9084759c502692d265b43a1fd81ec4203c72a1f",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.059Z"
+    },
+    {
+      "seq": 32,
+      "kind": "UsageCommitted",
+      "subject": "work:d3377a32802fb65e7fa0b7050dc0bf2e5b4f2abd0b5ba3459c8f9a3c81690d78",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.07Z"
+    },
+    {
+      "seq": 33,
+      "kind": "EpisodeCompleted",
+      "subject": "episode:d61fe6b7eaf6ee06889a7d15b9084759c502692d265b43a1fd81ec4203c72a1f",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.071Z"
+    },
+    {
+      "seq": 34,
+      "kind": "ObservationRecorded",
+      "subject": "observation:cfc42e30a258c641c4753d48b1820007d250fcf02ac6eca44e5f843ef8c35117",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.072Z"
+    },
+    {
+      "seq": 35,
+      "kind": "ObservationRecorded",
+      "subject": "observation:383159436325979b8c9a2926b172ab2523a62d8642adea91e2862c7aa6d6e1d2",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.073Z"
+    },
+    {
+      "seq": 36,
+      "kind": "ObservationRecorded",
+      "subject": "observation:5db30afa91407569d4d9d576d4afca44ac0a330d94499e138e5d5bc907f8cef4",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.074Z"
+    },
+    {
+      "seq": 37,
+      "kind": "EpisodeLeaseGranted",
+      "subject": "episode:f67a57c5a2e6dfe1d0d21c3543f59e981ad8caa505177f6f995d27dd2fc0ed2e",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.076Z"
+    },
+    {
+      "seq": 38,
+      "kind": "EpisodeAttemptStarted",
+      "subject": "episode:f67a57c5a2e6dfe1d0d21c3543f59e981ad8caa505177f6f995d27dd2fc0ed2e",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.077Z"
+    },
+    {
+      "seq": 39,
+      "kind": "UsageCommitted",
+      "subject": "work:a6ab8ae035d4a2077113f3aaf501f60fc07acf74a4b57e2ebff413cadbec4ec5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.088Z"
+    },
+    {
+      "seq": 40,
+      "kind": "EpisodeCompleted",
+      "subject": "episode:f67a57c5a2e6dfe1d0d21c3543f59e981ad8caa505177f6f995d27dd2fc0ed2e",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.089Z"
+    },
+    {
+      "seq": 41,
+      "kind": "ObservationRecorded",
+      "subject": "observation:5d76c69e7c73b3265ae8927642a6e02f1b669bf183be514c918bc804ba846668",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.09Z"
+    },
+    {
+      "seq": 42,
+      "kind": "ObservationRecorded",
+      "subject": "observation:bdd16c52488123e6f3b4333f93d8e22a2a8df07083915ad65a33f3cd0c66d98c",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.091Z"
+    },
+    {
+      "seq": 43,
+      "kind": "ObservationRecorded",
+      "subject": "observation:24f92e38f9700ea4f215e279fd8dc9cb9e6a00b5b6a2a73fbc9a9c57f60ac8e0",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.092Z"
+    },
+    {
+      "seq": 44,
+      "kind": "EpisodeLeaseGranted",
+      "subject": "episode:b4c54b1edb5ecec34d55170212c72e95f0a2f401224b1156f06581b69bd62ac1",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.093Z"
+    },
+    {
+      "seq": 45,
+      "kind": "EpisodeAttemptStarted",
+      "subject": "episode:b4c54b1edb5ecec34d55170212c72e95f0a2f401224b1156f06581b69bd62ac1",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.094Z"
+    },
+    {
+      "seq": 46,
+      "kind": "UsageCommitted",
+      "subject": "work:4cec22ccbec589d880d1c0d864c671535c1276c34099839c17b61b5b39834756",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.105Z"
+    },
+    {
+      "seq": 47,
+      "kind": "EpisodeCompleted",
+      "subject": "episode:b4c54b1edb5ecec34d55170212c72e95f0a2f401224b1156f06581b69bd62ac1",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.106Z"
+    },
+    {
+      "seq": 48,
+      "kind": "ObservationRecorded",
+      "subject": "observation:c2dfd4768a0b26cd76c5c7df292f584bf7aa684e1ee3944ca5dc513fb7ea8224",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.107Z"
+    },
+    {
+      "seq": 49,
+      "kind": "ObservationRecorded",
+      "subject": "observation:bd28df3aff8d4eeaf75a7067b36c0c6ca7d3c4b8071b3f427cd2f3e55a0c4f4c",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.108Z"
+    },
+    {
+      "seq": 50,
+      "kind": "ObservationRecorded",
+      "subject": "observation:43d7bd9267819e43182fec1ed8ba0776b51a7b8a2725d153ec44d4608b4fc8f6",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.109Z"
+    },
+    {
+      "seq": 51,
+      "kind": "EpisodeLeaseGranted",
+      "subject": "episode:9e32c98093ea391c1c2e7ba89dda29f29ebad2cc1963175106c592b84d9948be",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.111Z"
+    },
+    {
+      "seq": 52,
+      "kind": "EpisodeAttemptStarted",
+      "subject": "episode:9e32c98093ea391c1c2e7ba89dda29f29ebad2cc1963175106c592b84d9948be",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.112Z"
+    },
+    {
+      "seq": 53,
+      "kind": "UsageCommitted",
+      "subject": "work:6fa780ded28f1bcd2891daf0ded3b3654bdfe3808bec537b3dea7f02fbdeeb95",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.123Z"
+    },
+    {
+      "seq": 54,
+      "kind": "EpisodeCompleted",
+      "subject": "episode:9e32c98093ea391c1c2e7ba89dda29f29ebad2cc1963175106c592b84d9948be",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.124Z"
+    },
+    {
+      "seq": 55,
+      "kind": "ObservationRecorded",
+      "subject": "observation:704d8663be90cdf96743f742ced3e29bc0ff2ba9dea9936cab36aca5db14e675",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.125Z"
+    },
+    {
+      "seq": 56,
+      "kind": "ObservationRecorded",
+      "subject": "observation:460aaece8b837429da7b43b99323880cceddb5b707cc58be7ea9729e5ddf26ca",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.126Z"
+    },
+    {
+      "seq": 57,
+      "kind": "ObservationRecorded",
+      "subject": "observation:47c8c1015f1080acb1d53df634cf1bccbf9c67c4b7bd99f7ad0088e8ed9ecb35",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.127Z"
+    },
+    {
+      "seq": 58,
+      "kind": "EpisodeLeaseGranted",
+      "subject": "episode:ed10febc1658b5170f8977165fcaa18254154326c01fe48b68b314ee4ac62fb5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.128Z"
+    },
+    {
+      "seq": 59,
+      "kind": "EpisodeAttemptStarted",
+      "subject": "episode:ed10febc1658b5170f8977165fcaa18254154326c01fe48b68b314ee4ac62fb5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.129Z"
+    },
+    {
+      "seq": 60,
+      "kind": "UsageCommitted",
+      "subject": "work:7bae8171934ba35d59aaf66cea8264cb49aede5d24d1ff9b3a433f73ab7d5bdd",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.14Z"
+    },
+    {
+      "seq": 61,
+      "kind": "EpisodeCompleted",
+      "subject": "episode:ed10febc1658b5170f8977165fcaa18254154326c01fe48b68b314ee4ac62fb5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.141Z"
+    },
+    {
+      "seq": 62,
+      "kind": "ObservationRecorded",
+      "subject": "observation:f8915bb6f7e1fb8b31f8910ac84e4cc588a2c137db4b351dec3d363f378f9e20",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.142Z"
+    },
+    {
+      "seq": 63,
+      "kind": "ObservationRecorded",
+      "subject": "observation:df3a7987ef96501b3d2f6d5612945674af3250bdcddd5a5303d64e05b3f0c47d",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.143Z"
+    },
+    {
+      "seq": 64,
+      "kind": "ObservationRecorded",
+      "subject": "observation:2df3e766bca361c7fd74bad25ec9bbaef1c5887d516174a4f5b0ec2d8e60aa8c",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.144Z"
+    },
+    {
+      "seq": 65,
+      "kind": "EpisodeLeaseGranted",
+      "subject": "episode:a6eb91f286136e1eebb6b9c193c3bfd31377bd2d77c9ca2b14e7b93a028285f5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.146Z"
+    },
+    {
+      "seq": 66,
+      "kind": "EpisodeAttemptStarted",
+      "subject": "episode:a6eb91f286136e1eebb6b9c193c3bfd31377bd2d77c9ca2b14e7b93a028285f5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.147Z"
+    },
+    {
+      "seq": 67,
+      "kind": "UsageCommitted",
+      "subject": "work:50a33485c6ec80a1a35f50510dfd30284418693b22f6ec9a16c238490ba136a6",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.158Z"
+    },
+    {
+      "seq": 68,
+      "kind": "EpisodeCompleted",
+      "subject": "episode:a6eb91f286136e1eebb6b9c193c3bfd31377bd2d77c9ca2b14e7b93a028285f5",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.159Z"
+    },
+    {
+      "seq": 69,
+      "kind": "ObservationRecorded",
+      "subject": "observation:960b50f295ff202323aa01ebef06860177627e3bfeb4d7d5a2ceda653187e931",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.16Z"
+    },
+    {
+      "seq": 70,
+      "kind": "ObservationRecorded",
+      "subject": "observation:51ef20c2a5ae9f03f5ccb409533eb3a9050c4be23b96c1d8d125fa9272e545c9",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.161Z"
+    },
+    {
+      "seq": 71,
+      "kind": "ObservationRecorded",
+      "subject": "observation:54f42982dea03a0b156ad5ede0d656a892d8980e1a93ff4cc965e7815d97bedb",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.162Z"
+    },
+    {
+      "seq": 72,
+      "kind": "EpisodeLeaseGranted",
+      "subject": "episode:1b8d31e186897e58a3aa00fdf51a4893a2c8f867bd04e5af0d0d0bf1e81c5f7d",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.163Z"
+    },
+    {
+      "seq": 73,
+      "kind": "EpisodeAttemptStarted",
+      "subject": "episode:1b8d31e186897e58a3aa00fdf51a4893a2c8f867bd04e5af0d0d0bf1e81c5f7d",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.164Z"
+    },
+    {
+      "seq": 74,
+      "kind": "UsageCommitted",
+      "subject": "work:65342775aad944564cf3d27802cba7601fe52fe8281f7f5b084e45c30ae857f3",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.175Z"
+    },
+    {
+      "seq": 75,
+      "kind": "EpisodeCompleted",
+      "subject": "episode:1b8d31e186897e58a3aa00fdf51a4893a2c8f867bd04e5af0d0d0bf1e81c5f7d",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.176Z"
+    },
+    {
+      "seq": 76,
+      "kind": "ObservationRecorded",
+      "subject": "observation:d4fecff6f2d6071d9c44aa990c99c9de6894f623cf40da4410457f94a800564c",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.177Z"
+    },
+    {
+      "seq": 77,
+      "kind": "ObservationRecorded",
+      "subject": "observation:452832e9f2f65ec8cecf44b7e19de05bf8a6276d0bfea90fbbbf774385ee4337",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.178Z"
+    },
+    {
+      "seq": 78,
+      "kind": "ObservationRecorded",
+      "subject": "observation:e57972c40c8d06c3726b1b2b5e1a8714ae7c17d06a207cd123b2a8b22bc6d4bf",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.179Z"
+    },
+    {
+      "seq": 79,
+      "kind": "EstimateRecorded",
+      "subject": "trial:3347f0684e4c8e061316284058e903cfc0e6618231294a474c0f688c5d3e6619",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.181Z"
+    },
+    {
+      "seq": 80,
+      "kind": "DecisionRecorded",
+      "subject": "candidate:2e7656e87e1307589c47db75476e33f05f3ec07c4eb21972cd54a76c83610d9e",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.182Z"
+    },
+    {
+      "seq": 81,
+      "kind": "CampaignCompleted",
+      "actor": "actor:demo",
+      "occurred_at": "2026-08-26T09:00:00.183Z"
+    }
+  ],
+  "store_root": "/tmp/optkit-013-numbergame-store"
+}

@@ -227,6 +227,17 @@ A valid lens must satisfy get-put, put-get, and put-put laws. Without those laws
 
 `PatchBuilder` holds a base snapshot, artifact store, complete-config codec, and a private map of typed assignments. It rejects duplicate variable assignments and empty patches.
 
+### Variable catalogs and executable registries
+
+`Variable[C,V]` remains the typed source of mutation truth. `NewVariable` derives a discriminated `ValueSpec` and canonical default from the same typed domain and codec used by patches. Integer, finite-float, boolean, pattern-string, canonical choice, and schema-constrained artifact-reference domains are supported.
+
+A `Catalog` preserves declared section/variable order and computes two digests:
+
+- `SemanticID` hashes machine IDs, schemas, legality, defaults, sensitivity, cost hints, binding versions, and probes;
+- `ID` hashes the exact catalog including labels and documentation.
+
+Catalog accessors return detached data. JSON decoding recomputes both digests and rejects tampering. `Registry[C]` joins that serializable catalog to immutable type-erased `Binding[C]` adapters. A binding normalizes JSON with the real `Codec[V]`, validates the real `Domain[V]`, applies through the real lens for draft previews, and replays through `PatchBuilder` for durable sealing. Registration creates descriptor and binding together and rejects unknown sections, duplicate IDs/keys, and descriptor/domain drift.
+
 ### `Candidate`
 
 | Field | Writer | Reader | Purpose |
@@ -235,14 +246,16 @@ A valid lens must satisfy get-put, put-get, and put-put laws. Without those laws
 | `Parent` | Candidate proposer | Review and lineage projectors | Incumbent snapshot. |
 | `Patch` | Candidate proposer | Review and lineage projectors | Proposed intervention. |
 | `Child` | Candidate proposer | Trial planner | Resulting executable snapshot. |
-| `Proposer` | Agent, user, or strategy | Audit views | Attribution. |
-| `Strategy` | Candidate proposer | Analysis and UI | Proposal mechanism. |
-| `Hypothesis` | Candidate proposer | Reviewer and optimizer | Required expected causal explanation. |
-| `Targets` | Candidate proposer | Reviewer | Intended constructs or metrics. |
-| `Risks` | Candidate proposer | Reviewer | Known regressions or policy risks. |
+| `Proposer` | Agent, user, or strategy | Audit views | Structured kind (`human`, `llm`, or `search`) plus actor identity. |
+| `Strategy` | Candidate proposer | Analysis and UI | Required proposal mechanism. |
+| `Hypothesis` | Candidate proposer | Reviewer and optimizer | Required expected causal explanation, stored and hashed exactly. |
+| `ExpectedImprovement` | Candidate proposer | Reviewer | Required metric plus sorted/deduplicated groups. |
+| `Risks` | Candidate proposer | Reviewer | Ordered known regressions or policy risks. |
+| `Motivation` | Candidate proposer | Reviewer and diagnostics | Sorted/deduplicated case IDs and optional diagnostic digest. |
+| `SemanticCatalogID` | Candidate proposer | Historical interpretation | Machine-semantic identity of the variable catalog used to author the proposal. |
 | `CreatedAt` | Candidate proposer | UI ordering | Display time; excluded from candidate semantic identity. |
 
-Numbergame writes candidates today. Product optimization campaigns will use the same record after layered configuration identities are available.
+Candidate identity uses `schema:optkit.candidate-identity/v2`; no v1 alias or fallback decoder is provided. Numbergame writes v2 candidates and seals its exact catalog in the candidate-proposal artifact. Product optimization campaigns will use the same record after layered configuration identities are available.
 
 ## System registration and execution
 

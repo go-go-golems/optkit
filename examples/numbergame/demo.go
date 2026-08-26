@@ -2,6 +2,7 @@ package numbergame
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -57,6 +58,7 @@ type CampaignSpec struct {
 type CandidateProposal struct {
 	Candidate space.Candidate   `json:"candidate"`
 	Patch     space.PatchRecord `json:"patch"`
+	Catalog   space.Catalog     `json:"catalog"`
 }
 
 type EpisodeWork struct {
@@ -117,13 +119,25 @@ func RunDemo(ctx context.Context, options DemoOptions) (DemoSummary, error) {
 	if err != nil {
 		return DemoSummary{}, err
 	}
+	binding, err := registry.Binding("math.multiplier")
+	if err != nil {
+		return DemoSummary{}, err
+	}
+	serializedValue := json.RawMessage("3")
+	preview, err := binding.ApplyPure(baseline.Value, serializedValue)
+	if err != nil {
+		return DemoSummary{}, err
+	}
 	patchBuilder := space.NewPatchBuilder(baseline, profile.Artifacts, configCodec)
-	if err := space.Set(patchBuilder, MultiplierVariable(), 3); err != nil {
+	if err := binding.Assign(patchBuilder, serializedValue); err != nil {
 		return DemoSummary{}, err
 	}
 	patch, challenger, err := patchBuilder.Build(ctx)
 	if err != nil {
 		return DemoSummary{}, err
+	}
+	if preview != challenger.Value {
+		return DemoSummary{}, fmt.Errorf("serialized preview %+v differs from durable child %+v", preview, challenger.Value)
 	}
 	candidate, err := space.NewCandidate(
 		baseline.ID, patch.ID, challenger.ID,
@@ -195,7 +209,7 @@ func RunDemo(ctx context.Context, options DemoOptions) (DemoSummary, error) {
 	}
 
 	candidateRef, err := artifact.PutCanonical(ctx, profile.Artifacts, "schema:numbergame.candidate-proposal/v2", artifact.SensitivityInternal, CandidateProposal{
-		Candidate: candidate, Patch: patch.PatchRecord,
+		Candidate: candidate, Patch: patch.PatchRecord, Catalog: registry.Catalog(),
 	})
 	if err != nil {
 		return DemoSummary{}, err
