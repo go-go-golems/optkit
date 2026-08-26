@@ -172,3 +172,56 @@ Rewrote the scenarios document from the seat of its real user — someone improv
 
 - New API fields (all optional, additive): `cockpit.description`, `arms[].description`, `cases[].query`, `cases[].description` (cockpit and comparison arm summaries share `ArmSummary`).
 - Graphics palette reuses the semantic accent tokens; graphs encode with both color and position/weight, and every SVG carries a full-sentence `aria-label` restating its data.
+
+## Step 3: Answer "what changed and what came back" — per-layer widgets over data the store already had
+
+The user, looking at the live comparison, asked the fair question: what actually changed in retrieval, how do I see results, what ranked them — and was the base data even sufficient? Investigation showed the store already held everything: arm config values in the campaign spec, and full `SearchOutput` (ranked results with scores, per-channel fusion contributions, chunk text, effective limit and its source) inside the output artifact — blocked only by a 4 KiB preview cap and unexposed fields. No data recreation was needed.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, is it implemented? like i'm looking at http://127.0.0.1:5197/campaigns/campaign%3Afa569e901e85694649ac99615de83c78/compare/limit-1/limit-2 and legit I don't know what changed in the retrieval, and how to look at the results or so, what was used for ranking. Did you already go through all these things?" — followed mid-turn by "or is the base data not enough and you should recreate it ?" and "alsso I guess retrieval/fusion/reranking/etc... all will need different types of widgets for displaying (themselves or the diff, etc...)"
+
+**Assistant interpretation:** Verify honestly what is and isn't implemented; determine whether the recorded data suffices or campaigns need re-recording; and architect per-layer display widgets (values, diffs, outputs) rather than one generic view.
+
+**Inferred user intent:** Standing on the comparison screen, be able to answer: what did I change (in values), what came back (ranked results), and what ranked it (scores/channels) — without reading raw JSON.
+
+**Commit (code):** 4ddd59f03 — "Specialist: show what changed and what came back, per layer"
+
+### What I did
+
+- Backend: `ArmSummary.Config` now carries the arm's executable `RetrievalConfig` (values were already persisted in `CampaignSpec.Arms`); raised `MaximumArtifactPreviewSize` 4096 → 16384 so retrieval outputs (~5 KB) and trajectories (~9 KB) preview inline.
+- Frontend: introduced `src/layerwidgets/` — a registry mapping layer names to value-diff widgets and artifact schemas to output widgets, with generic fallbacks. Retrieval registers both: `RetrievalDiffView` renders "candidates kept per retriever: 2 (was 1)" inside the Configuration diff panel; `RetrievalOutputView` renders the Episode output as the question asked, the limit applied and its source, and a ranked-evidence table (rank, chunk, score, per-channel contributions like `bm25 #2 · 0.0161 ×1` / `vector #1 · 0.0164 ×1`, and the chunk text itself). Empty result lists say "for a negative case, that can be exactly right."
+- `ArtifactBlock` renders a registered widget when the preview's schema matches, keeping raw JSON behind a disclosure.
+- 4 new widget tests (36 total); validated live — no campaign re-run required since only the projector changed. Screenshots 13 (value diff) and 14 (ranked evidence) archived.
+
+### Why
+
+- The bottleneck was projection, not recording: re-running campaigns would have changed nothing. Establishing that before touching data answered the "recreate it?" question with evidence.
+- One generic table can't explain retrieval limits and fusion weights and reranker cutoffs; a registry gives each layer its own vocabulary while unregistered layers degrade gracefully.
+
+### What worked
+
+- Chunk text turned out to already be in the output artifact (`SearchResult.Text`) — so "what does this chunk say" is partially answered without chunk-lab, at least for retrieved chunks.
+- Fusion contributions (`rag.Contribution{channel, rank, weight, value}`) directly answer "what was used for ranking".
+
+### What didn't work
+
+- First commit attempt failed the pre-commit gofmt check on `types.go` (hand-aligned struct tags); `gofmt -w` fixed it. The earlier chained `git commit | tail` also masked the failure — the commit had not landed until retried.
+
+### What was tricky to build
+
+- Preview typing: previews arrive as `unknown` JSON, so `RetrievalOutputPreview` treats every field as optional and the widget renders honestly labeled gaps ("unscored", "no channel breakdown recorded") instead of assuming shape.
+
+### What warrants a second pair of eyes
+
+- The 16 KiB preview cap now exposes full trajectories inline; confirm that's acceptable under the sensitivity policy (both artifacts are `internal`, same as before — only size policy changed).
+- `RetrievalDiffView` reads arm-level config; when future campaigns vary multiple layers, per-layer value surfacing (beyond retrieval) needs the API to expose resolved layer values, not just the retrieval config.
+
+### What should be done in the future
+
+- Register widgets for fusion, reranking, chunking as their value schemas surface; case-level side-by-side pipeline diff remains the next big view.
+
+### Code review instructions
+
+- `git show 4ddd59f03`: start at `apps/specialist/web/src/layerwidgets/`, then `specialistapi/types.go` (Config field, preview cap) and `projector.go` (armConfig).
+- Validate: backend `GOWORK=off go test ./pkg/ttc/specialistapi/`; frontend `pnpm test`; live at the comparison URL — Configuration diff shows the values table, any episode's output shows ranked evidence.
