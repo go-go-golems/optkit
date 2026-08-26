@@ -329,3 +329,54 @@ The user's sharpest test yet: "nothing where I can actually look at the results 
 
 - `git show 4ff578c1c`: `pkg/ttc/search/search.go` (catalog collection), `service.go` (DescribeChunks), `specialistapi/pipeline.go` (decode), `apps/.../PipelineScreen.tsx` + `layerwidgets/`.
 - Validate live: pipeline of any episode in campaign `campaign:36ea7379a2bc647ff16e6b0192c0a8f6` — read chunk-c's text in "Chunks this run touched". Evidence: `various/screenshots/16-chunk-content.png`.
+
+## Step 6: Match lineage — from query to representation to hit
+
+The user asked whether the actual queries survive: "what led the vector.raw stage to return those results?" Investigation gave a precise answer: the query text is recorded (`SearchOutput.query`) and goes to BOTH channels verbatim — no per-channel rewriting exists in this pipeline (`QueryTransformID` names an identity transform). What actually explains a vector hit is the *representation* — the derived searchable text of the chunk that the channel matched on. Hits carry `RepresentationID` at runtime (we had been dropping it), and the semantic fixture ships the representation texts (e.g. `rep-c`: "inventory table quantity warehouse" — precisely why chunk-c comes back for an inventory question). Also notable: in this fixture the channels are canned deterministic hit lists, which is what makes campaigns reproducible; the lineage fields are the same ones a live embedding searcher would fill.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Do we still have the actual queries? for example, what led the vector.raw stage to return those results?"
+
+**Assistant interpretation:** Surface the full match lineage: the query as issued per channel, and per-hit, the exact text the channel matched against.
+
+**Inferred user intent:** Close the causal chain: question → what the retriever saw → why this chunk scored — so retrieval failures can be attributed to querying, representation, or ranking.
+
+**Commit (code):** 340b7b02a — "Trace every hit to the text it matched on"
+
+### What I did
+
+- `StageCandidate.RepresentationID` recorded from `rag.Hit` in `hitStage`.
+- `Service.RegisterRepresentations` + `ChunkSummary.Representations` (`{id, kind, text}`): services that know their derived texts put them in the run's chunk catalog; the semantic fixture registers its shipped representations. Optional by design — services without them record hits without matched text.
+- UI: stage candidate rows show `matched on rep-c: "inventory table quantity warehouse"` beneath the chunk's real text; the "Chunks this run touched" panel lists each chunk's "Searchable as:" representations.
+- Store recreated (`campaign:08864cb6…`); screenshot 17 shows the vector.raw autopsy: chunk-c #1 at 0.9000, matched on the inventory representation, next to the chunk's actual sentence.
+
+### Why
+
+- A vector hit is inexplicable from chunk text alone when the channel matches on a derived representation; recording the representation ID and text makes "rose vs thuja" attributable: wrong chunk retrieved because its *representation* looks relevant is a representation-layer bug, not a retrieval-layer one.
+
+### What worked
+
+- The whole chain needed no new routes: representation lineage rides the existing stage records and chunk catalog.
+
+### What didn't work
+
+- N/A — green throughout.
+
+### What was tricky to build
+
+- Being honest about what "the vector query" is: there is no separate vector query to show — the record proves the same text went to both channels. The UI therefore shows lineage (representation matched) rather than inventing a per-channel query display.
+
+### What warrants a second pair of eyes
+
+- `RegisterRepresentations` copies fixture representation text into every run's output artifact; for large corpora with LLM-generated representations this duplicates meaningful bytes per episode — may want per-campaign dedup (representations artifact referenced by ID) before scaling.
+- Fusion/evidence stages carry no representation ID (correct — they operate post-channel); confirm the UI's silence there reads as intentional.
+
+### What should be done in the future
+
+- Ground-truth overlay (expected/forbidden/incidental badges) remains the next step; with lineage in place it would complete failure attribution end to end.
+
+### Code review instructions
+
+- `git show 340b7b02a`: `pkg/ttc/search/service.go` (RegisterRepresentations, RepresentationSummary, StageCandidate.RepresentationID), `semantic_fixture.go` (registration), `apps/.../layerwidgets/retrieval.tsx` ("matched on" rendering).
+- Live: campaign `campaign:08864cb6e6446c7033d2870504c15344`, q-comparison challenger pipeline, stage #5 vector.raw. Evidence: `various/screenshots/17-vector-raw-lineage.png`.

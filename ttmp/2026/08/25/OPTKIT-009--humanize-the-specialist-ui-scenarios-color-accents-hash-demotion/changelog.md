@@ -49,3 +49,12 @@ Step 5: chunk catalog recorded with every run (content of all touched chunks inc
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/search/search.go — ChunkCatalog collection in RunRoute
 
+
+## 2026-08-25
+
+Step 6: match lineage — representation_id recorded per hit, representations registered into chunk catalog, UI shows 'matched on' text; query confirmed recorded and verbatim to both channels (commit 340b7b02a)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/search/semantic_fixture.go — Fixture registers shipped representations
+
