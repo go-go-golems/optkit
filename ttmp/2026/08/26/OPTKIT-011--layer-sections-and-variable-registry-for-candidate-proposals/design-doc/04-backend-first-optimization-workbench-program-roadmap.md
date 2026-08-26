@@ -20,7 +20,7 @@ RelatedFiles:
     - Path: repo://rag-ttc/pkg/ttc/specialistapi/projector.go
       Note: Current durable read projection boundary extended in OPTKIT-018
     - Path: repo://rag-ttc/apps/specialist/web/src/layerwidgets/index.tsx
-      Note: Existing widget registry generalized by OPTKIT-019
+      Note: Existing widget registry whose patterns migrate into the OPTKIT-022 pbui product
 ExternalSources: []
 Summary: 'Up-front program map for OPTKIT-012 through OPTKIT-020: goals, ownership, dependencies, deliverables, gates, and status tracking.'
 LastUpdated: 2026-08-26T14:20:36.814084497-04:00
@@ -243,24 +243,93 @@ The child tickets close these gaps in dependency order.
 
 **Must not do:** Recompute historical facts or place business rules in HTTP handlers.
 
-### OPTKIT-019 — React Workbench Framework and RRF Vertical Slice
+### OPTKIT-019 — React Workbench Framework and RRF Vertical Slice (superseded)
 
-**Goal:** Build the reusable React workbench and prove it with a complete RRF candidate workflow backed by real services and recorded evidence.
+**Superseded 2026-08-26** by the PBUI adoption track before implementation.
+The program decided to build the frontend on the presentation-based UI stack
+(`@hyperslop-systems/pbui`, `pbui-workbench`, `workbench-protocol`, `plot`)
+instead of the bespoke `WorkbenchShell` architecture. The exit criterion moves
+verbatim to OPTKIT-023; salvaged design content (generic `ValueSpec` editors,
+plugin resolution order, seal state machine, server-order invalidation
+rendering, RRF inspector, recorded-precision parity) is itemized in the
+OPTKIT-019 index. The successors are OPTKIT-021 (ADRs and vocabulary),
+OPTKIT-022 (product package and evidence tiles), OPTKIT-023 (propose
+workspace and RRF slice), and OPTKIT-024 (agent seat).
+
+### OPTKIT-021 — PBUI Adoption ADRs and Workbench Vocabulary
+
+**Goal:** Close the frontend architecture decisions against PBUI's contracts before UI code exists — the OPTKIT-012 role for the frontend.
 
 **Contents:**
 
-- generic editors for ordinary catalog value kinds;
-- specialized workbench plugin registry with generic fallbacks;
-- shared `WorkbenchShell` and proposal/evidence components;
-- RRF contribution inspector and deterministic preview;
-- case → proposal → pipeline → trial → verdict flow;
-- parity, accessibility, deep-link, loading, empty, and error tests.
+- ADR G: product packaging (`rag-ttc/apps/workbench/web`, migration rule for specialist organisms);
+- ADR H: Go workbench document host (`rag-ttc/pkg/ttc/workbenchhost`, beside — never inside — `specialistapi`);
+- ADR I: workbench document formats (`ragttc.proposal-draft/v1`, `ragttc.comparison/v1`, `ragttc.focus/v1`) with the derived-state rule;
+- ADR J: presentation vocabulary (types, tones, conversions, environment);
+- ADR K: verb families (navigation/draft/command), danger verbs, sink architecture;
+- ADR L: agent vocabulary reservation.
 
-**Depends on:** OPTKIT-018 and the RRF semantics from OPTKIT-015.
+**Depends on:** OPTKIT-011/012 only.
 
-**Unlocks:** A product-complete scalar-variable proof and the asset-variable extension.
+**Unlocks:** OPTKIT-022 and OPTKIT-023.
 
-**Must not do:** Turn backend descriptors into a server-driven component/layout DSL or infer invalidation client-side.
+**Must not do:** Any React or Go implementation; any change to OPTKIT-015–018 scope.
+
+### OPTKIT-022 — RAG-TTC Workbench Product Package and Evidence Tiles
+
+**Goal:** Build the pbui product scaffold and prove it with the read-only evidence tiles over `specialistapi`.
+
+**Contents:**
+
+- product package with presentation registry, descriptors, verb sink, trace store;
+- Go `workbenchhost` (catalog, document validators, routes, storage);
+- tiles: campaigns, failures, judge, autopsy, chunk, compare, inspector, trace, watch;
+- plot integration via one adapter file and `renderInteractive` presentations;
+- worst-first verdict projection contract (implemented backend-side with OPTKIT-018);
+- contract, layer, descriptor, fixture-replay, and accessibility tests.
+
+**Depends on:** OPTKIT-021. Not on OPTKIT-015–017 — runs in parallel with the backend chain.
+
+**Unlocks:** OPTKIT-023.
+
+**Must not do:** Authoring tiles, command-API calls, deletion of specialist screens before tile parity.
+
+### OPTKIT-023 — Propose Workspace: Draft Document and RRF Vertical Slice
+
+**Goal:** Prove the complete scalar-variable authoring workflow on PBUI. Inherits the OPTKIT-019 exit criterion verbatim.
+
+**Contents:**
+
+- `ragttc.proposal-draft/v1` lifecycle with derived seal state machine;
+- catalog/proposal/invalidation/preview/intent tiles as linked views over one draft;
+- accept flows: add mutation, attach evidence, set parent;
+- generic `ValueSpec` editors plus plugin registry (specialized → generic → visible fallback; previews dispatched by probe name);
+- fusion plugin with recorded-precision parity;
+- seal and trial danger verbs with idempotency and `APIError` mapping.
+
+**Depends on:** OPTKIT-021/022 plus OPTKIT-016–018 (steps 1–6 can run on compiler-CLI fixtures before OPTKIT-018).
+
+**Unlocks:** OPTKIT-020's plugin and OPTKIT-024.
+
+**Must not do:** Client-side invalidation inference, local patch semantics, durable writes on control movement.
+
+### OPTKIT-024 — Agent Seat over the Workbench Vocabulary
+
+**Goal:** Extend the shared vocabulary to agent proposers: mentions as live presentations, agent draft verbs in the shared document under actor attribution, sealing behind human approval.
+
+**Contents:**
+
+- vocabulary export in the pbui-chat shape with golden tests;
+- mention resolver and chat tile;
+- verb-router families with attribution and durable verb log;
+- approval flow for danger verbs; agent principal without seal grants;
+- Proposer/approval provenance into the sealed candidate.
+
+**Depends on:** OPTKIT-023.
+
+**Unlocks:** Agent-proposed candidates as durable, attributed experiment records.
+
+**Must not do:** Autonomous sealing or trial execution; sandbox/widget vocabulary in v1.
 
 ### OPTKIT-020 — Asset Variable Proof for Representation Prompts
 
@@ -275,7 +344,7 @@ The child tickets close these gaps in dependency order.
 - sensitivity, authorization, provenance, cancellation, and failure behavior;
 - scalar-versus-asset conformance tests.
 
-**Depends on:** OPTKIT-019 and the asset contracts established in OPTKIT-013/018.
+**Depends on:** OPTKIT-023 (previously OPTKIT-019) and the asset contracts established in OPTKIT-013/018. The React editor lands as a workbench plugin (specialized `variable` editor plus a preview renderer for `representations.one-chunk/v1`) in the OPTKIT-022 product rather than in the superseded bespoke shell.
 
 **Unlocks:** Proof that the architecture generalizes beyond scalar controls.
 
@@ -294,11 +363,18 @@ flowchart TD
     E --> F[OPTKIT-016\nProposal compiler + CLI]
     F --> G[OPTKIT-017\nSeal + manifests + persistence]
     G --> H[OPTKIT-018\nProjections + command API]
-    H --> I[OPTKIT-019\nReact framework + RRF slice]
-    I --> J[OPTKIT-020\nPrompt asset proof]
+    B --> K[OPTKIT-021\nPBUI ADRs + vocabulary]
+    K --> L[OPTKIT-022\nProduct package + evidence tiles]
+    L --> M[OPTKIT-023\nPropose workspace + RRF slice]
+    H --> M
+    M --> J[OPTKIT-020\nPrompt asset proof]
+    M --> N[OPTKIT-024\nAgent seat]
 ```
 
-The graph is intentionally mostly linear. Parallel work is safe only where contracts are already accepted. For example, OPTKIT-013 and early OPTKIT-014 package research can overlap after OPTKIT-012, but OPTKIT-016 must not stabilize compiler output before OPTKIT-015 proves the first real variable.
+(OPTKIT-019 was superseded by OPTKIT-021–024 on 2026-08-26 and no longer
+appears in the graph.)
+
+The graph is intentionally mostly linear on the backend side. Parallel work is safe only where contracts are already accepted. For example, OPTKIT-013 and early OPTKIT-014 package research can overlap after OPTKIT-012, but OPTKIT-016 must not stabilize compiler output before OPTKIT-015 proves the first real variable. The PBUI branch (OPTKIT-021 → OPTKIT-022) deliberately depends only on accepted contracts, not on OPTKIT-015–017 implementation, so evidence tiles proceed in parallel with the backend chain; OPTKIT-023 is where the branches join.
 
 ## Program gates
 
@@ -324,7 +400,7 @@ OPTKIT-018 must keep the historical read model separate from authoring commands.
 
 ### Gate 6 — Two coordinate classes use one workflow
 
-OPTKIT-019 proves a scalar variable end to end. OPTKIT-020 proves an artifact variable using the same compiler, sealer, persistence, projection, and shell contracts.
+OPTKIT-023 proves a scalar variable end to end. OPTKIT-020 proves an artifact variable using the same compiler, sealer, persistence, projection, and tile/plugin contracts.
 
 ## Status tracking
 
@@ -335,12 +411,16 @@ The ticket index and `tasks.md` of each child ticket are authoritative for local
 | OPTKIT-012 | Architecture contracts | OPTKIT-011 | complete — contracts accepted, proven, and pinned to OPTKIT-013–018 (`b1fcf17`) |
 | OPTKIT-013 | Generic catalog and bindings | OPTKIT-012 | complete — six value kinds, catalog identities, typed registry, candidate v2, and numbergame proof |
 | OPTKIT-014 | Aggregate RAG configuration | OPTKIT-012/013 | complete — v2 PipelineConfig, derived graphs, lifted lenses, campaigns/manifests, projections, and parity validation |
-| OPTKIT-015 | First real RAG variables | OPTKIT-013/014 | guide validated and delivered; implementation pending |
+| OPTKIT-015 | First real RAG variables | OPTKIT-013/014 | complete — runtime RRF injection, executable retrieval/fusion registry, fixture v3 parity, and proof evidence |
 | OPTKIT-016 | Pure compiler and CLI | OPTKIT-013–015 | guide validated and delivered; implementation pending |
 | OPTKIT-017 | Sealing and persistence | OPTKIT-016 | guide validated and delivered; implementation pending |
 | OPTKIT-018 | Projection and command boundaries | OPTKIT-017 | guide validated and delivered; implementation pending |
-| OPTKIT-019 | React framework and RRF proof | OPTKIT-018 | guide validated and delivered; implementation pending |
-| OPTKIT-020 | Artifact-variable proof | OPTKIT-019 | guide validated and delivered; implementation pending |
+| OPTKIT-019 | React framework and RRF proof | OPTKIT-018 | superseded 2026-08-26 by OPTKIT-021–024 (PBUI adoption); exit criterion inherited by OPTKIT-023 |
+| OPTKIT-020 | Artifact-variable proof | OPTKIT-023 | guide validated and delivered; implementation pending (editor section lands as an OPTKIT-022 plugin) |
+| OPTKIT-021 | PBUI ADRs and vocabulary | OPTKIT-012 | guide written; ADR review pending |
+| OPTKIT-022 | PBUI product package and evidence tiles | OPTKIT-021 | guide written; implementation pending; parallel with backend chain |
+| OPTKIT-023 | Propose workspace and RRF slice | OPTKIT-021/022 + OPTKIT-016–018 | guide written; implementation pending |
+| OPTKIT-024 | Agent seat | OPTKIT-023 | guide written; deliberately last |
 
 ## Required structure of every child guide
 
