@@ -6,6 +6,43 @@ import (
 	"strings"
 )
 
+// BindingErrorKind classifies failures at the type-erased binding boundary so
+// application services can expose stable diagnostics without parsing messages.
+type BindingErrorKind string
+
+const (
+	BindingErrorDecode BindingErrorKind = "decode"
+	BindingErrorDomain BindingErrorKind = "domain"
+	BindingErrorEncode BindingErrorKind = "encode"
+	BindingErrorApply  BindingErrorKind = "apply"
+)
+
+// BindingError preserves the underlying codec, domain, or lens error while
+// naming the variable and operation that failed.
+type BindingError struct {
+	Variable VariableID
+	Kind     BindingErrorKind
+	Err      error
+}
+
+func (e *BindingError) Error() string {
+	if e == nil {
+		return "binding error"
+	}
+	return fmt.Sprintf("variable %s: %s: %v", e.Variable, e.Kind, e.Err)
+}
+
+func (e *BindingError) Unwrap() error {
+	if e == nil {
+		return nil
+	}
+	return e.Err
+}
+
+func bindingError(id VariableID, kind BindingErrorKind, err error) error {
+	return &BindingError{Variable: id, Kind: kind, Err: err}
+}
+
 // Binding erases a variable's value type while retaining its real typed codec,
 // domain, and lens. Drafting uses ApplyPure; sealing uses Assign.
 type Binding[C any] interface {
@@ -31,16 +68,16 @@ func (b typedBinding[C, V]) decode(raw json.RawMessage) (V, json.RawMessage, err
 	value, err := b.variable.Codec.Decode(raw)
 	if err != nil {
 		var zero V
-		return zero, nil, fmt.Errorf("variable %s: %w", b.ID(), err)
+		return zero, nil, bindingError(b.ID(), BindingErrorDecode, err)
 	}
 	if err := b.variable.Domain.Validate(value); err != nil {
 		var zero V
-		return zero, nil, fmt.Errorf("variable %s: %w", b.ID(), err)
+		return zero, nil, bindingError(b.ID(), BindingErrorDomain, err)
 	}
 	canonical, err := b.variable.Codec.EncodeCanonical(value)
 	if err != nil {
 		var zero V
-		return zero, nil, fmt.Errorf("variable %s: encode canonical value: %w", b.ID(), err)
+		return zero, nil, bindingError(b.ID(), BindingErrorEncode, err)
 	}
 	return value, append([]byte(nil), canonical...), nil
 }
@@ -48,11 +85,11 @@ func (b typedBinding[C, V]) decode(raw json.RawMessage) (V, json.RawMessage, err
 func (b typedBinding[C, V]) ReadCanonical(config C) (json.RawMessage, error) {
 	value := b.variable.Lens.Get(config)
 	if err := b.variable.Domain.Validate(value); err != nil {
-		return nil, fmt.Errorf("variable %s current value: %w", b.ID(), err)
+		return nil, bindingError(b.ID(), BindingErrorDomain, fmt.Errorf("current value: %w", err))
 	}
 	canonical, err := b.variable.Codec.EncodeCanonical(value)
 	if err != nil {
-		return nil, fmt.Errorf("variable %s current value: %w", b.ID(), err)
+		return nil, bindingError(b.ID(), BindingErrorEncode, fmt.Errorf("current value: %w", err))
 	}
 	return append([]byte(nil), canonical...), nil
 }
@@ -69,7 +106,7 @@ func (b typedBinding[C, V]) ApplyPure(config C, raw json.RawMessage) (C, error) 
 	}
 	updated, err := b.variable.Lens.Put(config, value)
 	if err != nil {
-		return config, fmt.Errorf("variable %s: apply: %w", b.ID(), err)
+		return config, bindingError(b.ID(), BindingErrorApply, err)
 	}
 	return updated, nil
 }

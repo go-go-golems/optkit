@@ -3,6 +3,7 @@ package space
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"testing"
 
 	"github.com/go-go-golems/optkit/artifact/memory"
@@ -78,9 +79,24 @@ func TestBindingRejectsMalformedAndIllegalValues(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, raw := range []json.RawMessage{json.RawMessage(`"3"`), json.RawMessage(`3 4`), json.RawMessage(`99`)} {
-		if _, err := binding.Normalize(raw); err == nil {
-			t.Fatalf("invalid value %q accepted", raw)
+	for _, test := range []struct {
+		raw  json.RawMessage
+		kind BindingErrorKind
+	}{
+		{raw: json.RawMessage(`"3"`), kind: BindingErrorDecode},
+		{raw: json.RawMessage(`3 4`), kind: BindingErrorDecode},
+		{raw: json.RawMessage(`99`), kind: BindingErrorDomain},
+	} {
+		_, err := binding.Normalize(test.raw)
+		if err == nil {
+			t.Fatalf("invalid value %q accepted", test.raw)
+		}
+		var bindingErr *BindingError
+		if !errors.As(err, &bindingErr) {
+			t.Fatalf("invalid value %q returned unclassified error %T: %v", test.raw, err, err)
+		}
+		if bindingErr.Variable != binding.ID() || bindingErr.Kind != test.kind {
+			t.Fatalf("invalid value %q classification = %s/%s, want %s/%s", test.raw, bindingErr.Variable, bindingErr.Kind, binding.ID(), test.kind)
 		}
 	}
 	if _, err := testRegistry(t).Binding("missing.variable"); err == nil {
