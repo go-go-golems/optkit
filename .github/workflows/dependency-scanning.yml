@@ -43,8 +43,8 @@ jobs:
           go-version: stable
 
       - name: Install govulncheck
-        # Pin a release supported by the Go version declared in go.mod.
-        run: go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
+        # The stable scanner toolchain supports the maintained scanner.
+        run: go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
 
       - name: Run govulncheck
         run: govulncheck ./...
