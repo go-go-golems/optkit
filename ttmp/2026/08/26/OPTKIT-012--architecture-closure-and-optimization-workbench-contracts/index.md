@@ -1,7 +1,7 @@
 ---
 Title: Architecture Closure and Optimization Workbench Contracts
 Ticket: OPTKIT-012
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -14,10 +14,11 @@ Owners: []
 RelatedFiles: []
 ExternalSources: []
 Summary: Freeze the program's load-bearing configuration, catalog, identity, provenance, and command-boundary contracts before implementation begins.
-LastUpdated: 2026-08-26T14:20:20.214725622-04:00
+LastUpdated: 2026-08-26T14:59:17.706655321-04:00
 WhatFor: Prevent downstream tickets from independently inventing incompatible versions of the optimization-workbench architecture.
 WhenToUse: Read and complete before implementing OPTKIT-013 or any later workbench ticket.
 ---
+
 
 # Architecture Closure and Optimization Workbench Contracts
 
@@ -38,7 +39,7 @@ This ticket is the architecture gate for the backend-first optimization workbenc
 
 ## Status
 
-Current status: **active**
+Current status: **complete** — six decisions accepted, compatibility policy explicit, compile/runtime proof passing, and revision `b1fcf17` pinned to OPTKIT-013 through OPTKIT-018.
 
 ## Topics
 

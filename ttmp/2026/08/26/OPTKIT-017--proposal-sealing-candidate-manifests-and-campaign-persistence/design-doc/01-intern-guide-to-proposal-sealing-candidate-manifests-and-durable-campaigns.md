@@ -24,6 +24,8 @@ RelatedFiles:
         Canonical sealing mechanics
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
       Note: Parent program goals dependencies exclusions and exit gates
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
+      Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
     - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/manifest.go
       Note: |-
         Strict full-arm manifest loader extended with candidate authoring
@@ -38,6 +40,7 @@ LastUpdated: 2026-08-26T14:20:26.678499694-04:00
 WhatFor: Explain how a reviewed candidate becomes immutable patch/snapshot/candidate records that remain understandable without the source manifest.
 WhenToUse: Implement after OPTKIT-016 provides stable pure draft compilation.
 ---
+
 
 
 # Intern Guide to Proposal Sealing, Candidate Manifests, and Durable Campaigns

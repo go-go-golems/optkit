@@ -14,6 +14,8 @@ Owners: []
 RelatedFiles:
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
       Note: Parent program goals dependencies exclusions and exit gates
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
+      Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
     - Path: repo://rag-ttc/pkg/ttc/optimization/invalidation.go
       Note: |-
         Diff and plan semantics the first variables must prove
@@ -38,6 +40,7 @@ LastUpdated: 2026-08-26T14:20:23.810428915-04:00
 WhatFor: Show a new contributor exactly how registered semantic variables reach real retrieval execution and graph invalidation.
 WhenToUse: Implement after OPTKIT-013/014 and before proposal compilation or the RRF UI.
 ---
+
 
 
 # Intern Guide to Fusion Configuration, RRF, and the First RAG Catalog

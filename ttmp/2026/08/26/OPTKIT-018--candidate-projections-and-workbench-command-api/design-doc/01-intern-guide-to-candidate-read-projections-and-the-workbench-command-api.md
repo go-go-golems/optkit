@@ -14,6 +14,8 @@ Owners: []
 RelatedFiles:
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
       Note: Parent program goals dependencies exclusions and exit gates
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
+      Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
     - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/serve.go
       Note: Server composition root that may host distinct read and command handlers
     - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/service.go
@@ -38,6 +40,7 @@ LastUpdated: 2026-08-26T14:20:27.945954284-04:00
 WhatFor: Teach an intern how to connect durable campaign facts and workbench applications to clients without mixing historical reads with mutation logic.
 WhenToUse: Implement after OPTKIT-017 persists complete candidate and catalog provenance.
 ---
+
 
 
 # Intern Guide to Candidate Read Projections and the Workbench Command API

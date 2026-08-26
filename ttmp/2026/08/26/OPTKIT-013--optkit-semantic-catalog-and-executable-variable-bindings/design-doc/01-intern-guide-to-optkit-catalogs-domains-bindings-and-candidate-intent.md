@@ -31,12 +31,15 @@ RelatedFiles:
         Typed variable declaration extended by catalog metadata
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
       Note: Parent program goals dependencies exclusions and exit gates
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
+      Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
 ExternalSources: []
 Summary: Implementation design for ordered semantic catalogs, complete value descriptors, serialized-to-typed executable bindings, richer candidate intent, and the numbergame proof.
 LastUpdated: 2026-08-26T14:20:21.132009032-04:00
 WhatFor: Teach a new Optkit contributor how to make variables discoverable and remotely invocable without creating a parallel mutation mechanism.
 WhenToUse: Implement after OPTKIT-012 contracts are accepted and before RAG-TTC registers application variables.
 ---
+
 
 
 # Intern Guide to Optkit Catalogs, Domains, Bindings, and Candidate Intent

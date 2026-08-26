@@ -1,7 +1,7 @@
 ---
 Title: Implementation Diary
 Ticket: OPTKIT-012
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -215,4 +215,97 @@ remote: /ai/2026/08/26/OPTKIT-012
 commit: 428f6b8f5391dc851d989364b21a9d727c78cfc0
 doctor: clean
 production code changes: none
+```
+
+## Step 3: Accept and prove the architecture contracts
+
+This step executed the five architecture-closure phases rather than leaving the guide as a proposal. I printed the ticket plan and a start/done work slip around every phase, reconfirmed the current system evidence, compiled the generic binding contract, locked identity and migration tables, accepted all six decisions, and pinned the accepted revision to every downstream implementation guide through OPTKIT-018.
+
+No production behavior changed in OPTKIT-012. Its implementation artifact is a compile/runtime proof and a normative contract revision that OPTKIT-013 and OPTKIT-014 can now implement without hidden compatibility assumptions.
+
+### Prompt Context
+
+**User prompt (verbatim):**
+
+> implement OPTKIT-012 to OPTKIT-014 (included). commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill). for each ticket, Print out a brutalist work slip with the plan / different phases for the ticket. then before stsarting a phase, plrint a split about the phase, and print one when the phase is done. budget 2M [REMINDER] Output a <summary>...</summary> block at the VERY END of your response. This is mandatory.
+
+**Assistant interpretation:** Complete the architecture gate first, with physical plan/phase evidence, then implement the generic Optkit and aggregate RAG contracts in dependency order.
+
+**Inferred user intent:** Turn the delivered plans into reviewed, tested production foundations while maintaining unusually strong physical, written, test, and Git traceability.
+
+**Commit (code and architecture):** `b1fcf17a29f89921e9e1c42049de0486a35511f9` — "OPTKIT-012: accept workbench architecture contracts"
+
+### What I did
+
+- Printed `00-ticket-plan` with five phases, then printed one start and one done slip for each phase. Every printer response reported `ok: true` and `printed: true`.
+- Re-ran seven focused package tests across Optkit and RAG-TTC; all passed.
+- Generated a 255-package `go list -deps` result without an import cycle.
+- Added `scripts/contractproof/main.go`, which erases `Variable[C,V]` behind `Binding[C]`, canonicalizes raw JSON, applies it purely, replays it through `PatchBuilder`, and asserts equal child configuration.
+- Ran `go run` and `go vet` for the proof successfully.
+- Accepted aggregate configuration, catalog/bindings separation, discriminated value specs, candidate identity, catalog provenance, and read/write boundary decisions.
+- Added a seven-row normative identity matrix and the explicit v2/no-adapter compatibility policy.
+- Related the accepted guide revision to OPTKIT-013 through OPTKIT-018 and recorded the handoff in each changelog.
+- Checked all five architecture tasks and updated the parent roadmap and ticket status.
+
+### Why
+
+- The downstream code changes alter schema and identity, so implicit assumptions would become durable compatibility debt.
+- The generic proof demonstrates that the proposed API is legal in Go 1.23 and does not require reflection or a second mutation switch.
+- Start/done print slips make phase boundaries visible independently of the Git and diary record.
+
+### What worked
+
+- Contract proof output was: `contract proof OK: binding=proof.count normalized=3 child=snapshot:66a8f22a39cd7757e339cedc507a8e706aa7e133c8663094ce2a8e9e077625c4`.
+- The pure and durable paths shared the real codec, domain, and lens and produced equal configuration.
+- All six downstream guides now cite exact accepted revision `b1fcf17a29f89921e9e1c42049de0486a35511f9`.
+- The compatibility decision now rejects aliases, fallback decoding, dual fields, and automatic v1 reinterpretation.
+
+### What didn't work
+
+- The first `gofmt` of the proof failed because the `Lens` composite literal was missing one closing brace. Exact leading error: `main.go:93:3: missing ',' before newline in composite literal`. I inspected lines 70–120, added the missing `},`, then `gofmt`, `go run`, and `go vet` passed.
+- I initially attempted to read nonexistent `optkit/record/identity.go`; the actual identity code is split across `canonical.go`, `digest.go`, and `id.go`. I listed the directory and used those files.
+- Running `docmgr doctor` from inside `optkit/` caused thirteen false `missing_related_file` warnings because `repo://optkit/...` was resolved relative to the wrong working directory. The same ticket had previously passed from the workspace root; final validation is therefore always run from `/home/manuel/workspaces/2026-08-24/use-optkit`.
+
+### What I learned
+
+- A generic private adapter is sufficient to preserve typed variable behavior behind a serialized binding API.
+- Repository URI resolution depends on invoking `docmgr` from the workspace root in this multi-repository workspace.
+- The architect brief's “retain full-arm form” does not require retaining duplicated v1 `config + layers`; a v2 full-arm aggregate preserves the capability without a compatibility shim.
+
+### What was tricky to build
+
+- Candidate semantics combine ordered and set-like collections. The accepted policy sorts/deduplicates expected groups and motivating case IDs while preserving risk order as review priority.
+- Full and semantic catalog identity must avoid hashing their own computed IDs and must differ only on documentation/presentation fields.
+- The physical slips precede and follow phases, so the done slip can cite only evidence already produced; final doctor remains a later ticket-level audit rather than being falsely claimed inside the P5 slip.
+
+### What warrants a second pair of eyes
+
+- Review the no-v1-adapter policy before shipping binaries that must open historical stores; this task explicitly accepts fresh v2 stores rather than adding silent readers.
+- Review the candidate identity ordering rules and catalog semantic projection during OPTKIT-013 implementation.
+- Confirm the chosen package ownership remains acyclic once OPTKIT-014 moves runtime types.
+
+### What should be done in the future
+
+- Implement the accepted catalog/binding and candidate contracts in OPTKIT-013.
+- Implement aggregate configuration, graph derivation, and runtime/manifest migration in OPTKIT-014.
+- If v1 compatibility becomes a product requirement, open a dedicated ticket naming exact fixtures and read/resume support.
+
+### Code review instructions
+
+- Read the new accepted sections in `design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md` first.
+- Run `GOWORK=off go run ./ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/scripts/contractproof` from `optkit/`.
+- Inspect `b1fcf17` and verify that no production package changed.
+- Run `docmgr doctor --ticket OPTKIT-012 --stale-after 30` from the workspace root.
+- Inspect `various/work-slips/*.log`; each phase has a matching start/done receipt.
+
+### Technical details
+
+```text
+accepted contract revision: b1fcf17a29f89921e9e1c42049de0486a35511f9
+candidate identity schema: schema:optkit.candidate-identity/v2
+pipeline schema: schema:rag-ttc.pipeline-config/v2
+compatibility: explicit v2, no aliases/fallback conversion
+proof: pure child config == durable PatchBuilder child config
+phase slips: plan + 5 start + 5 done
+production behavior change: none
 ```

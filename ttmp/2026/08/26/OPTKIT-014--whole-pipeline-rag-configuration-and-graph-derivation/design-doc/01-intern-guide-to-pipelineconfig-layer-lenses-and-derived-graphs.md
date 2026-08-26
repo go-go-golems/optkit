@@ -16,6 +16,8 @@ RelatedFiles:
       Note: Generic lens laws used for aggregate layer lifting
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
       Note: Parent program goals dependencies exclusions and exit gates
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
+      Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
     - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/manifest.go
       Note: |-
         Current duplicated executable config and manually authored graph input
@@ -38,6 +40,7 @@ LastUpdated: 2026-08-26T14:20:22.368506158-04:00
 WhatFor: Teach an intern how to make semantic configuration the single source of truth for Optkit snapshots, execution, and graph identity.
 WhenToUse: Implement after OPTKIT-012/013 and before real fusion variables or proposal compilation.
 ---
+
 
 
 # Intern Guide to `PipelineConfig`, Layer Lenses, and Derived Graphs

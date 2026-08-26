@@ -18,6 +18,8 @@ RelatedFiles:
         Write path explicitly excluded from drafts
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
       Note: Parent program goals dependencies exclusions and exit gates
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
+      Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
     - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/command.go
       Note: |-
         Command-group composition and structured command conventions
@@ -38,6 +40,7 @@ LastUpdated: 2026-08-26T14:20:25.415917233-04:00
 WhatFor: Teach a backend contributor how to make one proposal service reusable by CLI, manifests, and browser authoring without writing draft artifacts.
 WhenToUse: Implement after OPTKIT-013 through OPTKIT-015 establish bindings, PipelineConfig, and real RAG variables.
 ---
+
 
 
 # Intern Guide to Pure Proposal Compilation and Glazed CLI Authoring
