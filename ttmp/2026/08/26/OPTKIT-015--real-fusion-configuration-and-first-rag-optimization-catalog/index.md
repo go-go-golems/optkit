@@ -1,7 +1,7 @@
 ---
 Title: Real Fusion Configuration and First RAG Optimization Catalog
 Ticket: OPTKIT-015
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -14,10 +14,11 @@ Owners: []
 RelatedFiles: []
 ExternalSources: []
 Summary: Make RRF fusion a real typed configuration and register the first runtime-honest RAG optimization variables.
-LastUpdated: 2026-08-26T14:20:23.810428915-04:00
+LastUpdated: 2026-08-26T16:13:41.309809956-04:00
 WhatFor: Prove catalog variables change actual RAG execution and produce correct graph diff and invalidation results.
 WhenToUse: Implement after OPTKIT-013/014 and before the proposal compiler.
 ---
+
 
 # Real Fusion Configuration and First RAG Optimization Catalog
 
@@ -37,7 +38,7 @@ This ticket is the first RAG semantic proof. It preserves RRF's runtime `float64
 
 ## Status
 
-Current status: **active**
+Current status: **complete** — configured float64 RRF reaches `WeightedRRF`, the first RAG registry is executable, fixture v3 identities are pipeline-derived, and full validation passes.
 
 ## Topics
 

@@ -12,34 +12,36 @@ DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
-      Note: Parent program goals dependencies exclusions and exit gates
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
       Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
-    - Path: repo://rag-ttc/pkg/ttc/optimization/invalidation.go
-      Note: |-
-        Diff and plan semantics the first variables must prove
-        Required graph plan evidence
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-015--real-fusion-configuration-and-first-rag-optimization-catalog/scripts/01-run-rrf-runtime-catalog-proof.sh
+      Note: Reproducible runtime catalog graph and contribution proof
+    - Path: repo://rag-ttc/pkg/ttc/optimization/catalog.go
+      Note: First executable RAG catalog and bindings
+    - Path: repo://rag-ttc/pkg/ttc/optimization/fixture.go
+      Note: Pipeline-derived semantic fixture v3 validation
     - Path: repo://rag-ttc/pkg/ttc/optkitcampaign/fixture.go
-      Note: Campaign executor currently passes only retrieval final limit
-    - Path: repo://rag-ttc/pkg/ttc/search/search.go
       Note: |-
-        Runtime SearchConfig and SearchRoute already use float64 RRFConstant
-        Runtime float64 RRF and final-limit semantics
+        Campaign executor currently passes only retrieval final limit
+        Configured pipeline RRF execution
     - Path: repo://rag-ttc/pkg/ttc/search/semantic_fixture.go
       Note: |-
         Fixture preparation currently hardcodes RRF constant 60
         Hardcoded RRF 60 to parameterize
+        Fixture search construction with injected RRF constant
     - Path: repo://rag-ttc/pkg/ttc/search/service.go
       Note: |-
         Actual WeightedRRF call and validation
         Actual WeightedRRF execution
+        Actual WeightedRRF execution and finite bounded validation
 ExternalSources: []
 Summary: Runtime-honest design for typed float64 fusion configuration, accurate retrieval-limit semantics, first RAG catalog entries, executable bindings, and RRF parity evidence.
 LastUpdated: 2026-08-26T14:20:23.810428915-04:00
 WhatFor: Show a new contributor exactly how registered semantic variables reach real retrieval execution and graph invalidation.
 WhenToUse: Implement after OPTKIT-013/014 and before proposal compilation or the RRF UI.
 ---
+
+
 
 
 
@@ -380,7 +382,38 @@ GOWORK=off go test ./... -count=1
 - Final limit and per-channel top-K must remain distinct in names, docs, and tests.
 - Float canonicalization and recorded precision must be pinned.
 
-## 15. Out of scope
+## 15. Implementation outcome
+
+Implemented on 2026-08-26 in RAG-TTC commits `d9d6d086`, `5b7ad758`, and `20266fd2`.
+
+- RAG-TTC now depends on Optkit `v0.0.0-20260826195739-5c1acb4e2688`, the published revision that contains lossless domains, catalogs, executable registries, and candidate v2.
+- `FusionConfig` remains the typed `float64` value introduced by OPTKIT-014. Validation now enforces finite `RRFK` in `(0,1000]`; search configuration and named routes enforce the same bound.
+- `search.NewSemanticFixtureTool(rrfConstant)` injects the semantic value into the real `SearchConfig`, selected `SearchRoute`, route identity, and `WeightedRRF` call. The campaign executor no longer accepts and ignores non-default values.
+- `optimization.NewRegistry` returns ordered retrieval/fusion sections plus executable bindings for `retrieval.final_result_limit` and `fusion.rrf_k`.
+- The final-result variable uses an integer domain `1…100`, canonical default `2`, value schema `schema:rag-ttc.value.final-result-limit/v1`, and the accurate post-fusion returned-result semantics.
+- The RRF variable uses a finite float domain `0.001…1000`, canonical default `60`, value schema `schema:rag-ttc.value.rrf-k/v1`, and probe `fusion.rrf-contributions/v1`.
+- Serialized binding application and durable `PatchBuilder` replay produce equal child pipeline values. Graph planning marks `fusion` as the sole direct change for `60 → 20`, with downstream upstream-change steps; final-result mutation marks retrieval direct.
+- The semantic fixture advanced to `rag-ttc.optimization-semantic-fixture/v3`, embeds its complete baseline `PipelineConfig`, uses content-derived local identities, and fails validation if its recorded graph differs from `DeriveGraph(PipelineConfig)`.
+
+Deterministic evidence shows that the fixture order remains stable while arithmetic and route identity change:
+
+```text
+k=60:
+  chunk-a = 0.01639344262295082
+  chunk-b = 0.03252247488101534
+  policy  = ...dd39c4bc
+
+k=20:
+  chunk-a = 0.047619047619047616
+  chunk-b = 0.09307359307359307
+  policy  = ...7da50635
+```
+
+Every recorded contribution is checked against `weight / (k + rank)` at `1e-15` tolerance. A separate test proves that changing only final-result limit from one to two changes returned count but not lexical raw, vector raw, or fused stage candidates. The fixture does not produce a rank flip for `60 → 20`; the implementation records that result rather than claiming one.
+
+Validation includes full RAG-TTC tests, golangci-lint, Glazed vet, build, focused race tests, a 255-package acyclic dependency scan, deterministic registry/runtime proof logs, clean diffs, docmgr doctor, and a completed guide/diary reMarkable bundle.
+
+## 16. Out of scope
 
 - BM25/vector top-K as variables;
 - channel weights as variables;
@@ -389,7 +422,7 @@ GOWORK=off go test ./... -count=1
 - prompt assets;
 - production route policy redesign.
 
-## 16. Exit criteria
+## 17. Exit criteria
 
 - real `FusionConfig` reaches `WeightedRRF`;
 - RRF remains positive finite `float64`;
@@ -399,7 +432,7 @@ GOWORK=off go test ./... -count=1
 - deterministic experiment/parity evidence is recorded;
 - full affected tests, diary, doctor, and reMarkable upload pass.
 
-## 17. File reference map
+## 18. File reference map
 
 - `rag-ttc/pkg/ttc/search/search.go:21-55` — runtime and route RRF values.
 - `rag-ttc/pkg/ttc/search/search.go:139-170,210-239` — final return limit behavior.

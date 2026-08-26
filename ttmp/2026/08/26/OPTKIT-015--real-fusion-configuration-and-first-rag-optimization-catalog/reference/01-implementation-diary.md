@@ -1,7 +1,7 @@
 ---
 Title: Implementation Diary
 Ticket: OPTKIT-015
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -16,16 +16,25 @@ RelatedFiles:
       Note: Overall program context that keeps the ticket aligned
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-015--real-fusion-configuration-and-first-rag-optimization-catalog/design-doc/01-intern-guide-to-fusion-configuration-rrf-and-the-first-rag-catalog.md
       Note: Primary design deliverable whose research and delivery this diary records
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-015--real-fusion-configuration-and-first-rag-optimization-catalog/various/remarkable-dry-run.log
-      Note: Ticket bundle selection and destination dry-run evidence
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-015--real-fusion-configuration-and-first-rag-optimization-catalog/various/remarkable-upload.log
-      Note: Successful rendered PDF upload receipt
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-015--real-fusion-configuration-and-first-rag-optimization-catalog/scripts/01-run-rrf-runtime-catalog-proof.sh
+      Note: Reproducible implementation proof command
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-015--real-fusion-configuration-and-first-rag-optimization-catalog/various/remarkable-implementation-dry-run.log
+      Note: Final implementation bundle selection evidence
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-015--real-fusion-configuration-and-first-rag-optimization-catalog/various/remarkable-implementation-upload.log
+      Note: Successful current implementation upload receipt
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-015--real-fusion-configuration-and-first-rag-optimization-catalog/various/rrf-runtime-catalog-proof.log
+      Note: Exact catalog graph route identity score and contribution evidence
+    - Path: repo://rag-ttc/pkg/ttc/optimization/catalog.go
+      Note: Central product registry implementation
 ExternalSources: []
 Summary: Chronological research, design, implementation, validation, and delivery record for OPTKIT-015.
 LastUpdated: 2026-08-26T14:20:24.177968464-04:00
 WhatFor: ""
 WhenToUse: ""
 ---
+
+
+
 
 
 # Diary
@@ -210,4 +219,233 @@ remote: /ai/2026/08/26/OPTKIT-015
 commit: 83d0f4f201ae59a0d8983d476e7873312fca8142
 doctor: clean
 production code changes: none
+```
+
+## Step 3: Route the semantic RRF value into real fusion arithmetic
+
+This step removed the last deliberate runtime rejection from OPTKIT-014. The semantic fixture now accepts the validated `PipelineConfig.Fusion.RRFK` value, supplies it to `SearchConfig`, and executes it through the actual selected route and `WeightedRRF` call.
+
+The implementation also published the completed Optkit foundation branch and upgraded RAG-TTC's pinned Optkit pseudo-version. This keeps isolated `GOWORK=off` builds authoritative rather than relying on an unpublished local workspace replacement.
+
+### Prompt Context
+
+**User prompt (verbatim):** "continue"
+
+**Assistant interpretation:** Continue the backend-first program with OPTKIT-015, the next dependency gate named in the completed roadmap and handoff.
+
+**Inferred user intent:** Make the first registered RAG coordinates runtime-honest and unlock pure proposal compilation.
+
+**Commit (code):** `d9d6d086397ebe9c3d8af6627a57441a980474ca` — "OPTKIT-015: execute configured RRF fusion"
+
+### What I did
+
+- Pushed Optkit `task/use-optkit` through `5c1acb4` so RAG-TTC could pin the real registry API in isolated builds.
+- Upgraded RAG-TTC to Optkit `v0.0.0-20260826195739-5c1acb4e2688` and ran `go mod tidy` with `GOWORK=off`.
+- Changed `NewSemanticFixtureTool` to require an explicit `float64` RRF constant.
+- Removed the fixture executor's `RRFK == 60` rejection and passed the pipeline value into actual search preparation.
+- Unified pipeline, search-config, and named-route legality at finite `(0,1000]`.
+- Added exact contribution, route-identity, final-limit/channel-top-K, and boundary tests.
+
+### Why
+
+- A semantic field that changes graph identity but is rejected or ignored by runtime is false provenance.
+- RAG-TTC's CI must compile against a published Optkit revision containing the APIs it imports.
+
+### What worked
+
+- `k=60` preserved baseline fixture output.
+- `k=20` changed route identity and every fused contribution/score while retaining the fixture's output order.
+- Every contribution equals `weight/(k+rank)` within `1e-15`.
+- Changing final-result limit from one to two changed returned count but not lexical raw, vector raw, or fused-stage candidates.
+- Full RAG-TTC pre-commit tests, lint, and Glazed vet passed.
+
+### What didn't work
+
+- N/A. The existing non-60 rejection was an intentional OPTKIT-014 guard, not a failed implementation attempt; this step replaced it after the coordinate became executable.
+
+### What I learned
+
+- Route semantic identity already included `RRFConstant`, so runtime attribution changed automatically once fixture construction received the pipeline value.
+- Final result truncation remains downstream of channel top-K and fusion and therefore must not alter route identity.
+
+### What was tricky to build
+
+- Search configuration, named routes, tool configuration, and pipeline validation had overlapping RRF bounds. The implementation aligned them without replacing unrelated production route values.
+- The worktree used the new Optkit registry through `go.work`, but release-like validation required publishing and pinning the exact Optkit commit before importing the API under `GOWORK=off`.
+
+### What warrants a second pair of eyes
+
+- Review whether `(0,1000]` remains the desired runtime legality if production route configuration evolves.
+- Review the deliberate choice not to force a rank flip in the tiny deterministic fixture.
+
+### What should be done in the future
+
+- Proposal compilation should use runtime score/contribution changes as preview evidence without reimplementing RRF.
+
+### Code review instructions
+
+- Start at `search/semantic_fixture.go`, `optkitcampaign/fixture.go`, and the configured-fusion test.
+- Run `scripts/01-run-rrf-runtime-catalog-proof.sh` from the workspace root.
+- Verify RAG-TTC's `go.mod` points at Optkit `5c1acb4`.
+
+### Technical details
+
+```text
+baseline k=60:
+  chunk-a=0.01639344262295082
+  chunk-b=0.03252247488101534
+changed k=20:
+  chunk-a=0.047619047619047616
+  chunk-b=0.09307359307359307
+route policy IDs: different
+rank order: unchanged for this fixture
+```
+
+## Step 4: Register the first executable RAG catalog and align fixture identity
+
+This step declared reviewed retrieval and fusion sections and registered `retrieval.final_result_limit` and `fusion.rrf_k` through Optkit's generic registry. Serialized inputs now execute the same lifted lenses used by direct typed code and durable patch sealing.
+
+The frozen optimization fixture advanced to v3. It embeds its complete baseline pipeline, records content-derived local identities, and validates that its graph equals `DeriveGraph(PipelineConfig)`.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3)
+
+**Assistant interpretation:** Finish the catalog/binding and semantic-fixture portions of OPTKIT-015 using the accepted OPTKIT-013/014 contracts.
+
+**Inferred user intent:** Prove the registry describes real legal values, graph effects, and runtime behavior rather than documentation-only controls.
+
+**Commit (catalog):** `5b7ad7582f78161662292bd6627b3bdb3a6974e5` — "OPTKIT-015: register first RAG optimization catalog"
+
+**Commit (fixture):** `20266fd2fa03389c5c542f7e6f5745474cca3b28` — "OPTKIT-015: align semantic fixture with derived fusion IDs"
+
+### What I did
+
+- Added value schemas `schema:rag-ttc.value.final-result-limit/v1` and `schema:rag-ttc.value.rrf-k/v1`.
+- Added reviewed retrieval and fusion section metadata and complete variable documentation.
+- Registered integer domain `1…100` with default `2` and float domain `0.001…1000` with default `60`.
+- Tested deterministic semantic/full catalog IDs, descriptors, serialized wrong types, domain bounds, pure application, durable replay, and graph plans.
+- Added `scripts/01-run-rrf-runtime-catalog-proof.sh` and retained exact proof output.
+- Added `scripts/02-upgrade-optimization-fixture-v3.py` to reproducibly create the v3 fixture.
+- Embedded `pipeline_config` in the fixture, replaced legacy local labels with derived identities, rewired lineage IDs, and pinned SHA-256 `3a006549b549fc328a56c98e76b80cf34f6cdc6237c722c2bfa1eeb83aeab035`.
+
+### Why
+
+- The first product registry is the proof that generic Optkit metadata and executable bindings can drive real RAG semantics.
+- A semantic fixture that retained hand-authored identities would contradict the new graph source-of-truth rule.
+
+### What worked
+
+- Catalog semantic ID is `sha256:d3034d1d61cb5da92649bf9d199015e25a6e5223ed50741f594ceba2093730b6`.
+- Full catalog ID is `sha256:d20f66171bfe0c5ef1a7ba4aade490c1d98b7c4d4d791e52b4b1f2a417c6f6ca`.
+- Serialized `fusion.rrf_k=20` changed graph `8861fa45…` to `608ac453…` and reported only `fusion` as direct change.
+- Pure binding application and durable `PatchBuilder` replay produced equal child pipeline values.
+- The v3 fixture graph equals a fresh derivation from its embedded pipeline.
+
+### What didn't work
+
+- N/A.
+
+### What I learned
+
+- The reviewed semantic fixture can remain an evidence artifact while still enforcing the same derivation rule as manifests and campaigns.
+- The existing tiny fixture changes score magnitudes but does not flip the two returned chunks for `60 → 20`; that is valid parity evidence.
+
+### What was tricky to build
+
+- Updating local identities required updating direct dependency IDs and context/answer/judge lineage references together. The ticket-local upgrade script performs the complete transformation deterministically.
+- The catalog's reviewed variable domain is narrower at the low end than runtime validity: runtime accepts any positive finite value, while workbench authoring starts at `0.001`.
+
+### What warrants a second pair of eyes
+
+- Review catalog Long text as product contract, especially the distinction between final returned count and per-channel top-K.
+- Review whether catalog ordering (`retrieval`, then `fusion`) is the desired long-term workbench order.
+
+### What should be done in the future
+
+- OPTKIT-016 should enumerate this catalog and invoke these bindings without adding a RAG-specific type switch.
+
+### Code review instructions
+
+- Review `optimization/catalog.go` beside `space/binding.go` and `optimization/lenses.go`.
+- Run the proof script and inspect the exact catalog IDs, graph IDs, scores, and route identities.
+- Review the v3 fixture's embedded pipeline and graph parity test.
+
+### Technical details
+
+```text
+variables:
+  retrieval.final_result_limit int [1,100] default 2
+  fusion.rrf_k float64 [0.001,1000] default 60
+fixture schema: rag-ttc.optimization-semantic-fixture/v3
+fixture sha256: 3a006549b549fc328a56c98e76b80cf34f6cdc6237c722c2bfa1eeb83aeab035
+```
+
+## Step 5: Run full validation and close the runtime-honest catalog gate
+
+This step ran the complete repository checks after runtime, registry, and fixture commits, synchronized ticket documentation and program status, and delivered the current implementation bundle.
+
+No proposal compiler, sealing service, or frontend editor was added. Those remain downstream consumers of the now-proven runtime and catalog contracts.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3)
+
+**Assistant interpretation:** Validate and close OPTKIT-015 completely before moving to pure proposal compilation.
+
+**Inferred user intent:** Hand OPTKIT-016 a stable first product registry with executable behavior and auditable evidence.
+
+### What I did
+
+- Ran full RAG-TTC lint, tests, Glazed vet, build, and focused race suites.
+- Ran the deterministic proof script and a 255-package acyclic dependency scan.
+- Checked every implementation task and updated guide, diary, changelog, relations, index, and parent roadmap.
+- Preserved unrelated `optkit/numbergame-demo` without staging or modification.
+- Dry-ran, rendered, and uploaded the completed implementation guide/diary bundle.
+
+### Why
+
+- The ticket is the entry gate for a generic compiler; partial runtime/catalog parity would force compiler work to encode exceptions.
+
+### What worked
+
+- Full repository and focused race validation passed.
+- Isolated `GOWORK=off` builds resolved the published Optkit catalog/registry API.
+- Exact proof output is retained under the ticket's `various/` directory.
+
+### What didn't work
+
+- N/A.
+
+### What I learned
+
+- Publishing the upstream generic framework before pinning it downstream keeps workspace development and isolated CI aligned.
+
+### What was tricky to build
+
+- Closure evidence spans two repositories: production commits live in RAG-TTC, while scripts, diary, tasks, upload receipts, and roadmap state live in the Optkit ticket workspace.
+
+### What warrants a second pair of eyes
+
+- Review dependency pin `5c1acb4`, fixture v3 identity migration, and public variable IDs before starting OPTKIT-016.
+
+### What should be done in the future
+
+- Begin OPTKIT-016 pure proposal compilation and Glazed CLI against `optimization.NewRegistry`.
+
+### Code review instructions
+
+- Review RAG-TTC commits `d9d6d086`, `5b7ad758`, and `20266fd2` in order.
+- Run `make lint && make test && GOWORK=off go build ./...` in RAG-TTC.
+- Run focused race tests for search, optimization, campaign, and workbench.
+- Run `docmgr doctor --ticket OPTKIT-015 --stale-after 30` from the workspace root.
+
+### Technical details
+
+```text
+full tests/lint/Glazed vet/build: pass
+focused race: pass
+dependency scan: 255 packages, acyclic
+proof script: pass
+implementation tasks: 6/6 complete
 ```

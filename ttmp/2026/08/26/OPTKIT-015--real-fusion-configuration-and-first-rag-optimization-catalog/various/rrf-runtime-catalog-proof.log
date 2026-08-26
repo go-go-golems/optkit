@@ -1,0 +1,18 @@
+=== RUN   TestRAGRegistryCatalogIsCompleteAndDeterministic
+    catalog_test.go:21: catalog semantic=sha256:d3034d1d61cb5da92649bf9d199015e25a6e5223ed50741f594ceba2093730b6 full=sha256:d20f66171bfe0c5ef1a7ba4aade490c1d98b7c4d4d791e52b4b1f2a417c6f6ca
+--- PASS: TestRAGRegistryCatalogIsCompleteAndDeterministic (0.00s)
+=== RUN   TestRAGRegistryBindingsApplyPureAndDurableMutations
+    catalog_test.go:64: fusion mutation before=config-graph:8861fa4568950d3148f20ecaaf96aa1195cea09697784f39706d7d5a184f9970 after=config-graph:608ac4539d54be7c32e8bb6160cf2f7701844a081af73d5a8bdf579b3f4c1d14 changes=[fusion]
+--- PASS: TestRAGRegistryBindingsApplyPureAndDurableMutations (0.00s)
+=== RUN   TestRAGRegistryBindingsRejectWrongTypesAndDomains
+--- PASS: TestRAGRegistryBindingsRejectWrongTypesAndDomains (0.00s)
+PASS
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optimization	0.003s
+=== RUN   TestSemanticFixtureExecutesConfiguredFusionCoordinate
+    fixture_test.go:43: k=60 policy=ttc-retrieval-policy/v1:sha256:dd39c4bcc5659b839cebfd234e09cc01f9026ab4f515b480bbefa9c0af3f5137 results=map[chunk-a:0.01639344262295082 chunk-b:0.03252247488101534]
+    fixture_test.go:44: k=20 policy=ttc-retrieval-policy/v1:sha256:7da5063543ca85c45b0bd28843870d307cf8fcb1e8ecc22b891192e8d8746953 results=map[chunk-a:0.047619047619047616 chunk-b:0.09307359307359307]
+--- PASS: TestSemanticFixtureExecutesConfiguredFusionCoordinate (0.00s)
+=== RUN   TestFinalResultLimitDoesNotChangeChannelTopKOrFusion
+--- PASS: TestFinalResultLimitDoesNotChangeChannelTopKOrFusion (0.00s)
+PASS
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	0.003s
