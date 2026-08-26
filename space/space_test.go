@@ -109,6 +109,13 @@ func TestVerifySnapshotValueRejectsRecordValueDrift(t *testing.T) {
 	if err := VerifySnapshotValue(base, codec); err != nil {
 		t.Fatalf("verify materialized snapshot: %v", err)
 	}
+	pure, err := DeriveSnapshotValue("system:test/v1", codec, testConfig{Multiplier: 2, Mode: "none"})
+	if err != nil {
+		t.Fatalf("derive snapshot value: %v", err)
+	}
+	if pure.ID != base.ID || pure.Config.Digest != base.Config.Digest || pure.Config.Size != base.Config.Size || pure.Value != base.Value {
+		t.Fatalf("pure/materialized snapshot mismatch: %+v != %+v", pure, base)
+	}
 
 	drifted := base
 	drifted.Value.Multiplier = 3

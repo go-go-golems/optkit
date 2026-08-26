@@ -22,34 +22,56 @@ type Snapshot[C any] struct {
 }
 
 func MaterializeSnapshot[C any](ctx context.Context, store artifact.Store, system record.SystemID, codec Codec[C], config C) (Snapshot[C], error) {
-	if err := record.ValidateID("system", string(system)); err != nil {
+	derived, bytesValue, err := deriveSnapshotValue(system, codec, config)
+	if err != nil {
 		return Snapshot[C]{}, err
 	}
-	bytesValue, err := codec.EncodeCanonical(config)
-	if err != nil {
-		return Snapshot[C]{}, fmt.Errorf("encode snapshot config: %w", err)
-	}
 	configRef, err := store.Put(ctx, artifact.PutRequest{
-		MediaType:   "application/vnd.optkit.record+json",
-		Schema:      schemaPtr(codec.Schema()),
-		Sensitivity: artifact.SensitivityInternal,
+		MediaType:      derived.Config.MediaType,
+		Schema:         schemaPtr(codec.Schema()),
+		Sensitivity:    derived.Config.Sensitivity,
+		ExpectedDigest: &derived.Config.Digest,
 	}, bytes.NewReader(bytesValue))
 	if err != nil {
 		return Snapshot[C]{}, fmt.Errorf("store snapshot config: %w", err)
 	}
+	if configRef.Digest != derived.Config.Digest || configRef.Size != derived.Config.Size ||
+		configRef.MediaType != derived.Config.MediaType || configRef.Sensitivity != derived.Config.Sensitivity ||
+		configRef.Schema == nil || *configRef.Schema != codec.Schema() {
+		return Snapshot[C]{}, fmt.Errorf("stored snapshot config ref differs from its pure derivation")
+	}
+	return derived, nil
+}
+
+// DeriveSnapshotValue computes exactly the snapshot record that
+// MaterializeSnapshot would create without writing its canonical config bytes
+// to a store. It is suitable for pure draft compilation; durable callers must
+// materialize before publishing the record as stored history.
+func DeriveSnapshotValue[C any](system record.SystemID, codec Codec[C], config C) (Snapshot[C], error) {
+	derived, _, err := deriveSnapshotValue(system, codec, config)
+	return derived, err
+}
+
+func deriveSnapshotValue[C any](system record.SystemID, codec Codec[C], config C) (Snapshot[C], []byte, error) {
+	if err := record.ValidateID("system", string(system)); err != nil {
+		return Snapshot[C]{}, nil, err
+	}
+	bytesValue, err := codec.EncodeCanonical(config)
+	if err != nil {
+		return Snapshot[C]{}, nil, fmt.Errorf("encode snapshot config: %w", err)
+	}
+	configRef := artifact.Ref{
+		Digest: record.SumBytes(bytesValue), MediaType: "application/vnd.optkit.record+json",
+		Schema: schemaPtr(codec.Schema()), Size: int64(len(bytesValue)), Sensitivity: artifact.SensitivityInternal,
+	}
 	rawID, err := snapshotContentID(system, codec.Schema(), configRef.Digest)
 	if err != nil {
-		return Snapshot[C]{}, err
+		return Snapshot[C]{}, nil, err
 	}
 	return Snapshot[C]{
-		SnapshotRecord: SnapshotRecord{
-			ID:     rawID,
-			System: system,
-			Schema: codec.Schema(),
-			Config: configRef,
-		},
-		Value: config,
-	}, nil
+		SnapshotRecord: SnapshotRecord{ID: rawID, System: system, Schema: codec.Schema(), Config: configRef},
+		Value:          config,
+	}, bytesValue, nil
 }
 
 // VerifySnapshotValue verifies a loaded snapshot record against its in-memory
