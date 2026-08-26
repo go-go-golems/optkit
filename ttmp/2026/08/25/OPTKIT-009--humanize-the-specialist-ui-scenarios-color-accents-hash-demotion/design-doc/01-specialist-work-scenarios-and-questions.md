@@ -11,8 +11,7 @@ Intent: long-term
 Owners: []
 RelatedFiles: []
 ExternalSources:
-    - URL: https://hyperslop.systems/
-      Note: Accent palette source (green 2db878, purple 805bd7, red ef4038, yellow f2ad00)
+    - "https://hyperslop.systems/ — accent palette source (green 2db878, purple 805bd7, red ef4038, yellow f2ad00)"
 Summary: The specialist UI reframed around its human user — someone making a chatbot's retrieval better — with judge traces, verdicts, and failure examples at the center, data graphics that answer questions, and prose that explains what things are.
 WhatFor: Drive the evolution of the specialist UI from journal-shaped tables toward a tool people do work in.
 WhenToUse: Read when prioritizing specialist UI features or projector/backend asks.

@@ -1,5 +1,5 @@
 ---
-Title: "Intern Guide: Layer Sections, Variables, and Candidate Proposals"
+Title: 'Intern Guide: Layer Sections, Variables, and Candidate Proposals'
 Ticket: OPTKIT-011
 Status: active
 Topics:
@@ -11,6 +11,8 @@ DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: abs:///home/manuel/code/wesen/go-go-golems/glazed/pkg/cmds/schema/section-impl.go
+      Note: The Section/Definitions model this design mirrors
     - Path: repo://optkit/space/candidate.go
       Note: Existing candidate model (hypothesis, risks) this design extends
     - Path: repo://optkit/space/variable.go
@@ -19,13 +21,16 @@ RelatedFiles:
       Note: Layered config graph the sections attach to
     - Path: repo://rag-ttc/pkg/ttc/optkitcampaign/system.go
       Note: RetrievalConfig, the one layer that already has real values
+    - Path: ws://coinvault/configs/ragopt/abstention-routing-v1/candidate.yaml
+      Note: Candidate metadata precedent (hypothesis, risks, expected_improvement)
 ExternalSources:
-    - URL: https://github.com/go-go-golems/glazed
-      Note: Schema/Section/Field model this design deliberately mirrors
+    - https://github.com/go-go-golems/glazed — Schema/Section/Field model this design deliberately mirrors
 Summary: A complete orientation and implementation guide for building the layer-section abstraction, the variable registry, and patch-style candidate proposals across optkit and rag-ttc, written for an engineer new to the codebase.
+LastUpdated: 0001-01-01T00:00:00Z
 WhatFor: Let a new contributor understand the experiment system end to end and implement the variable/section/candidate work without archaeology.
 WhenToUse: Read fully before touching optkit/space or rag-ttc's layered configuration; consult Part V while implementing.
 ---
+
 
 # Intern Guide: Layer Sections, Variables, and Candidate Proposals
 
