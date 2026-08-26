@@ -277,3 +277,55 @@ The user pressed on the pipeline screen: stages showed counts and chunk IDs, but
 
 - `git show 20e8d4621`: `pkg/ttc/search/service.go` (StageCandidate + constructors), `specialistapi/pipeline.go` (query lookup), `apps/.../layerwidgets/retrieval.tsx` (glossary + StageRecordView).
 - Validate: `GOWORK=off go test ./pkg/ttc/search/ ./pkg/ttc/specialistapi/`; frontend `pnpm test`; live — any stage row now opens with its explanation and candidate table. Evidence: `various/screenshots/15-stage-data.png`.
+
+## Step 5: Chunk content in the record — judge relevance, not counts
+
+The user's sharpest test yet: "nothing where I can actually look at the results and say 'well those were bad because XYZ, it retrieved a rose when it should have been a thuja'". Correct — stage tables had scores for chunk IDs, but content existed only for final survivors, so a chunk filtered mid-pipeline could never be read. Fixed at the recording layer: the search tool now resolves every chunk any stage touched through the content store at record time and stores a chunk catalog in the run's output.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok but retrieval.fused can't show me actual data from the runtime query, it just shows me the meta parameters, right? nothing where I can actually look at the results and say \"well those were bad because XYZ, it retrieved a rose when it should have been a thuja\" or so"
+
+**Assistant interpretation:** Make chunk content readable at every point a chunk ID appears — including candidates that were later filtered out — so a human can judge relevance directly.
+
+**Inferred user intent:** The autopsy workflow: read what was retrieved, in full, at each stage, and decide whether the pipeline's choices were right.
+
+**Commit (code):** 4ff578c1c — "Record chunk content with every run so candidates can be judged, not just counted"
+
+### What I did
+
+- `search.Service.DescribeChunks` resolves IDs via `content.Store.Chunks` plus the source catalog (title/URL); explicitly observability-only — store failure shortens the catalog, never fails retrieval.
+- `SearchOutput.ChunkCatalog` records every distinct chunk ID across all stages (first-appearance order) with document, title, and full text — including chunks the policy filter later removed.
+- `PipelineView.ChunkCatalog` decodes it from the output artifact (warning diagnostic on decode failure, never fatal).
+- UI: "Chunks this run touched" panel renders each chunk readable in full; `ChunkCatalogContext` lets `StageRecordView` add a "What it says" column and title to every candidate row. Stores without catalogs show "content not in catalog" chips.
+- Store recreated (`campaign:36ea7379…`); screenshot 16: chunk-c reads "The inventory table stores quantity and warehouse identifiers" — a reviewer can now see it was correctly filtered as restricted inventory data.
+
+### Why
+
+- Relevance is judged by reading, and the moment that matters is often a mid-pipeline drop. Content resolved at record time also keeps the sealed-record property: the catalog shows the corpus as it was during the run, not as it is later.
+
+### What worked
+
+- Single implementation point (`RunRoute`) covers all executors; build, full suite, lint green first try.
+
+### What didn't work
+
+- N/A — though note the catalog silently deduplicates by store response; unknown IDs are skipped by design.
+
+### What was tricky to build
+
+- Failure semantics: the catalog must never break retrieval, so `DescribeChunks` swallows store errors and returns what it can, and the projector degrades to a warning diagnostic. The UI states absence instead of hiding the column.
+
+### What warrants a second pair of eyes
+
+- Catalog size scales with corpus chunk length × touched chunks; at limit-50 with long chunks the output artifact could pass the 16 KiB preview cap, making the catalog invisible again (it's decoded, not previewed — actually unaffected; only the raw preview JSON disclosure is capped). Verify the decode path stays exempt from the preview cap as intended.
+- Sensitivity: the catalog embeds text of policy-FILTERED chunks in an `internal` artifact — deliberate for specialist review, but confirm this matches the sensitivity policy's intent (a restricted chunk's text now lives in the run output).
+
+### What should be done in the future
+
+- Ground-truth overlay: cases carry required/forbidden targets — marking each catalog chunk as "expected", "forbidden", or "incidental" in the stage tables would complete the rose-vs-thuja judgment at a glance.
+
+### Code review instructions
+
+- `git show 4ff578c1c`: `pkg/ttc/search/search.go` (catalog collection), `service.go` (DescribeChunks), `specialistapi/pipeline.go` (decode), `apps/.../PipelineScreen.tsx` + `layerwidgets/`.
+- Validate live: pipeline of any episode in campaign `campaign:36ea7379a2bc647ff16e6b0192c0a8f6` — read chunk-c's text in "Chunks this run touched". Evidence: `various/screenshots/16-chunk-content.png`.

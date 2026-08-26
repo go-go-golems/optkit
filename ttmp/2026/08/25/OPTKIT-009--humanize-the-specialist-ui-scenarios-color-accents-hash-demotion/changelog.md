@@ -40,3 +40,12 @@ Step 4: per-stage candidate recording (scores, channels, fusion contributions) i
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/search/service.go — StageCandidate recording in stage constructors
 
+
+## 2026-08-25
+
+Step 5: chunk catalog recorded with every run (content of all touched chunks incl. filtered ones); pipeline shows readable chunk panel and What-it-says column; store recreated (commit 4ff578c1c)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/search/search.go — ChunkCatalog collection in RunRoute
+
