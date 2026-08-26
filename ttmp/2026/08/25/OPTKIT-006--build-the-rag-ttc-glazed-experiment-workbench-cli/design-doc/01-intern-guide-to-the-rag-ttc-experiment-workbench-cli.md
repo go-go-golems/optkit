@@ -12,8 +12,18 @@ Owners: []
 RelatedFiles:
     - Path: repo://optkit/query/service.go
       Note: Read-only bounded projection precedent
+    - Path: repo://rag-ttc/assets/configs/experiments/optkit-rag/semantic-limit-v1.yaml
+      Note: Canonical offline operator manifest
+    - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/campaign_commands.go
+      Note: Glazed campaign command surface
     - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/command.go
       Note: Current Glazed durable campaign surface
+    - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/config.go
+      Note: Glazed configuration command surface
+    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/manifest.go
+      Note: Strict per-arm experiment manifest and identity contract
+    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/service.go
+      Note: Read-only planning and durable operator application service
     - Path: repo://rag-ttc/pkg/ttc/optimization/graph.go
       Note: Layered identity resolver
     - Path: repo://rag-ttc/pkg/ttc/optimization/invalidation.go
@@ -26,6 +36,7 @@ LastUpdated: 2026-08-25T23:58:00Z
 WhatFor: Teach a new engineer how experiment definitions become validated configuration graphs, durable Optkit campaigns, and structured operator output before the specialist UI is built.
 WhenToUse: Read before changing the RAG-TTC Optkit campaign CLI, experiment manifest, layered configuration model, or future projector API.
 ---
+
 
 
 # Intern Guide to the RAG-TTC Experiment Workbench CLI
@@ -231,11 +242,12 @@ The old top-level `run` and `inspect` commands may remain temporary aliases only
 
 #### `config inspect`
 
-Loads one manifest, validates it, resolves the graph, and emits one row per layer. Intended fields:
+Loads one manifest, validates it, resolves every arm graph, and emits one row per arm and layer. Intended fields:
 
 ```text
 manifest_schema
 manifest_id
+arm
 graph_id
 layer
 value_schema
@@ -253,7 +265,7 @@ Loads one manifest and emits a compact result row only after every validation ga
 ```text
 manifest_schema
 manifest_id
-graph_id
+graph_ids
 preparation
 arms
 cases
@@ -266,7 +278,7 @@ Invalid input returns an error and no success row.
 
 #### `config diff`
 
-Loads baseline and challenger manifests, resolves both graphs, calls `optimization.Diff`, and emits one row per canonical layer:
+Loads baseline and challenger manifests, selects `--before-arm` and `--after-arm`, resolves both arm graphs, calls `optimization.Diff`, and emits one row per canonical layer:
 
 ```text
 before_graph
@@ -301,7 +313,7 @@ Loads and validates the manifest without opening an Optkit profile. It emits exa
 
 ```text
 manifest_id
-graph_id
+graph_ids
 arms
 cases
 repeats
@@ -362,7 +374,7 @@ The manifest is a reviewed operator input, not the authoritative run record. Its
 - define at least two arms;
 - define at least one evaluation case;
 - define repeat count;
-- carry one complete layered configuration graph;
+- bind each executable arm to one complete layered configuration graph;
 - be strictly decoded;
 - derive a deterministic semantic ID.
 
@@ -378,15 +390,28 @@ repeats: 1
 
 arms:
   - id: limit-1
-    retrieval:
+    config:
       preparation: rag.semantic-fixture/v1
       route: default
       limit: 1
+    layers:
+      - schema: rag-ttc.layered-config-ref/v2
+        layer: corpus
+        value_schema: schema:rag-ttc.config.corpus/v1
+        identity: config:corpus:fixture-v1
+      # ...all twelve canonical layers...
+      - schema: rag-ttc.layered-config-ref/v2
+        layer: retrieval
+        value_schema: schema:rag-ttc.optkit-retrieval-config/v1
+        identity: config:2b5e54c46f...
+        depends_on: [config:indexes:fixture-v1]
   - id: limit-2
-    retrieval:
+    config:
       preparation: rag.semantic-fixture/v1
       route: default
       limit: 2
+    layers:
+      # ...a complete graph whose retrieval identity describes limit=2...
 
 cases:
   - id: placement-basics
@@ -399,16 +424,11 @@ cases:
     mode: authorization_negative
     query: Show me private staff notes
     forbidden_targets: [chunk:private-notes]
-
-layers:
-  - schema: rag-ttc.layered-config-ref/v2
-    layer: corpus
-    value_schema: rag-ttc.config.corpus/v1
-    identity: config:...
-  # all twelve canonical layers, with direct dependency identities
 ```
 
-For the first implementation, the checked-in example may derive its `layers` from the frozen optimization fixture. Operators can copy and modify complete manifests. A later authoring command can construct layer refs from typed value documents; it is not required to validate and execute v1.
+Each arm carries its own complete graph. This is not cosmetic duplication: the arm is the unit compared by the complete-block trial, so its executable retrieval config and its retrieval-layer identity must agree. Validation recomputes the retrieval `ConfigRef` from `arm.config` and rejects a manifest when the graph claims a different identity.
+
+The checked-in examples derive unchanged layer refs from the frozen optimization fixture and use content-derived retrieval refs for limits 1, 2, and 3. Operators can copy and modify complete manifests. A later authoring command can construct layer refs from typed value documents; it is not required to validate and execute v1.
 
 ### 5.3 Deterministic identity
 
@@ -463,19 +483,19 @@ Strict decoding must reject unknown fields. A typo such as `repeat: 3` must fail
 
 ```text
 rag-ttc/pkg/ttc/experimentworkbench/
-├── manifest.go       # schema, strict load, identity, validation
-├── plan.go           # dry-run and graph comparison services
-├── execution.go      # preparation registry and RunOptions construction
-├── verify.go         # journal + direct payload custody check
-└── testdata/
-    ├── semantic-limit-v1.yaml
-    └── semantic-limit-challenger-v1.yaml
+├── manifest.go       # schema, strict load, per-arm identity, validation
+├── manifest_test.go  # malformed and semantic contract tests
+├── service.go        # dry-run, diff, plan, execution, status, custody
+└── service_test.go   # durable run/resume integration proof
+
+rag-ttc/assets/configs/experiments/optkit-rag/
+├── semantic-limit-v1.yaml
+└── semantic-limit-challenger-v1.yaml
 
 rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/
-├── root.go
-├── config.go
-├── campaign.go
-├── rows.go
+├── command.go             # root, hidden legacy aliases, shared summary row
+├── config.go              # inspect, validate, diff, plan
+├── campaign_commands.go   # dry-run, run, resume, status, verify
 └── command_test.go
 ```
 
@@ -490,18 +510,18 @@ type Manifest struct { /* versioned operator input */ }
 
 type LoadedManifest struct {
     Path     string
-    ID       string
+    ID       ManifestID
     Manifest Manifest
-    Graph    optimization.Graph
+    Graphs   map[string]optimization.Graph // keyed by arm ID
 }
 
 func LoadManifest(ctx context.Context, path string) (LoadedManifest, error)
-func ValidateManifest(manifest Manifest) (optimization.Graph, error)
-func DryRun(loaded LoadedManifest, store string) DryRun
-func Compare(before, after LoadedManifest) (optimization.ConfigDiff, error)
-func Invalidation(before, after LoadedManifest) (optimization.InvalidationPlan, error)
+func ValidateManifest(manifest Manifest) (map[string]optimization.Graph, error)
+func BuildDryRun(loaded LoadedManifest, store string) DryRun
+func Compare(before LoadedManifest, beforeArm string, after LoadedManifest, afterArm string) (optimization.ConfigDiff, error)
+func Invalidation(before LoadedManifest, beforeArm string, after LoadedManifest, afterArm string) (optimization.InvalidationPlan, error)
 
-func NewRunOptions(loaded LoadedManifest, store string, reset bool) (optkitcampaign.RunOptions, error)
+func Run(ctx context.Context, loaded LoadedManifest, store string, reset bool) (optkitcampaign.Summary, error)
 func Resume(ctx context.Context, store string, campaign record.CampaignID) (optkitcampaign.Summary, error)
 func Status(ctx context.Context, store string, campaign record.CampaignID) (optkitcampaign.Summary, error)
 func Verify(ctx context.Context, store string, campaign record.CampaignID) (Verification, error)
@@ -545,7 +565,8 @@ experimentworkbench.LoadManifest
   +--> read bounded file
   +--> strict YAML decode
   +--> validate envelope, arms, cases
-  +--> optimization.NewGraph(layers)
+  +--> optimization.NewGraph(arm.layers) for every arm
+  +--> recompute and match each executable retrieval identity
   +--> derive semantic manifest ID
   v
 LoadedManifest
@@ -564,7 +585,7 @@ func validateCommand(ctx, settings, processor) error {
 
     return processor.AddRow(ctx, row(
         "manifest_id", loaded.ID,
-        "graph_id", loaded.Graph.ID,
+        "graph_ids", graphIDsInArmOrder(loaded),
         "arms", len(loaded.Manifest.Arms),
         "cases", len(loaded.Manifest.Cases),
         "episodes", loaded.EpisodeCount(),
@@ -576,9 +597,9 @@ func validateCommand(ctx, settings, processor) error {
 ### 7.2 Compare two configurations
 
 ```text
-baseline YAML --> strict load --> Graph A --+
-                                           +--> optimization.Diff/Plan --> rows
-challenger YAML -> strict load --> Graph B -+
+baseline YAML + --before-arm --> Graph A --+
+                                            +--> optimization.Diff/Plan --> rows
+challenger YAML + --after-arm -> Graph B ---+
 ```
 
 The workbench does not compare YAML text. Comments, formatting, and field order are irrelevant. `Diff` compares local semantic identities. `Plan` compares resolved dependency digests and distinguishes:
@@ -876,11 +897,14 @@ Representative commands:
 
 ```bash
 rag-ttc experiment optkit-rag config validate \
-  --manifest pkg/ttc/experimentworkbench/testdata/semantic-limit-v1.yaml \
+  --manifest assets/configs/experiments/optkit-rag/semantic-limit-v1.yaml \
   --format json
 
 rag-ttc experiment optkit-rag config plan \
-  --before baseline.yaml --after challenger.yaml \
+  --before assets/configs/experiments/optkit-rag/semantic-limit-v1.yaml \
+  --before-arm limit-2 \
+  --after assets/configs/experiments/optkit-rag/semantic-limit-challenger-v1.yaml \
+  --after-arm limit-3 \
   --format table
 
 rag-ttc experiment optkit-rag campaign dry-run \
@@ -970,11 +994,11 @@ Rejected for this ticket. A CLI command must not imply safe campaign cancellatio
 
 ### Risk: manifest and campaign spec drift
 
-The manifest contains a layered graph while the current `CampaignSpec` stores retrieval arms and cases but not the graph. Phase 3 should either persist the graph as a campaign-reachable artifact or clearly report that the v1 campaign executes the retrieval subset only. The preferred follow-up is to attach manifest and graph artifacts during campaign creation.
+The implementation now persists `ManifestID` and the resolved `ConfigGraphs` map in `CampaignSpec`, keyed by arm ID. This prevents the future projector from reconstructing configuration intent from command arguments. A later custody enhancement should store the original manifest bytes as a separate CAS artifact and verify nested graph/materialization refs transitively.
 
 ### Risk: semantic-fixture scope looks broader than it is
 
-A manifest can name all twelve layers, but the first executor varies retrieval limits only. The CLI must not claim that context, answer, or judge layers were executed. The graph is planning metadata until corresponding producers materialize those stages.
+Every arm names all twelve layers, but the first executor varies retrieval limits only. The CLI must not claim that context, answer, or judge layers were executed. Per-arm graphs are persisted planning and attribution metadata; only emitted trajectories and results prove materialized stages.
 
 ### Risk: verification wording
 
@@ -1037,7 +1061,7 @@ A reviewer should verify:
 - `rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/config.go` — config commands.
 - `rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/campaign.go` — campaign commands.
 - `rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/rows.go` — stable row mappings.
-- `rag-ttc/pkg/ttc/experimentworkbench/testdata/` — baseline/challenger manifests.
+- `rag-ttc/assets/configs/experiments/optkit-rag/` — baseline/challenger operator manifests.
 
 ## 18. Definition of done
 
