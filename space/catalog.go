@@ -72,8 +72,7 @@ func (c Catalog) Lookup(id VariableID) (VariableDescriptor, bool) {
 	for _, section := range c.sections {
 		for _, variable := range section.Variables {
 			if variable.ID == id {
-				copyVariable := cloneSection(Section{Variables: []VariableDescriptor{variable}}).Variables[0]
-				return copyVariable, true
+				return cloneVariableDescriptor(variable), true
 			}
 		}
 	}

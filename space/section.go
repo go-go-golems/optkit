@@ -53,13 +53,17 @@ func cloneSection(section Section) Section {
 	copySection := section
 	copySection.Variables = make([]VariableDescriptor, len(section.Variables))
 	for index, variable := range section.Variables {
-		copyVariable := variable
-		copyVariable.Default = append([]byte(nil), variable.Default...)
-		copyVariable.Probes = append([]string(nil), variable.Probes...)
-		copyVariable.Value = cloneValueSpec(variable.Value)
-		copySection.Variables[index] = copyVariable
+		copySection.Variables[index] = cloneVariableDescriptor(variable)
 	}
 	return copySection
+}
+
+func cloneVariableDescriptor(variable VariableDescriptor) VariableDescriptor {
+	copyVariable := variable
+	copyVariable.Default = append([]byte(nil), variable.Default...)
+	copyVariable.Probes = append([]string(nil), variable.Probes...)
+	copyVariable.Value = cloneValueSpec(variable.Value)
+	return copyVariable
 }
 
 func cloneValueSpec(spec ValueSpec) ValueSpec {
