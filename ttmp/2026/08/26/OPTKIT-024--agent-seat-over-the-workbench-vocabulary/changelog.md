@@ -4,3 +4,12 @@
 
 - Initial workspace created
 
+
+## 2026-08-26
+
+Created ticket and wrote the intern guide: pbui-chat vocabulary export, mentions, verb-router families with actor attribution, draft co-editing over the shared workbench document, Proposer/approval provenance, authorization-as-safety, implementation sketch and exclusions.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-024--agent-seat-over-the-workbench-vocabulary/design-doc/01-intern-guide-agent-seat-over-the-workbench-vocabulary.md — Primary design guide
+
