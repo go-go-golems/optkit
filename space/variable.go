@@ -124,8 +124,7 @@ func NewVariable[C, V any](metadata VariableMetadata, lens Lens[C, V], domain Do
 	return variable, nil
 }
 
-func (v Variable[C, V]) Validate() error {
-	d := v.Descriptor
+func (d VariableDescriptor) Validate() error {
 	if err := d.ID.Validate(); err != nil {
 		return err
 	}
@@ -141,11 +140,39 @@ func (v Variable[C, V]) Validate() error {
 	if strings.TrimSpace(d.Long) == "" {
 		return fmt.Errorf("variable %s requires long documentation", d.ID)
 	}
+	if err := d.ValueSchema.Validate(); err != nil {
+		return fmt.Errorf("variable %s value schema: %w", d.ID, err)
+	}
 	if strings.TrimSpace(d.BindingVersion) == "" {
 		return fmt.Errorf("variable %s requires a binding version", d.ID)
 	}
 	if err := d.CostHint.Validate(); err != nil {
 		return fmt.Errorf("variable %s: %w", d.ID, err)
+	}
+	if err := d.Value.Validate(); err != nil {
+		return fmt.Errorf("variable %s value spec: %w", d.ID, err)
+	}
+	if len(d.Default) > 0 {
+		canonical, err := canonicalRawJSON(d.Default)
+		if err != nil {
+			return fmt.Errorf("variable %s default: %w", d.ID, err)
+		}
+		if !bytes.Equal(d.Default, canonical) {
+			return fmt.Errorf("variable %s default must be canonical JSON", d.ID)
+		}
+	}
+	for index, probe := range d.Probes {
+		if strings.TrimSpace(probe) == "" {
+			return fmt.Errorf("variable %s probe %d is blank", d.ID, index)
+		}
+	}
+	return nil
+}
+
+func (v Variable[C, V]) Validate() error {
+	d := v.Descriptor
+	if err := d.Validate(); err != nil {
+		return err
 	}
 	if err := v.Lens.Validate(); err != nil {
 		return fmt.Errorf("variable %s: %w", d.ID, err)
@@ -158,9 +185,6 @@ func (v Variable[C, V]) Validate() error {
 	}
 	if d.ValueSchema != v.Codec.Schema() {
 		return fmt.Errorf("variable %s descriptor schema %s differs from codec schema %s", d.ID, d.ValueSchema, v.Codec.Schema())
-	}
-	if err := d.Value.Validate(); err != nil {
-		return fmt.Errorf("variable %s value spec: %w", d.ID, err)
 	}
 	derived, err := v.Domain.Descriptor(v.Codec)
 	if err != nil {
