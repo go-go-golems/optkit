@@ -10,6 +10,6 @@
 - [x] Paired case table with opaque-cursor pagination and dual episode links <!-- t:d11r -->
 - [x] Episode pipeline view preserving server stage order, previews and preview_reason <!-- t:txrd -->
 - [x] Provenance view with copyable IDs, artifact sensitivity/size, no local path assumptions <!-- t:t5ij -->
-- [ ] Loading, empty, diagnostic, API-error states; keyboard access and deep links <!-- t:c5de -->
+- [x] Loading, empty, diagnostic, API-error states; keyboard access and deep links <!-- t:c5de -->
 - [x] Component tests against archived fixtures (MSW) <!-- t:9ifb -->
-- [ ] Validate against live server and acceptance checklists <!-- t:h832 -->
+- [x] Validate against live server and acceptance checklists <!-- t:h832 -->

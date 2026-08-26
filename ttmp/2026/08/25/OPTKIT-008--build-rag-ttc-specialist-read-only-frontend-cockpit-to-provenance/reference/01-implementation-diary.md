@@ -10,6 +10,8 @@ DocType: reference
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: ws://rag-ttc/apps/specialist/README.md
+      Note: Run instructions and semantics contract for the app (commit 27aa79671)
     - Path: ws://rag-ttc/apps/specialist/web/src/api/specialistApi.ts
       Note: RTK Query endpoints and error normalization for specialist-api/v1 (commit 09a911ae5)
     - Path: ws://rag-ttc/apps/specialist/web/src/screens/ComparisonScreen.tsx
@@ -24,6 +26,7 @@ LastUpdated: 2026-08-25T21:25:00-04:00
 WhatFor: Record what was built, what failed, and how to review the specialist UI work.
 WhenToUse: Read before resuming or reviewing OPTKIT-008 frontend work.
 ---
+
 
 
 # Diary
@@ -103,3 +106,73 @@ Read the OPTKIT-007 frontend handoff and all six archived API fixtures, then bui
 
 - Routes: `/` (campaign entry), `/campaigns/:campaign`, `/campaigns/:campaign/compare/:baseline/:treatment` (+ `?after=` cursor), `/campaigns/:campaign/episodes/:episode/pipeline`, `/campaigns/:campaign/episodes/:episode/provenance`.
 - Dev proxy: `vite.config.ts` proxies `/api` to `http://127.0.0.1:8090`; dev server on port 5197.
+
+## Step 2: Live-server validation, screenshot walkthrough, and fidelity fixes
+
+Built the rag-ttc binary, ran the deterministic campaign into `/tmp/rag-specialist`, served the specialist API, and drove the real UI with Playwright through the full workflow: entry → cockpit → arm selection → comparison → baseline episode pipeline → provenance → bad-deep-link error state → keyboard focus check. Fixed three visual/fidelity defects the screenshots exposed, re-ran the suite (28/28), and archived the walkthrough screenshots in the ticket.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 1)
+
+**Assistant interpretation:** Complete the "validate the implementation against the acceptance checklists" part of the brief against the live server, not just fixtures.
+
+**Inferred user intent:** Confidence that the app works end-to-end against the real read-only API, with evidence.
+
+**Commit (code):** 316800111 — "Specialist UI: live-validation fixes"; 27aa79671 — "Specialist UI: add app README with run and semantics notes"
+
+### What I did
+
+- Built rag-ttc (`GOWORK=off go build`), ran `campaign run` (campaign `campaign:d0e2d0dade11386980811d9013bbf1ea`, journal seq 47), started `campaign serve` and `pnpm dev` in tmux session `specialist`.
+- Port 8090 was already occupied by an unrelated local app (`pbui-chat`), which I did not kill; instead the API serves on 8091 and `vite.config.ts` now honours a `SPECIALIST_API` env override for the proxy target (default stays 8090 per the handoff).
+- Walked every screen with Playwright, took full-page screenshots, and archived them under `various/screenshots/` in this ticket (01-cockpit … 06-focus).
+- Fixed defects found in the screenshots (see below), added an inline-SVG monochrome favicon, wrote `apps/specialist/README.md`.
+- Checked all acceptance checklists from the handoff (results in Technical details).
+
+### Why
+
+- The fixtures freeze one journal point; only the live server proves the proxy, URL encoding of `:`-bearing IDs, and the real error bodies.
+
+### What worked
+
+- The full workflow works end-to-end on first run: deep links with encoded IDs, both-arm pipeline links, provenance custody table (17 edges), and the 404 screen showing the server's real body (`cockpit_unavailable: campaign campaign:doesnotexist not found`).
+- Keyboard-only operation: Tab reaches every control, dotted System-1 focus outlines are visible, radios + submit work without a pointer.
+
+### What didn't work
+
+- `tmux new-session` for the API server died silently (window vanished): `Error: serve specialist API: listen tcp 127.0.0.1:8090: bind: address already in use` — an unrelated `pbui-chat` process owns 8090. Resolved with the `SPECIALIST_API` proxy override on 8091 rather than killing someone else's process.
+- The disabled "Compare arms" button rendered garbled: the dither-as-text-color trick (`background-clip: text` over transparent text) breaks with the button's own background. Replaced with a dashed border + #878787 ink, which reads as dithered at UI sizes.
+- `table.grid th { text-transform: uppercase }` applied to row headers too, so opaque IDs displayed as `Q-HYBRID` — a data-fidelity bug (IDs' casing is data). Scoped the label treatment to `thead th`.
+
+### What I learned
+
+- Campaign IDs are per-invocation (fixture: `campaign:53e7…`, live run: `campaign:d0e2…`) while the trial ID is deterministic (`trial:505a28c9…` matches the fixture) — reinforcing that campaign IDs must come from the operator, never be assumed.
+- The live `/health` route responds at `/api/rag/v1/health` with `read_only: true`; probing any other path 404s, which initially masqueraded as "server down" when the wrong process owned the port.
+
+### What was tricky to build
+
+- Diagnosing the 404s: the health endpoint returned `404 page not found`, which looked like a routing bug in the new serve command. The actual cause was a different process on 8090 answering all paths with its own 404. Symptom that cracked it: the tmux window for the serve command had disappeared, and re-running serve in the foreground printed the bind error. Lesson: when a fresh server 404s everything, check who owns the port before reading route code.
+
+### What warrants a second pair of eyes
+
+- The `SPECIALIST_API` override reads `process.env` in `vite.config.ts` — dev-only, but confirm it should not instead become a documented `.env` convention for the team.
+- Screenshots show the hatch at 28% black; verify on a real display that transitive-change badges stay clearly distinct from unchanged (dashed) at 100% zoom.
+
+### What should be done in the future
+
+- N/A — deferred screens (chunk lab, answer studio, calibration, Pareto, promotion) are explicitly out of scope per the handoff.
+
+### Code review instructions
+
+- Diff of this step: `git show 316800111` in rag-ttc (CSS scoping, disabled button, hatch density, favicon, proxy override).
+- Reproduce validation: build rag-ttc, `campaign run` + `campaign serve --listen 127.0.0.1:8091`, then `SPECIALIST_API=http://127.0.0.1:8091 pnpm dev` and open `/`, paste the campaign ID from the run output.
+- Evidence: `various/screenshots/01-cockpit.png` … `06-focus.png` in this ticket.
+
+### Technical details
+
+Acceptance checklist results (handoff §Screen acceptance checklist):
+
+- Cockpit: integrity badge visible (verified/not-verified inverted on failure); queued/active/failed_terminal counts always rendered, failed count inverted when non-zero; budget violation renders an inverted "budget violated" badge; arm means and estimates use `OptionalNumber` (missing → dithered "unknown", zero → 0.000 only when present); baseline/challenger chosen by explicit per-row radios. ✓
+- Comparison: direct = solid ink badge, transitive = hatched badge, unchanged = dashed; metric pair count in table; each case row links to both baseline and challenger pipeline + provenance; non-measured statuses render as words on dither. ✓
+- Pipeline: stages in server `seq` order (test-asserted against fixture order); in→out counts with delta and chunk-ID chips; `preview_reason` mapped to sentences with metadata retained; diagnostics panel always present. ✓
+- Provenance: manifest/graph/snapshot/episode/trial/result/trajectory/output all copyable `IdChip`s; sensitivity + size on every artifact and custody edge; no filesystem paths anywhere; explicit footnote that digests are not cryptographic signatures. ✓
