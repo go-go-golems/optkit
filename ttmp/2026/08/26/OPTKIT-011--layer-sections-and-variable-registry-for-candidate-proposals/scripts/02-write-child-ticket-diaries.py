@@ -180,7 +180,7 @@ The design preserves the backend-first dependency order. It records concrete API
 
 **User prompt (verbatim):**
 
-> {PROMPT.replace(chr(10), chr(10) + '> ')}
+{chr(10).join(('> ' + line) if line else '>' for line in PROMPT.split(chr(10)))}
 
 **Follow-up user prompt (verbatim):**
 
