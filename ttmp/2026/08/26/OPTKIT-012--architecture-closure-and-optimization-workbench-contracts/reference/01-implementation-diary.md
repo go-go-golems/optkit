@@ -16,16 +16,21 @@ RelatedFiles:
       Note: Overall program context that keeps the ticket aligned
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
       Note: Primary design deliverable whose research and delivery this diary records
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/scripts/contractproof/main.go
+      Note: Architecture contract experiment and pure/durable parity proof
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/various/remarkable-dry-run.log
       Note: Ticket bundle selection and destination dry-run evidence
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/various/remarkable-upload.log
       Note: Successful rendered PDF upload receipt
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/various/work-slips/00-ticket-plan.log
+      Note: Successful ticket plan slip print evidence
 ExternalSources: []
 Summary: Chronological research, design, implementation, validation, and delivery record for OPTKIT-012.
 LastUpdated: 2026-08-26T14:20:20.42211384-04:00
 WhatFor: ""
 WhenToUse: ""
 ---
+
 
 
 # Diary

@@ -22,3 +22,12 @@ Validated and committed the intern guide/diary package in 428f6b8f5391dc851d9893
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/reference/01-implementation-diary.md — Validation commit and delivery record
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/various/remarkable-upload.log — Explicit successful reMarkable upload evidence
+
+## 2026-08-26
+
+Accepted six architecture decisions, locked the explicit v2/no-adapter compatibility policy, documented identity matrices, and proved generic binding erasure with a compile/runtime experiment
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md — Normative accepted contracts and identity policy
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/scripts/contractproof/main.go — Generic binding compile/runtime proof

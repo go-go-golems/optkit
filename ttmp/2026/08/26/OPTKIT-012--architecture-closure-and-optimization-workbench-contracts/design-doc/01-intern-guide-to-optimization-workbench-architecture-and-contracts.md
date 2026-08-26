@@ -22,6 +22,8 @@ RelatedFiles:
         Current typed variable and descriptor contract
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
       Note: Parent program goals dependencies exclusions and exit gates
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/scripts/contractproof/main.go
+      Note: Compile/runtime proof for accepted generic Binding contract
     - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/service.go
       Note: |-
         Existing application-service and CLI boundary extended by proposal services
@@ -38,6 +40,7 @@ LastUpdated: 2026-08-26T14:20:20.214725622-04:00
 WhatFor: Give an intern the complete contract and package map that must be accepted before implementing OPTKIT-013 through OPTKIT-020.
 WhenToUse: Read before changing Optkit variable metadata, RAG pipeline configuration, proposal authoring, manifests, campaign persistence, APIs, or the workbench UI.
 ---
+
 
 
 # Intern Guide to Optimization Workbench Architecture and Contracts
@@ -123,7 +126,7 @@ This ticket designs those answers. It does not implement the child tickets.
 - **Decision:** Introduce a typed `optimization.PipelineConfig`. Optkit snapshots for new RAG campaigns contain that aggregate. The optimization graph is derived from it.
 - **Rationale:** One semantic value can be patched by generic Optkit mechanics and can deterministically derive every local layer identity. Typed layer structs preserve validation and codec behavior.
 - **Consequences:** The campaign system/schema changes. Initially frozen layers still require explicit versioned values. Package ownership must avoid an `optimization ↔ optkitcampaign` cycle.
-- **Status:** proposed for acceptance in this ticket.
+- **Status:** accepted on 2026-08-26. OPTKIT-014 implements this contract.
 
 Recommended shape:
 
@@ -183,7 +186,7 @@ return NewGraph(refs)
 - **Decision:** `Catalog` stores serializable metadata. `Bindings[C]` stores type-erased executable adapters created from typed `Variable[C,V]` values. One registration operation emits both.
 - **Rationale:** This keeps one mutation algebra and makes descriptor/binding agreement testable by construction.
 - **Consequences:** The binding adapter needs canonical decode, pure apply, and durable assignment operations. Registration rejects duplicate IDs and metadata mismatches.
-- **Status:** proposed.
+- **Status:** accepted on 2026-08-26. OPTKIT-013 implements this contract.
 
 Domain-neutral contracts:
 
@@ -248,7 +251,7 @@ The existing `DomainDescriptor` (`optkit/space/domain.go:8-13`) supports integer
 - **Decision:** Use a small workbench value specification, not a UI layout DSL.
 - **Rationale:** It expresses legality and transport values without coupling Optkit to React components.
 - **Consequences:** Every kind has explicit validation; unknown kinds fail closed; choices retain canonical values and labels.
-- **Status:** proposed.
+- **Status:** accepted on 2026-08-26. `ValueSpec` is intentionally smaller than JSON Schema and carries canonical machine values.
 
 ```go
 type ValueKind string
@@ -295,7 +298,7 @@ Stable identity fields are distinct:
 - **Decision:** Include parent, patch, child, proposer, strategy, hypothesis, expected improvement, regression risks, and motivating evidence references. Exclude `CreatedAt` and catalog documentation prose.
 - **Rationale:** Two proposals with different hypotheses or declared risks are different reviewed candidates even if they test the same patch. Wall-clock time does not change semantics.
 - **Consequences:** Editing sealed intent creates a new candidate. UI copy changes do not.
-- **Status:** proposed.
+- **Status:** accepted on 2026-08-26. Candidate identity advances to a new schema rather than retaining dual intent fields.
 
 Recommended semantic intent:
 
@@ -327,7 +330,7 @@ Canonicalize set-like collections before identity computation. Preserve order on
 - **Decision:** Compute a semantic ID from machine meaning and a full catalog ID from the complete descriptor set. Seal the catalog as an artifact and persist its reference with the candidate/campaign.
 - **Rationale:** Semantic identity can remain stable across copy edits while historical rendering can recover exact authored documentation.
 - **Consequences:** The campaign spec/proposal envelope gains catalog provenance. Readers must prefer the sealed artifact for historical candidates.
-- **Status:** proposed.
+- **Status:** accepted on 2026-08-26. OPTKIT-013 provides both digests; OPTKIT-017 persists the full artifact reference.
 
 Identity split:
 
@@ -348,7 +351,7 @@ Candidate identity includes `SemanticCatalogID`. The durable proposal stores the
 - **Decision:** Keep specialist projectors historical and read-only. Add a transport-independent workbench application service; CLI and HTTP are adapters.
 - **Rationale:** Manifests, CLI, and browser authoring then share behavior. Read projections remain deterministic and do not acquire write dependencies.
 - **Consequences:** The server composition root may host both handler groups, but package dependencies and route namespaces remain distinct.
-- **Status:** proposed.
+- **Status:** accepted on 2026-08-26. `specialistapi` remains read-only.
 
 ```go
 type Compiler interface {
@@ -531,6 +534,40 @@ If compatibility is required, it becomes explicit scope with fixtures and tests:
 - never reinterpret a v1 retrieval snapshot as a v2 pipeline snapshot.
 
 This ticket's acceptance review must record one of those policies.
+
+## 13.1 Accepted identity matrix
+
+The following matrix is normative for OPTKIT-013 through OPTKIT-017. “Included” means the canonical value is hashed under the named identity schema; “excluded” means it can change without changing that identity.
+
+| Persisted concept | Included in semantic identity | Excluded from semantic identity | Schema/migration consequence |
+|---|---|---|---|
+| Candidate v2 | parent, patch, child, proposer kind/identity, strategy, hypothesis, expected-improvement metric/groups, ordered risks, motivating case IDs/diagnostic digest, semantic catalog ID | creation time, catalog labels and prose, full catalog artifact digest | New `schema:optkit.candidate-identity/v2`; old v1 candidates remain historical records and are not re-hashed |
+| Semantic catalog v1 | section IDs/order, variable IDs/order, value schemas/specs, canonical defaults, sensitivity, cost hint, binding version, probes | section/variable labels, Short/Long prose | Documentation-only edits retain semantic ID; legality or executable-version edits change it |
+| Full catalog v1 | every serialized catalog field including ordering and prose | computed ID fields themselves | Any exact catalog change creates a new full ID and artifact |
+| Pipeline snapshot v2 | system ID, pipeline schema ID, canonical full `PipelineConfig` artifact digest | timestamps and process-local runtime objects | New system/schema IDs produce new snapshots; v1 retrieval snapshots are not reinterpreted |
+| Layer `ConfigRef` | layer, value schema, canonical local layer value, direct dependency local IDs | display copy and resolved transitive digest | Aggregate-derived identities replace hand-authored fixture labels for new graphs |
+| Resolved graph | canonical twelve refs plus resolved dependency digests | authoring source path and wall-clock time | Equivalent aggregate values are stable; changed layer values invalidate the expected suffix |
+| Patch | base, sorted assignment records, result snapshot | creation time and proposal prose | Existing patch identity behavior is retained |
+
+Set-like normalization is deliberately narrow. Expected-improvement groups and motivating case IDs are sorted and deduplicated before candidate identity; risks retain authored order because review order can convey priority. Stored prose is not silently trimmed: required prose is validated as non-blank, then hashed exactly as stored.
+
+## 13.2 Accepted compatibility policy
+
+The repository policy against unrequested adapters is accepted as the implementation rule:
+
+- new aggregate snapshots, manifests, candidates, and catalogs use explicit new schema IDs;
+- current checked-in authoring assets are migrated to the new manifest/config shape;
+- new code does **not** add v1 aliases, dual fields, fallback decoders, or automatic conversion;
+- historical v1 stores remain immutable historical facts readable with the version of the software that created them or through already exported projections;
+- a v1 retrieval snapshot is never loaded as a v2 `PipelineConfig` snapshot;
+- resuming or mutating a v1 campaign with the v2 authoring path is unsupported and fails at the schema boundary;
+- later compatibility work requires a separately approved ticket with exact fixtures and read-only/resume semantics.
+
+“Retain current full-arm form” in the architect brief is interpreted as retaining explicit full-arm authoring capability, not retaining the old duplicated `config + layers` wire shape. The v2 full-arm form supplies one complete `pipeline` value and derives its graph.
+
+## 13.3 Contract proof evidence
+
+The compile/runtime experiment at `scripts/contractproof/main.go` demonstrates that Go 1.23 can erase `Variable[C,V]` behind `Binding[C]` while sharing the actual codec, domain, and lens for both pure drafting and durable `PatchBuilder` assignment. It normalizes JSON ` 3 ` to canonical `3`, applies it without stores, replays it durably, and asserts equal child configuration. `go run` and `go vet` pass. The current dependency scan also succeeds without an import cycle.
 
 ## 14. Implementation plan for architecture closure
 

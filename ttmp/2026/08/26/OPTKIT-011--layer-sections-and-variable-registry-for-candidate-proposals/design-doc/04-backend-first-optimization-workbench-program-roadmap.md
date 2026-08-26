@@ -332,7 +332,7 @@ The ticket index and `tasks.md` of each child ticket are authoritative for local
 
 | Ticket | Program role | Entry dependency | Current state |
 | --- | --- | --- | --- |
-| OPTKIT-012 | Architecture contracts | OPTKIT-011 | guide validated and delivered; implementation pending |
+| OPTKIT-012 | Architecture contracts | OPTKIT-011 | six decisions and v2 migration policy accepted; downstream handoff in progress |
 | OPTKIT-013 | Generic catalog and bindings | OPTKIT-012 | guide validated and delivered; implementation pending |
 | OPTKIT-014 | Aggregate RAG configuration | OPTKIT-012/013 | guide validated and delivered; implementation pending |
 | OPTKIT-015 | First real RAG variables | OPTKIT-013/014 | guide validated and delivered; implementation pending |
@@ -399,9 +399,9 @@ A downstream ticket starts only when its upstream contract has fresh test and re
 6. **Frontend semantic duplication.** Existing labels and simulations are useful precedents but must migrate to backend catalog and compiler outputs.
 7. **False preview fidelity.** Deterministic scalar operations may run locally when parity-tested; expensive prompt generation remains bounded and server-side.
 
-## Open decision requiring explicit resolution
+## Accepted compatibility decision
 
-The architect brief recommends that old stores continue to open, while repository guidance says not to add compatibility adapters unless requested. OPTKIT-012 owns the decision. Until it is accepted, later guides describe both migration consequences but may not silently implement a shim.
+On 2026-08-26 OPTKIT-012 accepted explicit v2 schemas with no v1 aliases, dual-field decoding, or automatic store/manifest conversion. Checked-in authoring assets migrate to the aggregate v2 shape. Historical v1 stores remain immutable evidence and are not reinterpreted or resumed by v2 code. Any future v1 reader requires a separately approved compatibility ticket with named fixtures and support boundaries.
 
 ## References
 
