@@ -679,9 +679,12 @@ No React authoring UI was added. The accepted program assigns UI composition to 
 
 **Commit (RAG-TTC):** `f3d42719dd7cb0fef8c75db54295d09ea6320135` — "OPTKIT-018: publish frontend workbench contract types"
 
+**Commit (RAG-TTC):** `07e3bbe85fdee46b0d6e98d17e7e94988382ade0` — "OPTKIT-018: redact sensitive binding diagnostics"
+
 ### What I did
 
 - Added TypeScript candidate, catalog, domain, pipeline, graph, draft, preview, seal, and error types.
+- Redacted codec/domain/apply error details for variables whose sealed descriptor is sensitive, with a direct secret-value regression test.
 - Exported sanitized live health/catalog/compile/preview/seal/cockpit/error JSON.
 - Ran full RAG-TTC lint, tests, vet, build, focused race, and dependency scan.
 - Ran specialist TypeScript check, 45 tests, and production build.

@@ -418,7 +418,7 @@ Run live server tests in tmux per workspace guidance and stop it cleanly after c
 
 ## 17. Implementation outcome
 
-Implemented on 2026-08-26 in RAG-TTC commits `3144759e`, `8c263f75`, `9952f13d`, `bf734fda`, `b675fb6d`, `4c38094a`, and `f3d42719`.
+Implemented on 2026-08-26 in RAG-TTC commits `3144759e`, `8c263f75`, `9952f13d`, `bf734fda`, `b675fb6d`, `4c38094a`, `f3d42719`, and `07e3bbe8`.
 
 ### Historical candidate projection
 
@@ -469,7 +469,7 @@ artifact.write.restricted
 
 `Principal` is an `actor:` identity. Seal rejects a caller-supplied different proposer and always binds the persisted proposer identity to the authenticated principal. The composed local server requires an explicit secret `--workbench-token` and validated `--workbench-actor`; bearer comparison is constant-time.
 
-Application errors carry stable codes and safe messages. HTTP status mapping uses typed errors rather than message searches. Internal causes are never emitted. Command requests require `application/json`, are limited to 1 MiB, disallow unknown fields, reject trailing JSON, and propagate cancellation. Seal accepts exactly one `Idempotency-Key` header and no body alias. Responses include request correlation and security headers; command and error responses use `Cache-Control:no-store`.
+Application errors carry stable codes and safe messages. HTTP status mapping uses typed errors rather than message searches. Internal causes are never emitted. Compiler diagnostics also redact binding/domain/apply details for descriptors marked sensitive while retaining stable codes and variable IDs. Command requests require `application/json`, are limited to 1 MiB, disallow unknown fields, reject trailing JSON, and propagate cancellation. Seal accepts exactly one `Idempotency-Key` header and no body alias. Responses include request correlation and security headers; command and error responses use `Cache-Control:no-store`.
 
 The HTTP handlers parse/authenticate, call applications, and project results only. Compiler, preview, parent resolution, state/idempotency, and sealing behavior remain outside transport code.
 

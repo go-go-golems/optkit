@@ -60,3 +60,19 @@ Printed and audited complete seven-phase workbench API work-slip sequence
 ### Related Files
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-018--candidate-projections-and-workbench-command-api/various/work-slip-audit.log — Machine-checked 15-receipt print audit
+
+## 2026-08-26
+
+Hardened compiler diagnostics to redact sensitive binding values (RAG-TTC 07e3bbe8)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/experimentworkbench/proposal.go — Sensitive descriptor diagnostic redaction
+
+## 2026-08-26
+
+Uploaded final completed API bundle including sensitive diagnostic hardening
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-018--candidate-projections-and-workbench-command-api/various/remarkable-implementation-upload.log — Final implementation upload receipt
