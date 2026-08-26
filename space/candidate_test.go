@@ -77,6 +77,17 @@ func TestCandidateIdentityIncludesSemanticIntentAndExcludesTime(t *testing.T) {
 	}
 }
 
+func TestCandidateIntentValidatesWithoutDurableIdentities(t *testing.T) {
+	intent := baseCandidateIntent()
+	if err := intent.Validate(); err != nil {
+		t.Fatalf("valid candidate intent rejected: %v", err)
+	}
+	intent.Hypothesis = ""
+	if err := intent.Validate(); err == nil {
+		t.Fatal("incomplete candidate intent accepted")
+	}
+}
+
 func TestCandidateNormalizesOnlySetLikeCollections(t *testing.T) {
 	catalog := record.SumBytes([]byte("catalog"))
 	first := baseCandidateIntent()
@@ -117,6 +128,9 @@ func TestCandidateRejectsIncompleteOrAmbiguousIntent(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			intent := baseCandidateIntent()
 			test.mutate(&intent)
+			if err := intent.Validate(); err == nil {
+				t.Fatal("invalid standalone intent accepted")
+			}
 			if _, err := NewCandidate("snapshot:parent", "patch:change", "snapshot:child", intent, catalog, time.Now()); err == nil {
 				t.Fatal("invalid candidate accepted")
 			}
