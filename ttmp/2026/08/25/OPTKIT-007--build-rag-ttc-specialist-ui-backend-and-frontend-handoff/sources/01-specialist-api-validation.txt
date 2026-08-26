@@ -1,0 +1,14 @@
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/specialistapi	1.087s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/experimentworkbench	0.331s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag	0.018s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/specialistapi	7.658s
+SPECIALIST_HEALTH=PASS
+COCKPIT_API=PASS
+COMPARISON_API=PASS
+CASE_PAGINATION=PASS
+PIPELINE_API=PASS
+PROVENANCE_API=PASS
+READ_ONLY_AND_ERRORS=PASS
+CAMPAIGN=campaign:53e7cdb6a9493fd2481e6171dd1e83db
+EPISODE=episode:fe8ad4cacd2d73c9040f101207e23de797c0b4ebe7d68ba46486386407ff725e
+OPTKIT_007_SPECIALIST_API_VALIDATION=PASS
