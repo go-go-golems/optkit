@@ -40,6 +40,13 @@ func sqliteSequence(value uint64) (int64, error) {
 	return int64(value), nil
 }
 
+func unsignedSequence(value int64) (uint64, error) {
+	if value < 0 {
+		return 0, fmt.Errorf("SQLite sequence %d must not be negative", value)
+	}
+	return uint64(value), nil
+}
+
 func integer(row sqlitedb.Row, name string) (int64, error) {
 	value, ok := row[name]
 	if !ok {

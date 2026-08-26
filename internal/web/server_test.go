@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -87,12 +88,14 @@ func TestCampaignAPIReportsVerifiedNumbergame(t *testing.T) {
 	}
 }
 
-func TestUintToIntRejectsValuesOutsideThePlatformIntRange(t *testing.T) {
+func TestIntQueryRejectsValuesOutsideThePlatformIntRange(t *testing.T) {
 	maximum := uint64(^uint(0) >> 1)
-	if _, err := uintToInt(maximum); err != nil {
+	request := httptest.NewRequest(http.MethodGet, "/?limit="+strconv.FormatUint(maximum, 10), nil)
+	if _, err := intQuery(request, "limit", 1); err != nil {
 		t.Fatalf("maximum supported page limit: %v", err)
 	}
-	if _, err := uintToInt(maximum + 1); err == nil {
+	request = httptest.NewRequest(http.MethodGet, "/?limit="+strconv.FormatUint(maximum+1, 10), nil)
+	if _, err := intQuery(request, "limit", 1); err == nil {
 		t.Fatal("out-of-range page limit unexpectedly accepted")
 	}
 }

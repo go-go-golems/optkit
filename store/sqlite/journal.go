@@ -38,11 +38,22 @@ func (s *Store) Append(ctx context.Context, campaignID record.CampaignID, expect
 				if err != nil {
 					return err
 				}
-				events, err := readEventsConn(ctx, conn, campaignID, uint64(first-1), uint64(last))
+				firstSequence, err := unsignedSequence(first)
 				if err != nil {
 					return err
 				}
-				result = campaign.AppendResult{Version: uint64(last), Events: events, Duplicate: true}
+				if firstSequence == 0 {
+					return fmt.Errorf("invalid stored command first sequence 0")
+				}
+				lastSequence, err := unsignedSequence(last)
+				if err != nil {
+					return err
+				}
+				events, err := readEventsConn(ctx, conn, campaignID, firstSequence-1, lastSequence)
+				if err != nil {
+					return err
+				}
+				result = campaign.AppendResult{Version: lastSequence, Events: events, Duplicate: true}
 				return nil
 			}
 		}
@@ -66,7 +77,10 @@ func (s *Store) Append(ctx context.Context, campaignID record.CampaignID, expect
 		if err != nil {
 			return err
 		}
-		version := uint64(versionValue)
+		version, err := unsignedSequence(versionValue)
+		if err != nil {
+			return err
+		}
 		if version != expected {
 			return fmt.Errorf("%w: expected %d, current %d", campaign.ErrVersionConflict, expected, version)
 		}
@@ -87,6 +101,10 @@ func (s *Store) Append(ctx context.Context, campaignID record.CampaignID, expect
 			if event.Payload.Schema != nil {
 				payloadSchema = string(*event.Payload.Schema)
 			}
+			eventSequence, err := sqliteSequence(event.Seq)
+			if err != nil {
+				return err
+			}
 			if _, err := conn.Exec(ctx, `
 INSERT INTO campaign_events(
     campaign_id, seq, event_id, kind, schema_id, subject,
@@ -94,7 +112,7 @@ INSERT INTO campaign_events(
     previous_digest, payload_digest, payload_media_type, payload_schema,
     payload_size, payload_sensitivity, tags_json, digest
 ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-				string(event.Campaign), int64(event.Seq), string(event.ID), string(event.Kind), string(event.Schema), event.Subject,
+				string(event.Campaign), eventSequence, string(event.ID), string(event.Kind), string(event.Schema), event.Subject,
 				formatTime(event.OccurredAt), formatTime(event.RecordedAt), string(event.Actor), optionalCommand(event.Command),
 				event.PreviousDigest.String(), event.Payload.Digest.String(), event.Payload.MediaType, payloadSchema,
 				event.Payload.Size, string(event.Payload.Sensitivity), tags, event.Digest.String()); err != nil {
@@ -104,7 +122,15 @@ INSERT INTO campaign_events(
 			previous = event.Digest
 		}
 		newVersion := version + uint64(len(materialized))
-		changes, err := conn.Exec(ctx, `UPDATE campaign_heads SET version = ?, last_digest = ? WHERE campaign_id = ? AND version = ?`, int64(newVersion), previous.String(), string(campaignID), int64(version))
+		newVersionSequence, err := sqliteSequence(newVersion)
+		if err != nil {
+			return err
+		}
+		versionSequence, err := sqliteSequence(version)
+		if err != nil {
+			return err
+		}
+		changes, err := conn.Exec(ctx, `UPDATE campaign_heads SET version = ?, last_digest = ? WHERE campaign_id = ? AND version = ?`, newVersionSequence, previous.String(), string(campaignID), versionSequence)
 		if err != nil {
 			return err
 		}
@@ -112,7 +138,11 @@ INSERT INTO campaign_events(
 			return fmt.Errorf("%w: campaign head changed during append", campaign.ErrVersionConflict)
 		}
 		if commandID, ok := sharedCommand(inputs); ok {
-			if _, err := conn.Exec(ctx, `INSERT INTO campaign_commands(campaign_id, command_id, first_seq, last_seq) VALUES(?, ?, ?, ?)`, string(campaignID), string(commandID), int64(version+1), int64(newVersion)); err != nil {
+			firstSequence, err := sqliteSequence(version + 1)
+			if err != nil {
+				return err
+			}
+			if _, err := conn.Exec(ctx, `INSERT INTO campaign_commands(campaign_id, command_id, first_seq, last_seq) VALUES(?, ?, ?, ?)`, string(campaignID), string(commandID), firstSequence, newVersionSequence); err != nil {
 				return err
 			}
 		}
@@ -157,7 +187,11 @@ func (s *Store) Head(ctx context.Context, campaignID record.CampaignID) (campaig
 	if err != nil {
 		return campaign.Head{}, err
 	}
-	return campaign.Head{Version: uint64(version), LastDigest: digest}, nil
+	sequence, err := unsignedSequence(version)
+	if err != nil {
+		return campaign.Head{}, err
+	}
+	return campaign.Head{Version: sequence, LastDigest: digest}, nil
 }
 
 func (s *Store) Verify(ctx context.Context, campaignID record.CampaignID) error {
@@ -297,8 +331,12 @@ func decodeEvent(row sqlitedb.Row) (campaign.ControlEvent, error) {
 	if err != nil {
 		return campaign.ControlEvent{}, err
 	}
+	sequence, err := unsignedSequence(seq)
+	if err != nil {
+		return campaign.ControlEvent{}, err
+	}
 	event := campaign.ControlEvent{
-		ID: record.EventID(id), Campaign: record.CampaignID(campaignRaw), Seq: uint64(seq), Kind: campaign.EventKind(kind), Schema: record.SchemaID(schema), Subject: subject,
+		ID: record.EventID(id), Campaign: record.CampaignID(campaignRaw), Seq: sequence, Kind: campaign.EventKind(kind), Schema: record.SchemaID(schema), Subject: subject,
 		OccurredAt: occurred, RecordedAt: recorded, Actor: record.ActorRef(actor), PreviousDigest: previous, Payload: payload, Tags: tags, Digest: digest,
 	}
 	if commandRaw != nil {
@@ -387,7 +425,11 @@ func (s *Store) LookupCommand(ctx context.Context, campaignID record.CampaignID,
 	if err != nil {
 		return campaign.AppendResult{}, false, err
 	}
-	return campaign.AppendResult{Version: uint64(last), Events: decoded, Duplicate: true}, true, nil
+	sequence, err := unsignedSequence(last)
+	if err != nil {
+		return campaign.AppendResult{}, false, err
+	}
+	return campaign.AppendResult{Version: sequence, Events: decoded, Duplicate: true}, true, nil
 }
 
 var _ campaign.CommandLookup = (*Store)(nil)

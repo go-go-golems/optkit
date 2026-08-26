@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
-	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -102,12 +101,7 @@ func (s Server) handleEvents(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid_after", err)
 		return
 	}
-	limitValue, err := uintQuery(r, "limit", query.DefaultEventLimit)
-	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid_limit", err)
-		return
-	}
-	limit, err := uintToInt(limitValue)
+	limit, err := intQuery(r, "limit", query.DefaultEventLimit)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid_limit", err)
 		return
@@ -207,12 +201,16 @@ func uintQuery(r *http.Request, name string, fallback uint64) (uint64, error) {
 	return value, nil
 }
 
-func uintToInt(value uint64) (int, error) {
-	maximum := uint64(math.MaxInt)
-	if value > maximum {
-		return 0, fmt.Errorf("value exceeds the supported page limit")
+func intQuery(r *http.Request, name string, fallback int) (int, error) {
+	raw := strings.TrimSpace(r.URL.Query().Get(name))
+	if raw == "" {
+		return fallback, nil
 	}
-	return int(value), nil
+	value, err := strconv.Atoi(raw)
+	if err != nil || value < 0 {
+		return 0, fmt.Errorf("%s must be a non-negative integer", name)
+	}
+	return value, nil
 }
 
 func writeJSON(w http.ResponseWriter, status int, value any) {
