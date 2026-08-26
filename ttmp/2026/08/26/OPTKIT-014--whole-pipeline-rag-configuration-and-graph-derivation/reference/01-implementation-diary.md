@@ -18,10 +18,10 @@ RelatedFiles:
       Note: Primary design deliverable whose research and delivery this diary records
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/fresh-campaign-run.log
       Note: Fresh six-episode v2 campaign evidence
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/remarkable-dry-run.log
-      Note: Ticket bundle selection and destination dry-run evidence
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/remarkable-upload.log
-      Note: Successful rendered PDF upload receipt
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/remarkable-implementation-dry-run.log
+      Note: Final implementation bundle selection and destination evidence
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/remarkable-implementation-upload.log
+      Note: Successful current guide and diary upload receipt
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/work-slips/00-ticket-plan.log
       Note: Successful ticket plan print receipt
     - Path: repo://rag-ttc/pkg/ttc/optimization/config.go
@@ -32,6 +32,8 @@ LastUpdated: 2026-08-26T14:20:22.664335767-04:00
 WhatFor: ""
 WhenToUse: ""
 ---
+
+
 
 
 
@@ -602,6 +604,7 @@ The final physical done slip is printed only after tasks, relations, changelog, 
 - Wrote a 1,243-line, 5,969-word textbook-style project report at `Projects/2026/08/26/PROJECT REPORT - Optkit Workbench - From Typed Coordinates to Whole-Pipeline Semantic Configuration.md`.
 - Validated report frontmatter, checked for analogy language, staged only that note, committed it, and pushed vault `main` to `origin`.
 - Checked all six implementation tasks and updated the guide with actual implementation outcomes.
+- Rendered and uploaded the final current guide/diary bundle as `OPTKIT-014 Pipeline Config Implementation Complete.pdf`.
 
 ### Why
 

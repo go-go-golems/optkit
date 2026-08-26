@@ -19,10 +19,10 @@ RelatedFiles:
       Note: Primary design deliverable whose research and delivery this diary records
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/various/numbergame-catalog-proof.json
       Note: Fresh end-to-end v2 bundle proof
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/various/remarkable-dry-run.log
-      Note: Ticket bundle selection and destination dry-run evidence
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/various/remarkable-upload.log
-      Note: Successful rendered PDF upload receipt
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/various/remarkable-implementation-dry-run.log
+      Note: Final implementation bundle selection and destination evidence
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/various/remarkable-implementation-upload.log
+      Note: Successful current guide and diary upload receipt
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/various/work-slips/00-ticket-plan.log
       Note: Successful plan work-slip print receipt
 ExternalSources: []
@@ -31,6 +31,8 @@ LastUpdated: 2026-08-26T14:20:21.419612535-04:00
 WhatFor: ""
 WhenToUse: ""
 ---
+
+
 
 
 
@@ -573,6 +575,7 @@ The P6 done slip is printed only after these checks and ticket bookkeeping pass.
 - Ran `make race`: every package passed under the race detector.
 - Ran `make lint`: golangci-lint 2.4.0 passed with zero issues after triage.
 - Checked all six implementation tasks and updated the implementation outcome, core docs, roadmap, changelog, relations, and ticket status.
+- Rendered and uploaded the final current guide/diary bundle as `OPTKIT-013 Catalog Bindings Implementation Complete.pdf`.
 - Kept unrelated untracked `optkit/numbergame-demo` untouched.
 
 ### Why
