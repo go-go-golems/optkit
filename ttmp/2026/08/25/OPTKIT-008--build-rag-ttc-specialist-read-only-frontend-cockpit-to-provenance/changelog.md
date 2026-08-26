@@ -22,3 +22,8 @@ Step 2: validated against live server (campaign serve on 8091 behind SPECIALIST_
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/specialist/web/vite.config.ts — SPECIALIST_API proxy override for occupied port 8090
 
+
+## 2026-08-25
+
+Specialist read-only frontend delivered and validated against live server (rag-ttc commits 09a911ae5, 316800111, 27aa79671)
+
