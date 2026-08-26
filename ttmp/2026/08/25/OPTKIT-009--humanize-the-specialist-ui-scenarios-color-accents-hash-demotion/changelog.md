@@ -31,3 +31,12 @@ Step 3: per-layer widget registry — retrieval value diff (limit 2 was 1) and r
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/specialist/web/src/layerwidgets/retrieval.tsx — Retrieval diff and ranked-output widgets
 
+
+## 2026-08-25
+
+Step 4: per-stage candidate recording (scores, channels, fusion contributions) in RetrievalStage; pipeline shows query, case prose, stage glossary, and candidate tables; store recreated (commit 20e8d4621)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/search/service.go — StageCandidate recording in stage constructors
+

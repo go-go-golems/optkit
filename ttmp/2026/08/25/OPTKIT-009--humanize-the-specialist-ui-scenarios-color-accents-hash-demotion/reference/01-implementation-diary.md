@@ -225,3 +225,55 @@ The user, looking at the live comparison, asked the fair question: what actually
 
 - `git show 4ddd59f03`: start at `apps/specialist/web/src/layerwidgets/`, then `specialistapi/types.go` (Config field, preview cap) and `projector.go` (armConfig).
 - Validate: backend `GOWORK=off go test ./pkg/ttc/specialistapi/`; frontend `pnpm test`; live at the comparison URL — Configuration diff shows the values table, any episode's output shows ranked evidence.
+
+## Step 4: Record the data, not just the metadata — per-stage candidates with scores
+
+The user pressed on the pipeline screen: stages showed counts and chunk IDs, but not what a stage actually did — its query, its results, its scores. Investigation delivered a split verdict on data sufficiency: the query and final ranked output were recorded but unsurfaced, while **per-stage scores were genuinely never recorded** — every stage constructor had `rag.Hit.Score`, `FusedHit.Contributions`, and `Evidence.RetrievalScore/RerankerScore` in hand at runtime and kept only the chunk IDs (the "candidate artifact" is a digest of the ID list, not stored content). So this step changed the recording itself and rebuilt the store.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok but i can't see the actual data, ,right? it's just metadata? like how do I understand what #10 retrieval.fused or so did, what query it ran, what results it got, etc... ?" — followed mid-turn by: "we could potentially use protobuf to define the data schemas of the artifacts and thus generate frontend / backend types. Or generate the frontend types to parse them from the current go definition, that way we can expose them via the API in a generic manner and the frontend can register custom widgets and all?"
+
+**Assistant interpretation:** Make each pipeline stage show its actual contents (query, candidates, scores), determine whether that required a recording change (it did), and assess schema-codegen options (protobuf vs Go-to-TS generation) for keeping widget types in sync.
+
+**Inferred user intent:** Stand on a stage row and understand what it did without insider knowledge or raw JSON; and stop hand-maintaining parallel type definitions as the schema surface grows.
+
+**Commit (code):** 20e8d4621 — "Record what each retrieval stage actually held, and say what stages mean"
+
+### What I did
+
+- `ttcsearch.RetrievalStage` gains `Candidates []StageCandidate` (chunk, rank, channel, score, reranker score, fusion contributions), filled by `hitStage`/`fusedStage`/`evidenceStage` from data the runtime already had; `idStage` stays membership-only rather than fabricating scores. Stage trajectory payloads are the stage struct verbatim, so trajectories and previews enriched automatically.
+- `PipelineView` gains `query` and `case_description` (looked up from the persisted campaign spec), shown at the top of the pipeline screen.
+- Frontend: `STAGE_EXPLANATIONS` glossary — one plain sentence per stage name ("Both channels merged into one ranking — each candidate's score combines its keyword and semantic evidence") shown on every stage row; `StageRecordView` registered for `schema:rag-ttc.retrieval-stage/v1` renders the candidate table inline; membership-only stages say so honestly.
+- Rebuilt, recreated the store (`campaign:0ac671bd…`), verified via API and screenshot 15: lexical.raw shows chunk-b at 10.0 / chunk-a at 9.0; retrieval.fused shows RRF scores with the bm25+vector breakdown; the chunk-c drop at vector.policy_filtered is visible with its pre-drop score.
+
+### Why
+
+- "Metadata about data" cannot answer a debugging question; the scores at each stage are the mechanism of every retrieval failure. Recording them costs a few hundred bytes per stage and makes the sealed trajectory a complete story.
+
+### What worked
+
+- Because stage payloads are the struct itself, one type change flowed through trajectory, preview, and widget with no projector edits.
+- Episode IDs stayed stable across the store rebuild (candidates are outputs, not part of the episode spec), so old deep links to episodes still resolve.
+
+### What didn't work
+
+- N/A this step — build, full suite, and lint passed first try; the one caveat is operational: stores recorded before this change lack `candidates` and show the membership-only fallback.
+
+### What was tricky to build
+
+- Honesty at the edges: `idStage`-built stages (e.g. evidence.admitted in some paths) have no scores at runtime; the widget renders "membership only; per-candidate scores were not captured for this run" instead of hiding the difference.
+
+### What warrants a second pair of eyes
+
+- Stage payload size grew (~300 B → ~1 KB for scored stages); trajectory sizes scale with stages × candidates × contributions. Fine at limit 2; worth a look before limit-50 campaigns.
+- The schema ID `rag-ttc.retrieval-stage/v1` was not bumped for the additive field; if consumers treat stage records as closed schemas, this should have been v2 — a contract call for the backend owner.
+
+### What should be done in the future
+
+- Schema/type generation (user proposal): recommended path is Go-structs-as-source-of-truth with generated TS (e.g. tygo) for read-side types, wired into `go generate` — protobuf is already in-repo (buf, chat server) but migrating *artifact* schemas to proto changes the JSON encoding that semantic digests hash, i.e. a store-identity migration; reserve proto for new schema families (judge traces) where cross-language matters from day one. The frontend widget registry keyed by schema ID is already the extension point either way.
+
+### Code review instructions
+
+- `git show 20e8d4621`: `pkg/ttc/search/service.go` (StageCandidate + constructors), `specialistapi/pipeline.go` (query lookup), `apps/.../layerwidgets/retrieval.tsx` (glossary + StageRecordView).
+- Validate: `GOWORK=off go test ./pkg/ttc/search/ ./pkg/ttc/specialistapi/`; frontend `pnpm test`; live — any stage row now opens with its explanation and candidate table. Evidence: `various/screenshots/15-stage-data.png`.
