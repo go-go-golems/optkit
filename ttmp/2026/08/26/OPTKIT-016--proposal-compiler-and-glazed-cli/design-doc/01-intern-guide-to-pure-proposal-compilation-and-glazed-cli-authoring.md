@@ -12,34 +12,28 @@ DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
-    - Path: repo://optkit/space/patch.go
-      Note: |-
-        Durable builder explicitly excluded from pure compilation
-        Write path explicitly excluded from drafts
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
-      Note: Parent program goals dependencies exclusions and exit gates
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
-      Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
-    - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/command.go
-      Note: |-
-        Command-group composition and structured command conventions
-        Command composition
-    - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/config.go
-      Note: |-
-        Existing Glazed config inspect diff and plan commands
-        Existing Glazed config commands
+    - Path: repo://optkit/space/binding.go
+      Note: Stable typed binding failure classifications
+    - Path: repo://optkit/space/snapshot.go
+      Note: Pure snapshot derivation and loaded-value verification
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-016--proposal-compiler-and-glazed-cli/scripts/01-prove-cli-compilation-no-write.sh
+      Note: Repeated built-CLI filesystem purity experiment
+    - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/catalog.go
+      Note: Structured catalog list and show commands
+    - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/proposal.go
+      Note: Strict proposal compile CLI adapter
+    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/proposal.go
+      Note: Pure compiler DTO algorithm digest diagnostics and capabilities
     - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/service.go
-      Note: |-
-        Existing application-service layer where proposal compilation belongs
-        Application layer for pure compilation
-    - Path: repo://rag-ttc/pkg/ttc/optimization/invalidation.go
-      Note: Authoritative diff and recomputation plan returned by drafts
+      Note: Shared graph comparison and planning boundary
 ExternalSources: []
 Summary: Design for a side-effect-free proposal compiler, deterministic diagnostics and normalization, preview capabilities, and catalog/proposal Glazed CLI commands.
 LastUpdated: 2026-08-26T14:20:25.415917233-04:00
 WhatFor: Teach a backend contributor how to make one proposal service reusable by CLI, manifests, and browser authoring without writing draft artifacts.
 WhenToUse: Implement after OPTKIT-013 through OPTKIT-015 establish bindings, PipelineConfig, and real RAG variables.
 ---
+
+
 
 
 
@@ -415,7 +409,84 @@ Use the repository's actual Glazed output flags discovered from tests/help rathe
 - Existing config commands must not maintain a second implementation of graph semantics.
 - CLI output projection should not mutate application DTOs.
 
-## 17. Out of scope
+## 17. Implementation outcome
+
+Implemented on 2026-08-26 in Optkit commits `759ef01f`, `f0dafc6f`, and `b45db558`, and RAG-TTC commits `1e926542`, `4c90cd51`, `b7c4e428`, `5ce78767`, `fad49208`, and `eaef2024`.
+
+### Generic framework support
+
+Optkit's type-erased binding boundary now returns typed `BindingError` values with stable `decode`, `domain`, `encode`, and `apply` classifications. RAG-TTC therefore emits `wrong_value_type`, `out_of_domain`, and `apply_failed` without parsing error prose. `space.VerifySnapshotValue` verifies a record against its loaded typed value without any store operation. `space.DeriveSnapshotValue` computes exactly the snapshot identity and config reference that durable materialization would create, but performs no write. `MaterializeSnapshot` now uses that same derivation and verifies the store's returned reference.
+
+### Compiler contract
+
+`experimentworkbench.ProposalCompiler` contains only one dependency: `*space.Registry[optimization.PipelineConfig]`. It validates the semantic catalog and complete parent record/value pair, sorts requests by fully qualified variable ID, rejects every occurrence of a duplicate assignment, normalizes through the real typed codec/domain, applies the registered lifted lens in memory, derives graphs, and returns:
+
+- `schema:rag-ttc.candidate-draft/v1`;
+- deterministic `sha256:` draft digest;
+- verified parent record and semantic catalog ID;
+- canonical before/after mutation bytes;
+- complete child `PipelineConfig`;
+- complete before/after graphs;
+- shared config diff and invalidation plan;
+- preview capabilities and deterministic diagnostics;
+- an explicit `sealable` decision.
+
+The chosen atomicity contract retains successfully applied fields as a **partial preview** when another mutation fails, but any error diagnostic makes the entire draft unsealable. No partial draft can cross the OPTKIT-017 seal boundary.
+
+Draft identity uses parent ID, semantic catalog ID, normalized mutations, child semantic config digest, graph IDs, capability mode/probe, diagnostic code/severity/variable/path, and sealability. Human-readable diagnostic messages and capability reasons are excluded. Request order and timestamps are absent.
+
+The implemented operator diagnostic matrix is:
+
+```text
+empty_mutations
+unknown_variable
+duplicate_mutation
+invalid_json
+wrong_value_type
+out_of_domain
+no_effect
+apply_failed
+child_invalid
+graph_derivation_failed
+```
+
+Invalid parent records and service state remain returned errors because the compiler cannot safely interpret them as an editable draft.
+
+### CLI contract
+
+The Glazed command tree now includes:
+
+```text
+rag-ttc experiment optkit-rag catalog list
+rag-ttc experiment optkit-rag catalog show --variable fusion.rrf_k
+rag-ttc experiment optkit-rag proposal compile \
+  --manifest baseline.yaml --parent limit-2 --set fusion.rrf_k=20
+rag-ttc experiment optkit-rag proposal compile \
+  --manifest baseline.yaml --parent limit-2 --mutations mutations.yaml
+```
+
+`--set` splits only the first `=` and treats the remainder as exact JSON. The strict YAML/JSON mutation file is one array of the core `{variable,value}` DTO; unknown fields, missing fields, multiple YAML documents, oversized input, and mixed `--set`/`--mutations` sources fail at the boundary. The application derives a verified parent from the selected manifest arm without writing it.
+
+Catalog list emits one ordered row per registered variable. Catalog show emits section documentation, the complete variable descriptor, lossless domain/choices, canonical default, binding version, probes, and both catalog identities. Proposal compile emits the complete nested draft contract as one structured row. The commands use only Glazed v1.4's `--format`, `--output-fields`, and `--max-output-rows` universal flags.
+
+### Proof evidence
+
+The deterministic CLI proof records:
+
+```text
+semantic_catalog_id: sha256:d3034d1d61cb5da92649bf9d199015e25a6e5223ed50741f594ceba2093730b6
+full_catalog_id: sha256:d20f66171bfe0c5ef1a7ba4aade490c1d98b7c4d4d791e52b4b1f2a417c6f6ca
+draft_digest: sha256:1e9eaa7482f129cdd3069d0aa8cd016e600bbc6de6dccb2445d9133b871afb2d
+before_graph: config-graph:8861fa4568950d3148f20ecaaf96aa1195cea09697784f39706d7d5a184f9970
+after_graph: config-graph:608ac4539d54be7c32e8bb6160cf2f7701844a081af73d5a8bdf579b3f4c1d14
+direct_changes: [fusion]
+```
+
+A counting-store unit test compiles the same draft 100 times and observes only the pre-existing parent materialization write. A separate built-binary CLI experiment runs compilation 100 times in a watched directory: the complete file-tree SHA-256 remains `ad2257c2be2188627b84d292ac194444c0fb4922af35c66edb43ef4737287e22`, with zero SQLite files, artifact directories, or journal paths. Config comparison and proposal compilation return byte-equivalent diff/plan values for the same before/after pipeline.
+
+Full Optkit CI, CGO/non-CGO tests and builds, repository-wide race and lint checks, full RAG-TTC lint/test/vet/build, focused race suites, CLI structured-output smoke tests, a 372-package dependency scan, docmgr validation, and all fifteen required physical slip receipts pass.
+
+## 18. Out of scope
 
 - Durable patch/snapshot/candidate writes (OPTKIT-017);
 - campaign manifest candidate block beyond shared DTO preparation;
@@ -423,7 +494,7 @@ Use the repository's actual Glazed output flags discovered from tests/help rathe
 - React controls and previews;
 - prompt generation.
 
-## 18. Exit criteria
+## 19. Exit criteria
 
 - `CompileProposal` is pure by dependencies and observed store state.
 - All mutation validation is routed through registered typed bindings.
@@ -433,7 +504,7 @@ Use the repository's actual Glazed output flags discovered from tests/help rathe
 - Existing config comparison agrees for equivalent values.
 - focused/full tests, diary, doctor, and reMarkable delivery pass.
 
-## 19. File reference map
+## 20. File reference map
 
 - `rag-ttc/pkg/ttc/experimentworkbench/service.go:15-88` — current application services.
 - `rag-ttc/pkg/ttc/experimentworkbench/manifest.go:63-174` — strict input/loading baseline.

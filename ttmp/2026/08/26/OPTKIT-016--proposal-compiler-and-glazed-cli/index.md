@@ -1,7 +1,7 @@
 ---
 Title: Proposal Compiler and Glazed CLI
 Ticket: OPTKIT-016
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -14,10 +14,11 @@ Owners: []
 RelatedFiles: []
 ExternalSources: []
 Summary: Compile serialized mutations into pure auditable proposal drafts and expose the workflow through structured Glazed CLI commands.
-LastUpdated: 2026-08-26T14:20:25.415917233-04:00
+LastUpdated: 2026-08-26T16:54:56.593205555-04:00
 WhatFor: Give manifests, CLI users, and future browser authoring one deterministic validation and planning service.
 WhenToUse: Implement after the catalog, PipelineConfig, and first real RAG variables exist.
 ---
+
 
 # Proposal Compiler and Glazed CLI
 
@@ -37,7 +38,7 @@ This ticket defines the draft half of the workbench lifecycle. `CompileProposal`
 
 ## Status
 
-Current status: **active**
+Current status: **complete** — pure typed proposal compilation, deterministic diagnostics/digest, catalog and proposal Glazed commands, shared graph planning, and repeated no-write proofs all pass.
 
 ## Topics
 

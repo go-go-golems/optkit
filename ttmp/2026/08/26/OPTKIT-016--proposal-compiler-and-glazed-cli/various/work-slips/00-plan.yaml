@@ -1,0 +1,74 @@
+almanach_studio_version: 1
+theme: brutalist
+paperWidth: 384
+bodyScale: 1
+feedLines: 8
+blocks:
+- id: head
+  type: row
+  data:
+    cols:
+    - w: 1fr
+      text: OPTKIT-016
+      preset: micro
+    - w: 1fr
+      text: PLAN
+      preset: micro
+      align: right
+- id: r1
+  type: rule
+  data:
+    weight: heavy
+- id: gap1
+  type: space
+  data:
+    size: s
+- id: title
+  type: text
+  data:
+    text: Pure Proposal Compiler Plan
+    preset: h1
+    lines: 3
+- id: gap2
+  type: space
+  data:
+    size: s
+- id: summary
+  type: text
+  data:
+    text: Build one deterministic no-write compiler and expose it through structured Glazed commands.
+    preset: body
+- id: gap3
+  type: space
+  data:
+    size: m
+- id: planhead
+  type: text
+  data:
+    text: PLAN
+    preset: h2
+- id: plan
+  type: checks
+  data:
+    items:
+    - P1 compiler contracts + digest
+    - P2 compiler engine + diagnostics
+    - P3 exhaustive deterministic tests
+    - P4 catalog list + show CLI
+    - P5 proposal compile CLI
+    - P6 shared config paths + no-write
+    - P7 validation + delivery
+- id: r2
+  type: rule
+  data:
+    weight: hair
+- id: facts
+  type: kv
+  data:
+    items:
+    - - PHASES
+      - '7'
+    - - NEXT
+      - P1 compiler contracts + digest
+    - - ORDER
+      - BACKEND FIRST

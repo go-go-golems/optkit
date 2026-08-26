@@ -1,0 +1,10 @@
+catalog_rows: 2
+semantic_catalog_id: sha256:d3034d1d61cb5da92649bf9d199015e25a6e5223ed50741f594ceba2093730b6
+full_catalog_id: sha256:d20f66171bfe0c5ef1a7ba4aade490c1d98b7c4d4d791e52b4b1f2a417c6f6ca
+rrf_domain: {'minimum': 0.001, 'maximum': 1000}
+draft_digest: sha256:1e9eaa7482f129cdd3069d0aa8cd016e600bbc6de6dccb2445d9133b871afb2d
+before_graph: config-graph:8861fa4568950d3148f20ecaaf96aa1195cea09697784f39706d7d5a184f9970
+after_graph: config-graph:608ac4539d54be7c32e8bb6160cf2f7701844a081af73d5a8bdf579b3f4c1d14
+direct_changes: ['fusion']
+invalid_diagnostic: invalid_json
+result: PASS - catalog and proposal CLI preserve structured contracts

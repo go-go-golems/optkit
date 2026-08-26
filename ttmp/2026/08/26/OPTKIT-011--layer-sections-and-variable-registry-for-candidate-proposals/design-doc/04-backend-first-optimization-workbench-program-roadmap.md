@@ -412,7 +412,7 @@ The ticket index and `tasks.md` of each child ticket are authoritative for local
 | OPTKIT-013 | Generic catalog and bindings | OPTKIT-012 | complete — six value kinds, catalog identities, typed registry, candidate v2, and numbergame proof |
 | OPTKIT-014 | Aggregate RAG configuration | OPTKIT-012/013 | complete — v2 PipelineConfig, derived graphs, lifted lenses, campaigns/manifests, projections, and parity validation |
 | OPTKIT-015 | First real RAG variables | OPTKIT-013/014 | complete — runtime RRF injection, executable retrieval/fusion registry, fixture v3 parity, and proof evidence |
-| OPTKIT-016 | Pure compiler and CLI | OPTKIT-013–015 | guide validated and delivered; implementation pending |
+| OPTKIT-016 | Pure compiler and CLI | OPTKIT-013–015 | complete — deterministic draft compiler, structured catalog/proposal CLI, shared graph planning, and 100-run no-write proof |
 | OPTKIT-017 | Sealing and persistence | OPTKIT-016 | guide validated and delivered; implementation pending |
 | OPTKIT-018 | Projection and command boundaries | OPTKIT-017 | guide validated and delivered; implementation pending |
 | OPTKIT-019 | React framework and RRF proof | OPTKIT-018 | superseded 2026-08-26 by OPTKIT-021–024 (PBUI adoption); exit criterion inherited by OPTKIT-023 |
