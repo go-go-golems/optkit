@@ -12,34 +12,28 @@ DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
-      Note: Parent program goals dependencies exclusions and exit gates
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
-      Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
     - Path: repo://rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/serve.go
-      Note: Server composition root that may host distinct read and command handlers
-    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/service.go
-      Note: |-
-        Transport-independent application services behind command adapters
-        Transport-independent applications
+      Note: Separate read and command handler composition
+    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/workbench_contracts.go
+      Note: Principal action authorization and typed errors
+    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/workbench_service.go
+      Note: Transport-independent catalog compile preview and seal applications
     - Path: repo://rag-ttc/pkg/ttc/specialistapi/http.go
-      Note: |-
-        Current GET-only net/http ServeMux boundary
-        GET-only HTTP routes
+      Note: Unchanged GET-only historical route boundary
     - Path: repo://rag-ttc/pkg/ttc/specialistapi/projector.go
-      Note: |-
-        Historical campaign fact loader and comparison projector
-        Historical projection boundary
+      Note: Sealed-catalog candidate projection while preserving read-only history
     - Path: repo://rag-ttc/pkg/ttc/specialistapi/types.go
-      Note: |-
-        Existing read response contracts extended with candidate meaning
-        Read response contracts
+      Note: Historical candidate summary response contracts
+    - Path: repo://rag-ttc/pkg/ttc/workbenchapi/server.go
+      Note: Strict authenticated HTTP command adapters
 ExternalSources: []
 Summary: Design for sealed candidate projections, catalog reads, compile/preview/seal command services, thin HTTP adapters, and authorization/idempotency/sensitivity contracts.
 LastUpdated: 2026-08-26T14:20:27.945954284-04:00
 WhatFor: Teach an intern how to connect durable campaign facts and workbench applications to clients without mixing historical reads with mutation logic.
 WhenToUse: Implement after OPTKIT-017 persists complete candidate and catalog provenance.
 ---
+
+
 
 
 
@@ -422,7 +416,89 @@ Run live server tests in tmux per workspace guidance and stop it cleanly after c
 - Preview capability names are backend contracts, not frontend plugin IDs.
 - Candidate absence on old/full-arm campaigns is normal.
 
-## 17. Out of scope
+## 17. Implementation outcome
+
+Implemented on 2026-08-26 in RAG-TTC commits `3144759e`, `8c263f75`, `9952f13d`, `bf734fda`, `b675fb6d`, `4c38094a`, and `f3d42719`.
+
+### Historical candidate projection
+
+`specialistapi.ComparisonView` now includes an optional `CandidateSummary`. Candidate-backed treatment comparisons verify baseline/treatment snapshot ancestry, load the exact sealed catalog artifact, validate its semantic ID against the candidate, and label normalized before/after mutations from sealed descriptors. They never consult `optimization.NewRegistry` or current catalog prose.
+
+The summary exposes candidate ID, parent/child snapshots, proposer, strategy, hypothesis, expected improvement, ordered risks, motivation, semantic catalog ID, and mutations. A direct/full-arm historical comparison with no candidate record returns no fabricated candidate. Missing/corrupt sealed catalogs and lineage mismatches are corruption errors, not label fallbacks.
+
+The existing specialist route tree remains GET-only under `/api/rag/v1/`; its health response still reports `read_only:true`.
+
+### Current catalog and workbench application
+
+The separate current catalog service exposes the immutable runtime registry as serializable values. Authenticated workbench endpoints are:
+
+```text
+GET  /api/rag/workbench/v1/catalog
+GET  /api/rag/workbench/v1/catalog/variables/{variable}
+POST /api/rag/workbench/v1/proposals:compile
+POST /api/rag/workbench/v1/previews:run
+POST /api/rag/workbench/v1/proposals:seal
+```
+
+Catalog responses carry `rag-ttc.workbench-api/v1`, complete nested domains/descriptors, and a strong ETag equal to the quoted full catalog ID. `If-None-Match` returns 304. The semantic catalog ID remains `sha256:d3034d1d61cb5da92649bf9d199015e25a6e5223ed50741f594ceba2093730b6`.
+
+`WorkbenchService` is transport-independent. It owns:
+
+- campaign/spec/snapshot parent and case resolution;
+- current catalog reads;
+- authorization checks;
+- proposal compilation;
+- deterministic RRF before/after preview execution;
+- authenticated proposer binding;
+- idempotent proposal sealing.
+
+The RRF preview dispatches only `fusion.rrf-contributions/v1`, executes the actual semantic fixture executor with parent and draft child configs, returns typed before/after search output under `schema:rag-ttc.preview.rrf-contributions/v1`, and marks the payload internal. Unsupported probes and stale/non-sealable drafts are typed application errors.
+
+### Authorization, errors, and HTTP boundary
+
+The action set is closed:
+
+```text
+catalog.read
+proposal.compile
+preview.run
+proposal.seal
+artifact.read.restricted
+artifact.write.restricted
+```
+
+`Principal` is an `actor:` identity. Seal rejects a caller-supplied different proposer and always binds the persisted proposer identity to the authenticated principal. The composed local server requires an explicit secret `--workbench-token` and validated `--workbench-actor`; bearer comparison is constant-time.
+
+Application errors carry stable codes and safe messages. HTTP status mapping uses typed errors rather than message searches. Internal causes are never emitted. Command requests require `application/json`, are limited to 1 MiB, disallow unknown fields, reject trailing JSON, and propagate cancellation. Seal accepts exactly one `Idempotency-Key` header and no body alias. Responses include request correlation and security headers; command and error responses use `Cache-Control:no-store`.
+
+The HTTP handlers parse/authenticate, call applications, and project results only. Compiler, preview, parent resolution, state/idempotency, and sealing behavior remain outside transport code.
+
+### Server composition and live evidence
+
+`campaign serve` mounts two disjoint handlers into one standard-library `http.ServeMux`:
+
+```text
+/api/rag/v1/           -> specialistapi read handler
+/api/rag/workbench/v1/ -> workbenchapi command handler
+```
+
+The live built-binary smoke created a running campaign and proved:
+
+```text
+specialist_read_only: true
+unauthorized_catalog_status: 401
+draft_digest: sha256:b56f41ebc27ea8dbca4964a9d5592f94aafd96503703304c9e904647c09c0e4e
+preview_probe: fusion.rrf-contributions/v1
+candidate_id: candidate:3fc3c902b5d459be5f60ffc40c60ad5941c4c9287cb437afd45e478b93b83314
+candidate_actor: actor:live-smoke
+idempotent_retry_equal: true
+```
+
+Sanitized live JSON responses for health, cockpit, catalog, compile, preview, seal, and unauthorized errors are retained as frontend contract artifacts. TypeScript handoff types cover candidate summaries, complete catalog domains, pipeline/graph/draft contracts, compile/preview/seal requests and responses, API errors, and sealed proposal artifacts.
+
+Validation includes full RAG-TTC lint/test/vet/build, focused race suites, 45 specialist frontend tests, TypeScript checking, production frontend build, a 373-package acyclic dependency scan, live HTTP smoke with clean shutdown, strict diary/slip audits, docmgr doctor, and completed guide/diary delivery. No React authoring UI was added; that remains the accepted PBUI/OPTKIT-023 boundary.
+
+## 18. Out of scope
 
 - React WorkbenchRegistry/shell (OPTKIT-019);
 - actual prompt preview implementation (OPTKIT-020);
@@ -430,7 +506,7 @@ Run live server tests in tmux per workspace guidance and stop it cleanly after c
 - promotion/approval APIs;
 - recomputing historical facts.
 
-## 18. Exit criteria
+## 19. Exit criteria
 
 - comparisons project sealed candidate intent/mutations when present;
 - old/full-arm comparisons retain current behavior;
@@ -440,7 +516,7 @@ Run live server tests in tmux per workspace guidance and stop it cleanly after c
 - specialist historical projector remains read-only;
 - tests, live smoke, diary, doctor, and upload pass.
 
-## 19. File reference map
+## 20. File reference map
 
 - `rag-ttc/pkg/ttc/specialistapi/http.go:13-29` — current GET-only server.
 - `rag-ttc/pkg/ttc/specialistapi/http.go:134-185` — parsing/errors/security headers.

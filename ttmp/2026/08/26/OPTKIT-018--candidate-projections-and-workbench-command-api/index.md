@@ -1,7 +1,7 @@
 ---
 Title: Candidate Projections and Workbench Command API
 Ticket: OPTKIT-018
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -14,10 +14,11 @@ Owners: []
 RelatedFiles: []
 ExternalSources: []
 Summary: Project sealed candidate meaning for historical reads and expose proposal commands through a separate workbench application/API boundary.
-LastUpdated: 2026-08-26T14:20:27.945954284-04:00
+LastUpdated: 2026-08-26T18:20:33.87202678-04:00
 WhatFor: Let browsers consume authoritative facts and invoke authoring services without embedding storage or mutation rules.
 WhenToUse: Implement after candidate sealing and campaign persistence are complete.
 ---
+
 
 # Candidate Projections and Workbench Command API
 
@@ -37,7 +38,7 @@ This ticket connects durable backend records to clients while preserving boundar
 
 ## Status
 
-Current status: **active**
+Current status: **complete** — sealed candidate projections, authenticated catalog/compile/preview/seal applications, strict HTTP adapters, separate route composition, live smoke, and frontend handoff contracts all pass.
 
 ## Topics
 

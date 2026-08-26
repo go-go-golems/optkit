@@ -1,0 +1,25 @@
+layout: optkit/ttmp/2026/08/26/OPTKIT-018--candidate-projections-and-workbench-command-api/various/work-slips/01-p1-start.yaml
+dry_run: false
+height: 519
+layout_member: 01-p1-start.yaml
+ok: true
+printed: true
+printer_response:
+    ok: true
+rendered_at: "2026-08-26T21:39:55Z"
+response:
+    height: 519
+    ok: true
+    printed: true
+    printerResponse:
+        ok: true
+    renderedAt: "2026-08-26T21:39:55Z"
+    width: 384
+source_kind: file
+status_code: 200
+url: https://almanach.crib.scapegoat.dev/api/render-and-print
+width: 384
+
+---
+
+printed: yes

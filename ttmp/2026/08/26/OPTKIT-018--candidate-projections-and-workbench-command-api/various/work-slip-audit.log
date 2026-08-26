@@ -1,0 +1,5 @@
+plan_slips: 1
+phase_start_slips: 7
+phase_done_slips: 7
+successful_print_receipts: 15
+result: PASS - complete OPTKIT-018 brutalist slip sequence
