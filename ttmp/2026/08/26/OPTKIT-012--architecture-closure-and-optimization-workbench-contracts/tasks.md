@@ -8,4 +8,4 @@
 - [ ] Validate package dependencies and prove the proposed package graph is acyclic <!-- t:ynuy -->
 - [ ] Use the accepted contracts as entry criteria for OPTKIT-013 through OPTKIT-018 <!-- t:k4xd -->
 - [x] Write validate and review the intern architecture/design/implementation guide <!-- t:knz3 -->
-- [ ] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:u729 -->
+- [x] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:u729 -->

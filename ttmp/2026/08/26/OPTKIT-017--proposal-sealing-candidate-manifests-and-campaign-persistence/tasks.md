@@ -9,4 +9,4 @@
 - [ ] Emit CandidateProposed and preserve deterministic sealing semantics <!-- t:8gtg -->
 - [ ] Prove sealed campaigns remain explainable after the source manifest is removed <!-- t:9ure -->
 - [x] Write validate and review the intern architecture/design/implementation guide <!-- t:wp43 -->
-- [ ] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:t4qq -->
+- [x] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:t4qq -->

@@ -9,4 +9,4 @@
 - [ ] Route existing config inspection paths through shared application services where appropriate <!-- t:0cz0 -->
 - [ ] Prove repeated compilation performs no durable writes <!-- t:1137 -->
 - [x] Write validate and review the intern architecture/design/implementation guide <!-- t:hynn -->
-- [ ] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:14tq -->
+- [x] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:14tq -->

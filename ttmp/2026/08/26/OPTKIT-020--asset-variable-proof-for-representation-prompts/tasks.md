@@ -9,4 +9,4 @@
 - [ ] Persist prompt assets and provenance without placing content in patch metadata <!-- t:9sqb -->
 - [ ] Prove the workbench supports scalar and asset mutations through one core workflow <!-- t:yu6q -->
 - [x] Write validate and review the intern architecture/design/implementation guide <!-- t:0eax -->
-- [ ] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:j4lf -->
+- [x] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:j4lf -->

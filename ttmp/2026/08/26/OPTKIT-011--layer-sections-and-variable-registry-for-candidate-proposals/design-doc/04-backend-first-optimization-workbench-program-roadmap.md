@@ -332,15 +332,15 @@ The ticket index and `tasks.md` of each child ticket are authoritative for local
 
 | Ticket | Program role | Entry dependency | Current state |
 | --- | --- | --- | --- |
-| OPTKIT-012 | Architecture contracts | OPTKIT-011 | guide preparation |
-| OPTKIT-013 | Generic catalog and bindings | OPTKIT-012 | guide preparation |
-| OPTKIT-014 | Aggregate RAG configuration | OPTKIT-012/013 | guide preparation |
-| OPTKIT-015 | First real RAG variables | OPTKIT-013/014 | guide preparation |
-| OPTKIT-016 | Pure compiler and CLI | OPTKIT-013–015 | guide preparation |
-| OPTKIT-017 | Sealing and persistence | OPTKIT-016 | guide preparation |
-| OPTKIT-018 | Projection and command boundaries | OPTKIT-017 | guide preparation |
-| OPTKIT-019 | React framework and RRF proof | OPTKIT-018 | guide preparation |
-| OPTKIT-020 | Artifact-variable proof | OPTKIT-019 | guide preparation |
+| OPTKIT-012 | Architecture contracts | OPTKIT-011 | guide validated and delivered; implementation pending |
+| OPTKIT-013 | Generic catalog and bindings | OPTKIT-012 | guide validated and delivered; implementation pending |
+| OPTKIT-014 | Aggregate RAG configuration | OPTKIT-012/013 | guide validated and delivered; implementation pending |
+| OPTKIT-015 | First real RAG variables | OPTKIT-013/014 | guide validated and delivered; implementation pending |
+| OPTKIT-016 | Pure compiler and CLI | OPTKIT-013–015 | guide validated and delivered; implementation pending |
+| OPTKIT-017 | Sealing and persistence | OPTKIT-016 | guide validated and delivered; implementation pending |
+| OPTKIT-018 | Projection and command boundaries | OPTKIT-017 | guide validated and delivered; implementation pending |
+| OPTKIT-019 | React framework and RRF proof | OPTKIT-018 | guide validated and delivered; implementation pending |
+| OPTKIT-020 | Artifact-variable proof | OPTKIT-019 | guide validated and delivered; implementation pending |
 
 ## Required structure of every child guide
 

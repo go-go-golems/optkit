@@ -9,4 +9,4 @@
 - [ ] Migrate numbergame as the catalog and serialized-mutation proof case <!-- t:7oan -->
 - [ ] Run focused and full Optkit validation <!-- t:ua4u -->
 - [x] Write validate and review the intern architecture/design/implementation guide <!-- t:6bnn -->
-- [ ] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:qj65 -->
+- [x] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:qj65 -->

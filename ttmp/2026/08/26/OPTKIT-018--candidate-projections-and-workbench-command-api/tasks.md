@@ -9,4 +9,4 @@
 - [ ] Preserve specialistapi as the durable historical read boundary <!-- t:bi43 -->
 - [ ] Define authorization sensitivity idempotency and error contracts before asset editing <!-- t:yelw -->
 - [x] Write validate and review the intern architecture/design/implementation guide <!-- t:nsn5 -->
-- [ ] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:gbnj -->
+- [x] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:gbnj -->

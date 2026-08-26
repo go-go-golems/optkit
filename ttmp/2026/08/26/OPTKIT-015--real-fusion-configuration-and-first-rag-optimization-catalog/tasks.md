@@ -9,4 +9,4 @@
 - [ ] Prove registered mutations change runtime behavior and graph invalidation <!-- t:8b9q -->
 - [ ] Update semantic fixtures identities and focused parity tests <!-- t:h6ax -->
 - [x] Write validate and review the intern architecture/design/implementation guide <!-- t:jcqx -->
-- [ ] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:d5im -->
+- [x] Dry-run and publish the guide/diary bundle to the ticket reMarkable folder <!-- t:d5im -->

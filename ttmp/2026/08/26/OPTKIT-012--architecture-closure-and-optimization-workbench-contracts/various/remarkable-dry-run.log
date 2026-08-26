@@ -1,0 +1,9 @@
+=== OPTKIT-012: OPTKIT-012 Architecture Contracts Guide (dry-run) ===
+DRY: layout=default
+DRY: bundle name=OPTKIT-012 Architecture Contracts Guide
+DRY: remote-dir=/ai/2026/08/26/OPTKIT-012
+DRY: include /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/index.md (title="index")
+DRY: include /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md (title="01-intern-guide-to-optimization-workbench-architecture-and-contracts")
+DRY: include /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/reference/01-implementation-diary.md (title="01-implementation-diary")
+DRY: pandoc <bundle> -> <tmp>/OPTKIT-012 Architecture Contracts Guide.pdf
+DRY: upload OPTKIT-012 Architecture Contracts Guide.pdf -> /ai/2026/08/26/OPTKIT-012
