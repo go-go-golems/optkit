@@ -39,7 +39,14 @@ The design deliberately keeps RAG semantics in RAG-TTC, generic durability in Op
 
 ### Prompt Context
 
-**User prompt (verbatim):** "ok, let's create a new ticket for the CLI, and implementthat first, that way we can already validate that what the UI is going to display is valid. Create  a detailed analysis / design / implementation guide that is for a new intern, explaining all the parts of the system needed to understand what it is, with prose paragraphs and bullet point sand pseudocode and diagrams and api references and file references. It should be very clear and technical. Store in the ticket and the nupload to remarkable.\n\n\nBtw, don't forget to commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill)"
+**User prompt (verbatim):**
+
+```text
+ok, let's create a new ticket for the CLI, and implementthat first, that way we can already validate that what the UI is going to display is valid. Create  a detailed analysis / design / implementation guide that is for a new intern, explaining all the parts of the system needed to understand what it is, with prose paragraphs and bullet point sand pseudocode and diagrams and api references and file references. It should be very clear and technical. Store in the ticket and the nupload to remarkable.
+
+
+Btw, don't forget to commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill)
+```
 
 **Assistant interpretation:** Create OPTKIT-006, research the existing experiment stack, write an intern-ready architecture and implementation guide, implement the manifest-driven Glazed workbench in coherent phases, validate it, maintain this diary, and publish the deliverables to reMarkable.
 
@@ -472,4 +479,88 @@ CAMPAIGN_CUSTODY=PASS
 IDEMPOTENT_RESUME=PASS
 GLAZED_HELP_SURFACE=PASS
 OPTKIT_006_WORKBENCH_VALIDATION=PASS
+```
+
+## Step 6: Publish the intern guide and close the ticket
+
+The final step audited the documentation against the implemented per-arm model, preserved validation evidence, and uploaded the guide plus diary as one reMarkable bundle with a table of contents.
+
+The ticket now contains a 1,000-line intern guide, a chronological implementation diary, an executable validator, and the exact output from a successful end-to-end campaign.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 1)
+
+**Assistant interpretation:** Finish publication and ticket bookkeeping only after implementation and validation are complete.
+
+**Inferred user intent:** Leave a durable teaching and review package that can be read away from the repository and used to start the UI work safely.
+
+### What I did
+
+- Updated the guide from the initial single-graph proposal to the implemented per-arm graph contract.
+- Added final command paths, API signatures, file locations, decision records, failure modes, and validation results.
+- Ran `docmgr doctor` and frontmatter/placeholder checks.
+- Ran a mandatory reMarkable dry-run.
+- Uploaded the guide and diary bundle to `/ai/2026/08/25/OPTKIT-006`.
+- Prepared all tasks and changelog entries for closure.
+
+### Why
+
+- Published architecture must describe the implementation, including corrections discovered during coding.
+- The reMarkable bundle gives a new engineer one navigable document containing both the intended system and its actual construction history.
+
+### What worked
+
+- Dry-run selected the two intended documents in the correct order.
+- The corrected bundle rendered and uploaded successfully:
+
+  ```text
+  OK: uploaded OPTKIT-006 RAG-TTC Experiment Workbench CLI.pdf -> /ai/2026/08/25/OPTKIT-006
+  ```
+
+- `docmgr doctor` passed cleanly before publication.
+
+### What didn't work
+
+- The first real upload failed in Pandoc/LaTeX:
+
+  ```text
+  Error: pandoc failed: Error producing PDF.
+  ! Undefined control sequence.
+  l.2052 ... ticket and the nupload to remarkable.\n
+  ```
+
+  Step 1 had encoded the multiline verbatim user prompt with literal `\n` sequences inside a quoted line. LaTeX interpreted `\n` as a control sequence. I replaced it with a fenced text block containing the actual blank lines, which is both more faithful to the prompt and safe for rendering.
+
+### What I learned
+
+- Diary prompt fidelity and document rendering agree when multiline prompts use fenced text rather than escaped newline text.
+- Dry-run validates selection and destination but does not invoke Pandoc, so a real render can still reveal Markdown-to-LaTeX problems.
+
+### What was tricky to build
+
+- The guide had to be reconciled after implementation corrected the graph ownership model. Search-based auditing for singular `LoadedManifest.Graph`, old testdata paths, and missing arm selectors prevented stale examples from surviving publication.
+
+### What warrants a second pair of eyes
+
+- Review the reMarkable PDF's long tables and code blocks for comfortable reading.
+- Review the final guide's distinction between persisted planning graphs and actually materialized stages.
+
+### What should be done in the future
+
+- Start the projector ticket with the CLI characterization as its backend oracle.
+- Add an embedded Glazed help page if operators need the full guide discoverable inside the binary.
+
+### Code review instructions
+
+- Read the design guide first and this diary second.
+- Run `scripts/01-validate-workbench.sh`.
+- Compare CLI JSON with future projector DTO fixtures.
+
+### Technical details
+
+```text
+reMarkable destination: /ai/2026/08/25/OPTKIT-006
+bundle: OPTKIT-006 RAG-TTC Experiment Workbench CLI.pdf
+contents: intern guide + implementation diary
 ```

@@ -1,7 +1,7 @@
 ---
 Title: Build the RAG-TTC Glazed Experiment Workbench CLI
 Ticket: OPTKIT-006
-Status: active
+Status: complete
 Topics:
     - implementation
     - optkit
@@ -11,11 +11,12 @@ Intent: long-term
 Owners: []
 RelatedFiles: []
 ExternalSources: []
-Summary: "Implement a manifest-driven Glazed CLI that validates configuration and operates durable RAG-TTC experiments before UI work begins."
-LastUpdated: 2026-08-25T23:59:00Z
-WhatFor: "Track design, implementation, validation, and publication of the experiment operator workbench."
-WhenToUse: "Use for all OPTKIT-006 planning and status."
+Summary: Implement a manifest-driven Glazed CLI that validates configuration and operates durable RAG-TTC experiments before UI work begins.
+LastUpdated: 2026-08-25T20:24:10.823755578-04:00
+WhatFor: Track design, implementation, validation, and publication of the experiment operator workbench.
+WhenToUse: Use for all OPTKIT-006 planning and status.
 ---
+
 
 # Build the RAG-TTC Glazed Experiment Workbench CLI
 
