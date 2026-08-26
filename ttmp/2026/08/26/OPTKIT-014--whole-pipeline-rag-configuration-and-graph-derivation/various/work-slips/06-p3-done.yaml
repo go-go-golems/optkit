@@ -1,0 +1,85 @@
+almanach_studio_version: 1
+theme: brutalist
+paperWidth: 384
+bodyScale: 1
+feedLines: 8
+blocks:
+- id: head
+  type: row
+  data:
+    cols:
+    - w: 1fr
+      text: OPTKIT-014
+      preset: micro
+    - w: 1fr
+      text: P3 DONE
+      preset: micro
+      align: right
+- id: r1
+  type: rule
+  data:
+    weight: heavy
+- id: gap1
+  type: space
+  data:
+    size: s
+- id: title
+  type: text
+  data:
+    text: Layer Lenses Preserve the Pipeline
+    preset: h1
+    lines: 3
+- id: gap2
+  type: space
+  data:
+    size: s
+- id: summary
+  type: text
+  data:
+    text: All twelve aggregate lenses and lifted retrieval/fusion field lenses obey laws and reject invalid writes.
+    preset: body
+- id: gap3
+  type: space
+  data:
+    size: m
+- id: did
+  type: list
+  data:
+    marker: —
+    lines: 2
+    items:
+    - all layer lens laws pass
+    - unrelated values stay unchanged
+    - invalid puts return original
+- id: r2
+  type: rule
+  data:
+    weight: hair
+- id: facts
+  type: kv
+  data:
+    items:
+    - - COMMIT
+      - f1b0759
+    - - NEXT
+      - P4 migrate fixture execution
+    - - HOOKS
+      - FULL PASS
+- id: r3
+  type: rule
+  data:
+    weight: hair
+- id: decide
+  type: row
+  data:
+    cols:
+    - w: 1fr
+      text: SCAN FOR COMMIT
+      preset: caption
+    - w: 120
+      blocks:
+      - id: qr
+        type: qr
+        data:
+          value: https://github.com/the-tree-center/rag-ttc/commit/f1b0759
+          size: 110

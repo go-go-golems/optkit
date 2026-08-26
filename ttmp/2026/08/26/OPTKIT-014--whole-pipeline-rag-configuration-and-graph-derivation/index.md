@@ -1,7 +1,7 @@
 ---
 Title: Whole-Pipeline RAG Configuration and Graph Derivation
 Ticket: OPTKIT-014
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -14,10 +14,11 @@ Owners: []
 RelatedFiles: []
 ExternalSources: []
 Summary: Introduce a patchable whole-pipeline RAG semantic configuration and derive the twelve-layer graph from it.
-LastUpdated: 2026-08-26T14:20:22.368506158-04:00
+LastUpdated: 2026-08-26T15:52:04.33335527-04:00
 WhatFor: Eliminate drift between executable values, Optkit snapshots, and manually authored graph identities.
 WhenToUse: Implement after OPTKIT-012/013 and before adding real fusion variables.
 ---
+
 
 # Whole-Pipeline RAG Configuration and Graph Derivation
 
@@ -37,7 +38,7 @@ This ticket repairs the current retrieval-only snapshot asymmetry. It defines `P
 
 ## Status
 
-Current status: **active**
+Current status: **complete** — PipelineConfig, derived graphs, lifted lenses, v2 snapshots/manifests/campaigns, specialist projection parity, and full backend/frontend validation are complete.
 
 ## Topics
 

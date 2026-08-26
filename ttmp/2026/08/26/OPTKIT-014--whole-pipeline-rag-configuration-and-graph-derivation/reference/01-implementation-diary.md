@@ -1,7 +1,7 @@
 ---
 Title: Implementation Diary
 Ticket: OPTKIT-014
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -16,16 +16,23 @@ RelatedFiles:
       Note: Overall program context that keeps the ticket aligned
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/design-doc/01-intern-guide-to-pipelineconfig-layer-lenses-and-derived-graphs.md
       Note: Primary design deliverable whose research and delivery this diary records
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/fresh-campaign-run.log
+      Note: Fresh six-episode v2 campaign evidence
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/remarkable-dry-run.log
       Note: Ticket bundle selection and destination dry-run evidence
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/remarkable-upload.log
       Note: Successful rendered PDF upload receipt
+    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-014--whole-pipeline-rag-configuration-and-graph-derivation/various/work-slips/00-ticket-plan.log
+      Note: Successful ticket plan print receipt
+    - Path: repo://rag-ttc/pkg/ttc/optimization/config.go
+      Note: Core production implementation recorded in Steps 3 through 8
 ExternalSources: []
 Summary: Chronological research, design, implementation, validation, and delivery record for OPTKIT-014.
 LastUpdated: 2026-08-26T14:20:22.664335767-04:00
 WhatFor: ""
 WhenToUse: ""
 ---
+
 
 
 # Diary
@@ -210,4 +217,444 @@ remote: /ai/2026/08/26/OPTKIT-014
 commit: 428f6b8f5391dc851d989364b21a9d727c78cfc0
 doctor: clean
 production code changes: none
+```
+
+## Step 3: Introduce the complete semantic pipeline value
+
+This phase moved semantic configuration ownership below the campaign adapter. `optimization.PipelineConfig` now contains explicit values for all twelve layers, a strict v2 codec, and validation that rejects missing frozen versions, blank retrieval preparation/route, non-positive final-result limits, and invalid RRF constants.
+
+The ticket plan and P1 start slip were printed before code work. The P1 done slip was printed only after focused tests, vet, and the RAG-TTC full pre-commit hook passed.
+
+### Prompt Context
+
+**User prompt (verbatim):**
+
+> implement OPTKIT-012 to OPTKIT-014 (included). commit at appropriate intervals and keep a detailed diary as you work (using the diary format from the skill). for each ticket, Print out a brutalist work slip with the plan / different phases for the ticket. then before stsarting a phase, plrint a split about the phase, and print one when the phase is done. budget 2M [REMINDER] Output a <summary>...</summary> block at the VERY END of your response. This is mandatory.
+
+**Assistant interpretation:** Implement aggregate RAG configuration after the accepted generic catalog/binding contracts, with physical phase receipts and full repository evidence.
+
+**Inferred user intent:** Remove the retrieval-only snapshot asymmetry before any real RAG coordinate, compiler, or UI depends on it.
+
+**Commit (code):** `e26d4ef4ebfad5a8310d399911850fae0145b9bc` — "OPTKIT-014: define whole-pipeline configuration"
+
+### What I did
+
+- Added `PipelineConfig`, `RetrievalConfig`, `FusionConfig`, `FrozenConfig`, and thirteen schema constants in `pkg/ttc/optimization/config.go`.
+- Added `PipelineConfigCodec` and `SemanticFixturePipelineConfig`.
+- Named `FinalResultLimit` according to observed runtime behavior rather than the previous UI description.
+- Added strict round-trip, unknown-field, every-layer, limit, and finite-positive-RRF tests.
+
+### Why
+
+- Optkit must patch the semantic value that actually defines one complete arm.
+- Explicit frozen versions prevent different implementations from sharing an empty identity.
+
+### What worked
+
+- Canonical JSON round trips byte-for-byte.
+- Every missing layer or invalid executable field fails with layer context.
+- Full RAG-TTC tests/lint/Glazed vet passed in the commit hook.
+
+### What didn't work
+
+- N/A.
+
+### What I learned
+
+- Layer-local schemas can remain v1 while the aggregate schema advances to v2; the aggregate migration does not require changing unchanged local value contracts.
+
+### What was tricky to build
+
+- `RRFK` is a semantic float coordinate but not yet executable outside its default. Validation must accept positive finite values at the model layer, while the current fixture executor later rejects non-60 values explicitly until OPTKIT-015.
+
+### What warrants a second pair of eyes
+
+- Review whether future frozen layers should become distinct named types before they gain fields; the shared `FrozenConfig` is intentional for version-only semantics.
+
+### What should be done in the future
+
+- OPTKIT-015 must make `Fusion.RRFK` affect actual fusion arithmetic.
+
+### Code review instructions
+
+- Start with `pkg/ttc/optimization/config.go` and `config_test.go`.
+- Run `GOWORK=off go test ./pkg/ttc/optimization -count=1`.
+
+### Technical details
+
+```text
+phase slips: 01-p1-start, 02-p1-done
+pipeline schema: schema:rag-ttc.pipeline-config/v2
+frozen layers: 10
+real layer configs: retrieval, fusion
+```
+
+## Step 4: Derive graph identity and invalidation from PipelineConfig
+
+This phase encoded the reviewed twelve-layer topology in one ordered table. `DeriveGraph` validates the aggregate, derives every local `ConfigRef`, resolves transitive digests through `NewGraph`, and produces the only graph accepted by the new authoring path.
+
+The tests distinguish local semantic change from transitive recomputation. A fusion-only change leaves retrieval local and resolved identity unchanged, changes fusion locally, and changes every downstream resolved digest.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3)
+
+**Assistant interpretation:** Make semantic values—not manifest graph strings—the source of local and resolved graph identity.
+
+**Inferred user intent:** Give future proposal previews a deterministic, backend-owned diff and recomputation plan.
+
+**Commit (code):** `3055aa4f0985360d1ad2df6d35fc2791419e5be6` — "OPTKIT-014: derive graphs from pipeline config"
+
+### What I did
+
+- Added one ordered `pipelineLayerDefinitions` topology and `DeriveGraph`.
+- Matched direct dependency topology and layer schemas against the prior semantic fixture.
+- Locked baseline graph ID `config-graph:8861fa4568950d3148f20ecaaf96aa1195cea09697784f39706d7d5a184f9970`.
+- Tested fusion, retrieval, and corpus changes across `Diff` and `Plan`.
+- Tested invalid aggregate rejection.
+
+### Why
+
+- Independently authored local identities cannot prove that the graph describes executable values.
+
+### What worked
+
+- Equivalent configs derive equal complete graphs.
+- Fusion changes produce one direct change and the exact downstream `upstream_change` suffix.
+- Retrieval changes reuse corpus through indexes.
+
+### What didn't work
+
+- N/A.
+
+### What I learned
+
+- Local identity and resolved digest answer different questions and must remain separate in every projection.
+
+### What was tricky to build
+
+- Indexes have two direct dependencies—representations and embeddings—so a simple linear predecessor chain would not preserve the reviewed topology.
+
+### What warrants a second pair of eyes
+
+- Review topology changes as schema-level behavior; editing the definition table changes graph IDs and invalidation boundaries.
+
+### What should be done in the future
+
+- Add explicit topology migration notes whenever a direct dependency changes.
+
+### Code review instructions
+
+- Review `derive.go` beside the fixture topology and `derive_test.go`.
+- Run the fusion test and inspect direct versus upstream reasons.
+
+### Technical details
+
+```text
+phase slips: 03-p2-start, 04-p2-done
+layers: 12
+baseline graph: config-graph:8861fa4568950d3148f20ecaaf96aa1195cea09697784f39706d7d5a184f9970
+```
+
+## Step 5: Add law-tested aggregate and lifted lenses
+
+This phase made layer-local fields patchable as coordinates of the aggregate. RAG-TTC owns one generic `LiftPipelineLens` helper, aggregate lenses for all layers, local retrieval/fusion field lenses, and four lifted field lenses.
+
+Every lens write copies data and validates the resulting pipeline. Invalid values return an error and the original aggregate, which prevents partially applied draft state.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3)
+
+**Assistant interpretation:** Provide typed coordinate access without making each variable understand the complete aggregate.
+
+**Inferred user intent:** Let normal future variables be registered with a local field definition and a reusable aggregate lift.
+
+**Commit (code):** `f1b075992c707815b6ffc2724ef4929ff96db204` — "OPTKIT-014: add lifted pipeline lenses"
+
+### What I did
+
+- Added aggregate lenses for all twelve `PipelineConfig` fields.
+- Added local preparation, route, final-result-limit, and RRF-k field lenses.
+- Added `LiftPipelineLens` and lifted field accessors.
+- Ran get-put, put-get, and put-put laws for all aggregate and lifted lenses.
+- Compared complete aggregates and derived graphs after one fusion write.
+
+### Why
+
+- Variable definitions should remain local to the layer value they understand.
+
+### What worked
+
+- A lifted RRF write changed only `Fusion.RRFK` and only fusion local identity.
+- Invalid writes returned the original value exactly.
+
+### What didn't work
+
+- N/A.
+
+### What I learned
+
+- The helper remains RAG-local so isolated `GOWORK=off` builds can use the currently published Optkit dependency without a local replacement.
+
+### What was tricky to build
+
+- The composed field lens itself does not validate the complete aggregate; validation belongs in the aggregate layer lens after the updated local value is inserted.
+
+### What warrants a second pair of eyes
+
+- Review exported lens naming before OPTKIT-015 publishes a long-lived RAG registry.
+
+### What should be done in the future
+
+- Register only the coordinates accepted by each ticket; the existence of a lens does not imply that runtime supports mutation yet.
+
+### Code review instructions
+
+- Read `lenses.go`, then run `TestLiftedFieldLensesObeyLawsAndPreserveUnrelatedValues`.
+
+### Technical details
+
+```text
+phase slips: 05-p3-start, 06-p3-done
+aggregate lenses: 12
+lifted executable fields: 4
+```
+
+## Step 6: Migrate snapshots, executors, and campaigns to the aggregate
+
+This phase removed retrieval configuration ownership from `optkitcampaign`. Factories now load whole-pipeline snapshots, executors receive the aggregate, campaign arms contain `Pipeline`, and initialization derives and persists graphs itself.
+
+The semantic fixture preserves baseline behavior. It validates the full aggregate, consumes retrieval preparation/route/final-result-limit, and explicitly rejects a non-60 RRF value until OPTKIT-015 makes that coordinate executable.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3)
+
+**Assistant interpretation:** Move every execution and persistence boundary from retrieval-only values to the new semantic aggregate.
+
+**Inferred user intent:** Ensure snapshots, runtime behavior, and graph records describe the same arm.
+
+**Commit (runtime and migration):** `61422e3b10f292bd0231839e46ec8c953c1e7b26` — "OPTKIT-014: migrate campaigns to pipeline snapshots"
+
+### What I did
+
+- Advanced system identity to `system:rag-ttc-pipeline/v2`.
+- Replaced the executor argument, prepared snapshot, arm, materialization codec, campaign spec, work schema, and trial protocol with aggregate equivalents.
+- Removed caller-supplied `RunOptions.ConfigGraphs`; campaign initialization calls `DeriveGraph` for each pipeline.
+- Added direct fixture-runtime parity and explicit unsupported-RRF tests.
+- Added persistence/readback assertions for derived graphs and pipeline snapshot schemas.
+
+### Why
+
+- A graph derived by the manifest service but accepted as an input by the campaign would still permit another caller to submit mismatched graph facts.
+
+### What worked
+
+- Existing campaign completion, restart checkpoints, budget reconciliation, measurements, and specialist reads remained green at equivalent values.
+- A direct baseline executor and the prior search tool returned equal `SearchOutput` values.
+
+### What didn't work
+
+- N/A in production migration.
+
+### What I learned
+
+- `ConfigGraphs` remains in the persisted campaign spec as historical evidence but must not remain in command input.
+
+### What was tricky to build
+
+- The repository's full pre-commit hook required manifest and specialist packages to migrate coherently with the runtime type change; an intermediate retrieval-only public type would have been an unapproved compatibility alias.
+
+### What warrants a second pair of eyes
+
+- Review schema transitions and historical store expectations before release; v1 resume is deliberately unsupported.
+
+### What should be done in the future
+
+- Store proposal/catalog provenance alongside these derived graph facts in OPTKIT-017.
+
+### Code review instructions
+
+- Start with `optkitcampaign/system.go`, then `campaign.go`, `fixture.go`, and their tests.
+- Run the three checkpoint-resume subtests.
+
+### Technical details
+
+```text
+phase slips: 07-p4-start, 08-p4-done
+system: system:rag-ttc-pipeline/v2
+campaign spec: schema:rag-ttc.optkit-campaign-spec/v2
+work: schema:rag-ttc.optkit-episode-work/v2
+trial protocol: rag-ttc.pipeline/v2
+```
+
+## Step 7: Remove independently authored manifest graphs
+
+This phase replaced the checked-in manifests with strict v2 pipeline assets. `ManifestArm` has no `Config` or `Layers`; validation derives graphs and campaign creation derives them again before persistence.
+
+CLI smoke tests verified the actual application path: validate, inspect, diff, dry-run, fresh run, status reconstruction, and direct-payload verification.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3)
+
+**Assistant interpretation:** Delete the remaining authoring path that could drift from executable configuration.
+
+**Inferred user intent:** Make the aggregate source-of-truth rule enforceable at every backend entry point.
+
+**Commit (manifest/runtime migration):** `61422e3b10f292bd0231839e46ec8c953c1e7b26` — "OPTKIT-014: migrate campaigns to pipeline snapshots"
+
+### What I did
+
+- Advanced strict manifest schema to `rag-ttc.experiment-manifest/v2`.
+- Replaced `semantic-limit-v1.yaml` assets with explicit v2 pipeline assets.
+- Added negative tests for stale `config` and `layers` fields.
+- Corrected all result-limit names and descriptions.
+- Captured CLI validate, inspect, diff, and dry-run logs under this ticket.
+- Ran fresh campaign `campaign:69829bf109068f1498ba9b598fef5ac1`: six episodes, 47 events, paired delta `0.16666666666666666`.
+- Verified the journal and all 47 unique direct payloads.
+
+### Why
+
+- Validating duplicated identities is weaker than removing the duplicate input.
+
+### What worked
+
+- Strict YAML decoding failed closed for both stale fields.
+- Dry-run created no store.
+- The new campaign completed with unchanged baseline metrics.
+
+### What didn't work
+
+- The first help command used plural `experiments` and failed: `unknown command "experiments"`; the actual root is singular `experiment`.
+- A campaign smoke attempted `--output json`, but the leaf command does not expose that flag and returned `unknown flag: --output`. The successful smoke used the structured default table instead of changing the CLI.
+
+### What I learned
+
+- CLI verification must follow actual Glazed command composition rather than inferred group names or output flags.
+
+### What was tricky to build
+
+- The old prose claimed `limit` controlled per-retriever top-K. Runtime evidence showed it caps final returned results, so filenames, YAML fields, docs, Go types, and UI copy all needed one coordinated correction.
+
+### What warrants a second pair of eyes
+
+- Review every external manifest consumer for the intentional v2-only cutover.
+
+### What should be done in the future
+
+- Add concise candidate mutations in OPTKIT-017 without reintroducing a graph field.
+
+### Code review instructions
+
+- Review `experimentworkbench/manifest.go`, both v2 YAML assets, and strict-negative tests.
+- Run the `config validate`, `config inspect`, and `campaign dry-run` commands from the guide outcome section.
+
+### Technical details
+
+```text
+phase slips: 09-p5-start, 10-p5-done
+manifest: rag-ttc.experiment-manifest/v2
+fresh campaign: campaign:69829bf109068f1498ba9b598fef5ac1
+journal/direct payload verification: true/true
+```
+
+## Step 8: Validate projections, frontend contracts, and complete delivery
+
+This phase verified that historical reads expose the migrated values accurately, updated the specialist TypeScript shape and wording, ran the final backend/frontend suites, closed ticket bookkeeping, and produced a project-wide textbook report in the Obsidian vault.
+
+The final physical done slip is printed only after tasks, relations, changelog, roadmap, doctor, repository status, and validation evidence agree.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3)
+
+**Additional user prompt (verbatim):**
+
+> write a detailed project report for the obsidian vault as a deep dive technical analysis blog post using a textbook writing style (no analogies, see skill).
+>  Commit and push the bsidian vault when done (go-go-parc vault).
+>
+> About all your work so far.
+>
+> [REMINDER] Output a <summary>...</summary> block at the VERY END of your response. This is mandatory.
+
+**Additional follow-up (verbatim):**
+
+> Don't forget the report bruh, do it now
+>
+> [REMINDER] Output a <summary>...</summary> block at the VERY END of your response. This is mandatory.
+
+**Assistant interpretation:** Finish the read-side validation and immediately preserve the complete OPTKIT-011–014 work as a detailed, non-analogical project report in the committed and pushed vault.
+
+**Inferred user intent:** Retain both implementation correctness and durable textbook-quality understanding outside the ticket workspace.
+
+**Commit (projection):** `9c56a7df614b95bdc754fdcdb944ba9ddf02ec7a` — "OPTKIT-014: project final result limits accurately"
+
+**Commit (Obsidian report):** `56dde1f3a4f47bb86e19557d1dede991f14abb5e` — "Add Optkit workbench backend foundations report"
+
+### What I did
+
+- Changed specialist retrieval wire/type field to `final_result_limit` and UI label to “final results returned.”
+- Added projector tests proving persisted pipelines, derived graphs, snapshot schemas, and system identities agree.
+- Ran `make lint`, full Go tests/build, focused race tests, and the 255-package dependency scan.
+- Ran specialist `pnpm typecheck`, 45 tests, and production build.
+- Wrote a 1,243-line, 5,969-word textbook-style project report at `Projects/2026/08/26/PROJECT REPORT - Optkit Workbench - From Typed Coordinates to Whole-Pipeline Semantic Configuration.md`.
+- Validated report frontmatter, checked for analogy language, staged only that note, committed it, and pushed vault `main` to `origin`.
+- Checked all six implementation tasks and updated the guide with actual implementation outcomes.
+
+### Why
+
+- A backend naming correction is incomplete if the read API and specialist UI continue teaching the old meaning.
+- The project now spans architecture, two repositories, durable schemas, phase evidence, and future ticket contracts; a vault report preserves the reasoning in a discoverable long-form format.
+
+### What worked
+
+- Final backend lint/tests/build and focused race tests passed.
+- Frontend typecheck, 9 files/45 tests, and Vite build passed.
+- The dependency scan listed 255 packages without an import cycle.
+- Vault push advanced `main` to `56dde1f` with a clean worktree.
+
+### What didn't work
+
+- The report request arrived during OPTKIT-014 phase 6. I paused closure, wrote and pushed the requested report immediately, then resumed the remaining ticket bookkeeping rather than deferring the user request.
+
+### What I learned
+
+- Project-level reports should state the exact implementation boundary at writing time; the first report commit recorded phase-6 validation as ongoing and is updated after final ticket closure.
+
+### What was tricky to build
+
+- The specialist read model intentionally projects only retrieval values for the existing widget while the sealed snapshot contains the whole pipeline. Tests must prove the projection comes from the persisted aggregate without duplicating the aggregate as another source of truth.
+- Documentation status, physical slip ordering, code commits, and vault report status had to remain truthful while the report interrupted the final phase.
+
+### What warrants a second pair of eyes
+
+- Review the v2-only migration policy and frontend wire-field change before deployment.
+- Review the report's explicit statement that non-60 RRF execution remains OPTKIT-015 work.
+
+### What should be done in the future
+
+- Implement actual RRF configuration and the first RAG registry in OPTKIT-015.
+- Update the vault report when that next implementation phase materially changes the architecture.
+
+### Code review instructions
+
+- Review RAG-TTC commits `e26d4ef`, `3055aa4`, `f1b0759`, `61422e3`, and `9c56a7d` in order.
+- Run `make lint && make test && GOWORK=off go build ./...` from `rag-ttc/`.
+- Run focused race tests for optimization, campaign, workbench, specialist API, and command packages.
+- Run `pnpm typecheck && pnpm test && pnpm build` from `apps/specialist/web`.
+- Run `docmgr doctor --ticket OPTKIT-014 --stale-after 30` from the workspace root.
+- Inspect every work-slip log for `printed: true`.
+
+### Technical details
+
+```text
+backend full tests/lint/build: pass
+focused race: pass
+frontend typecheck/tests/build: pass (45 tests)
+dependency scan: 255 packages, acyclic
+project report: 1,243 lines / 5,969 words
+vault commit/push: 56dde1f / main -> origin/main
+phase slips: plan + 6 start + 6 done
 ```

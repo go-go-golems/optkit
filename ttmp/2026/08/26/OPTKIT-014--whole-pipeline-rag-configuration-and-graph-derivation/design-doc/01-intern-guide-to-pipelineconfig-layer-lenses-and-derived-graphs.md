@@ -12,34 +12,34 @@ DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
-    - Path: repo://optkit/space/lens.go
-      Note: Generic lens laws used for aggregate layer lifting
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
-      Note: Parent program goals dependencies exclusions and exit gates
     - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
       Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
     - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/manifest.go
       Note: |-
         Current duplicated executable config and manually authored graph input
         Current duplicated config/graph authoring
-    - Path: repo://rag-ttc/pkg/ttc/optimization/contracts.go
-      Note: |-
-        Canonical twelve-layer vocabulary and ConfigRef contract
-        Canonical layer vocabulary
-    - Path: repo://rag-ttc/pkg/ttc/optimization/graph.go
-      Note: |-
-        Local identity and dependency resolution to preserve
-        Graph derivation target
+        Implemented strict v2 pipeline-only authoring
+    - Path: repo://rag-ttc/pkg/ttc/optimization/config.go
+      Note: Implemented complete v2 semantic pipeline model
+    - Path: repo://rag-ttc/pkg/ttc/optimization/derive.go
+      Note: Implemented sole graph derivation topology
+    - Path: repo://rag-ttc/pkg/ttc/optimization/lenses.go
+      Note: Implemented aggregate and lifted layer lenses
+    - Path: repo://rag-ttc/pkg/ttc/optkitcampaign/campaign.go
+      Note: Implemented pipeline snapshot and derived graph persistence
     - Path: repo://rag-ttc/pkg/ttc/optkitcampaign/system.go
       Note: |-
         Retrieval-only snapshot and executor ownership to replace
         Retrieval-only snapshot asymmetry
+        Implemented aggregate factory and executor boundary
 ExternalSources: []
 Summary: Design for a typed whole-pipeline semantic configuration, layer-local lens lifting, deterministic graph derivation, and migration away from retrieval-only snapshots.
 LastUpdated: 2026-08-26T14:20:22.368506158-04:00
 WhatFor: Teach an intern how to make semantic configuration the single source of truth for Optkit snapshots, execution, and graph identity.
 WhenToUse: Implement after OPTKIT-012/013 and before real fusion variables or proposal compilation.
 ---
+
+
 
 
 
@@ -462,7 +462,25 @@ This allows dynamic layers but gives up typed validation and makes variable bind
 
 This can model caching artifacts but complicates atomic multi-variable candidates and Optkit's parent/child semantics. The workbench candidate changes one whole arm configuration.
 
-## 16. Out of scope
+## 16. Implementation outcome
+
+Implemented on 2026-08-26 in RAG-TTC commits `e26d4ef4`, `3055aa4f`, `f1b07599`, `61422e3b`, and `9c56a7df`.
+
+- `pkg/ttc/optimization/config.go` owns `PipelineConfig`, ten explicit frozen layer versions, typed retrieval and fusion values, strict `schema:rag-ttc.pipeline-config/v2` codec, and complete validation.
+- `pkg/ttc/optimization/derive.go` is the only new graph-authoring path. One ordered topology table emits all local refs, resolved digests, and graph ID. The baseline limit-2 graph is locked as `config-graph:8861fa4568950d3148f20ecaaf96aa1195cea09697784f39706d7d5a184f9970`.
+- `pkg/ttc/optimization/lenses.go` supplies aggregate lenses for every layer and lifted preparation, route, final-result-limit, and RRF-k field lenses. All obey get-put, put-get, and put-put laws and return the original aggregate on invalid writes.
+- `pkg/ttc/optkitcampaign` no longer declares a retrieval configuration. Its v2 factory, snapshots, executor contract, arms, campaign specification, and episode work consume `optimization.PipelineConfig`.
+- Campaign initialization derives graphs itself; `RunOptions` no longer accepts caller-authored `ConfigGraphs`. The persisted campaign spec retains the derived graphs as historical facts.
+- `experimentworkbench.ManifestArm` contains only `pipeline`. Strict `rag-ttc.experiment-manifest/v2` decoding rejects stale `config` and `layers` fields.
+- Checked-in manifests were replaced by `semantic-limit-v2.yaml` and `semantic-limit-challenger-v2.yaml`. Their prose and wire field use `final_result_limit`, accurately naming the post-pipeline returned-result bound.
+- The semantic fixture executor validates the entire aggregate and requires `Fusion.RRFK == 60` until OPTKIT-015 routes that coordinate into actual `WeightedRRF` arithmetic. Unsupported semantic values fail rather than being ignored.
+- Specialist projections read retrieval values from persisted pipelines. The TypeScript contract and retrieval diff widget use `final_result_limit` and display “final results returned.”
+
+Validation includes complete pre-commit Go tests/lint/Glazed vet on every commit, focused race tests, full `make lint`/`make test`/build, a 255-package acyclic dependency scan, specialist TypeScript typecheck plus 45 tests and production build, CLI validate/inspect/diff/dry-run, and a fresh six-episode campaign whose journal and 47 direct payloads verify.
+
+The implementation deliberately does not provide a v1 reader or alias. V1 retrieval snapshots, `config + layers` manifests, and old system IDs are not reinterpreted by the v2 path.
+
+## 17. Out of scope
 
 - Optkit catalog implementation (OPTKIT-013);
 - actual RRF plumbing and RAG registry (OPTKIT-015);
@@ -470,7 +488,7 @@ This can model caching artifacts but complicates atomic multi-variable candidate
 - candidate manifest/sealing semantics (OPTKIT-017);
 - frontend workbench.
 
-## 17. Exit criteria
+## 18. Exit criteria
 
 - `PipelineConfig` owns all twelve semantic layer values.
 - Config package dependencies are acyclic.
@@ -481,7 +499,7 @@ This can model caching artifacts but complicates atomic multi-variable candidate
 - Identity migration is documented and tested.
 - Full affected tests, diary, doctor, and reMarkable delivery pass.
 
-## 18. File reference map
+## 19. File reference map
 
 - `rag-ttc/pkg/ttc/optimization/contracts.go:20-55` — layer order and `ConfigRef`.
 - `rag-ttc/pkg/ttc/optimization/graph.go:30-165` — identity derivation and graph construction.

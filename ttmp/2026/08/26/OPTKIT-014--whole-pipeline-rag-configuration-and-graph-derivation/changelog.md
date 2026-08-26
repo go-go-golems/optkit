@@ -30,3 +30,17 @@ Pinned the accepted OPTKIT-012 workbench contract revision b1fcf17a29f89921e9e1c
 ### Related Files
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md — Normative aggregate config catalog binding identity provenance and compatibility decisions
+
+## 2026-08-26
+
+Implemented whole-pipeline v2 configuration, derived graphs, lifted lenses, aggregate snapshots/execution, strict pipeline-only manifests, derived campaign graphs, specialist projection parity, and full backend/frontend validation (RAG-TTC e26d4ef, 3055aa4, f1b0759, 61422e3, 9c56a7d)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/experimentworkbench/manifest.go — Pipeline-only v2 manifest boundary
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/optimization/config.go — Whole-pipeline semantic value
+
+
+## 2026-08-26
+
+All production, migration, runtime parity, graph/lens, backend/frontend validation, diary, and work-slip requirements complete
