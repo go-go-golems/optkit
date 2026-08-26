@@ -25,6 +25,8 @@ topics:
       description: Visual representations of campaign evidence and provenance
     - slug: scientific-workflow
       description: Scientist-facing experiment review and assessment workflows
+    - slug: design
+      description: Architecture and implementation design documents
 docTypes: []
 intent: []
 status: []
