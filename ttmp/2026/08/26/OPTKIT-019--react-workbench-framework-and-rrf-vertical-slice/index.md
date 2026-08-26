@@ -1,7 +1,7 @@
 ---
 Title: React Workbench Framework and RRF Vertical Slice
 Ticket: OPTKIT-019
-Status: active
+Status: superseded
 Topics:
     - architecture
     - design
@@ -31,6 +31,46 @@ This ticket creates the frontend framework after backend semantics are proven. G
 - [Intern guide](design-doc/01-intern-guide-to-the-react-workbench-framework-and-rrf-vertical-slice.md)
 - [Implementation diary](reference/01-implementation-diary.md)
 
+## Superseded — 2026-08-26
+
+This ticket was closed **before implementation** and replaced by the PBUI adoption
+track. The program decided to build the frontend on the presentation-based UI
+stack (`@hyperslop-systems/pbui`, `pbui-workbench`, `plot`) instead of the bespoke
+`WorkbenchShell`/`WorkbenchProvider` architecture this guide specifies. The
+successors are:
+
+- **OPTKIT-021** — PBUI adoption ADRs and workbench vocabulary (packaging, Go
+  workbench service placement, document formats, presentation types/verbs).
+- **OPTKIT-022** — RAG-TTC workbench product package and evidence tiles (the
+  pbui product scaffold plus the read-only tiles over `specialistapi`).
+- **OPTKIT-023** — Propose workspace: draft document and RRF vertical slice
+  (inherits this ticket's exit criterion verbatim).
+- **OPTKIT-024** — Agent seat over the workbench vocabulary (deferred).
+
+The intern guide in this ticket remains valuable as a design record and as a
+source of salvaged content. The following parts survive into the successors and
+must not be re-invented:
+
+- generic editors keyed by `ValueSpec` kind with a visible unsupported fallback
+  (never silent coercion) — lifted into OPTKIT-023;
+- plugin resolution order: specialized variable editor → generic by value kind →
+  visible fallback — becomes the pbui product's plugin registry rule;
+- the debounced-compile / stale-response / `sealState` machine
+  (`editing → compiling → sealable → sealing → sealed`) — lifted into the
+  `ragttc.proposal-draft/v1` document flow in OPTKIT-023;
+- the `InvalidationStrip` rule that recomputation status renders in **server
+  order** from `InvalidationPlan.Steps`, never inferred client-side;
+- the RRF contribution inspector (`contribution = weight / (k + rank)` with
+  auditable per-channel operands) and the parity-pinning discipline against
+  recorded six-decimal Go results (OPTKIT-010 precedent);
+- accessibility, deep-link, loading/empty/error state requirements.
+
+What does **not** survive: the bespoke shell (`WorkbenchShell.tsx`,
+`WorkbenchProvider.tsx`), the proposed `apps/specialist/web/src/workbench/`
+module tree, and the `/workbench/campaigns/:campaign/cases/:case/proposal`
+route pattern — pbui-workbench's split-tree surface, workbench documents, and
+accept protocol replace them.
+
 ## Key Links
 
 - **Related Files**: See frontmatter RelatedFiles field
@@ -38,7 +78,7 @@ This ticket creates the frontend framework after backend semantics are proven. G
 
 ## Status
 
-Current status: **active**
+Current status: **superseded** (by OPTKIT-021, OPTKIT-022, OPTKIT-023, OPTKIT-024)
 
 ## Topics
 
