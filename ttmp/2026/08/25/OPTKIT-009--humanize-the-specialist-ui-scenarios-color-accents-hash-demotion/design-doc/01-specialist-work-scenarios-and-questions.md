@@ -13,128 +13,146 @@ RelatedFiles: []
 ExternalSources:
     - URL: https://hyperslop.systems/
       Note: Accent palette source (green 2db878, purple 805bd7, red ef4038, yellow f2ad00)
-Summary: Persona-driven scenarios and the questions a RAG specialist actually asks, mapped to what the UI can answer today, soon, and only with backend support; plus the design consequences.
+Summary: The specialist UI reframed around its human user — someone making a chatbot's retrieval better — with judge traces, verdicts, and failure examples at the center, data graphics that answer questions, and prose that explains what things are.
 WhatFor: Drive the evolution of the specialist UI from journal-shaped tables toward a tool people do work in.
 WhenToUse: Read when prioritizing specialist UI features or projector/backend asks.
 ---
 
 # Specialist Work Scenarios and Questions
 
-The v1 UI is contract-faithful but journal-shaped: it shows what the store
-recorded, dominated by identifiers. This document walks the tool as its actual
-user — an engineer tuning a RAG system — and derives the questions the UI must
-answer, ranked by how often they come up in a working session.
+Everything here starts from one person: someone whose job is to make a
+chatbot's answers better, which mostly means making its **retrieval** better.
+The journal, the projectors, the digests — all of that scaffolding exists to
+serve that person's day. The UI must not be shaped like the journal; it must
+be shaped like the work.
 
-## Scenarios (me, doing the work)
+The work, concretely, is a loop:
 
-### A. Morning check — "did my sweep finish, can I trust it?"
+> Read failures → form a hypothesis → change one thing → re-run → see which
+> failures got fixed and what broke → repeat.
 
-I kicked off a campaign last night. I open the cockpit and want, in five
-seconds: finished or not, anything failed, journal verified, budget headroom.
-Then one promising challenger to click into. I do not want to cross-reference
-four tables to learn "yes, it's fine."
+Averages start that loop; **examples** drive it. Nobody improves a retriever
+by staring at 0.833; they improve it by reading the question the bot fumbled,
+the evidence it actually fetched, the evidence it should have fetched, and
+what the judge said about the difference.
 
-**Wants:** a verdict-first cockpit header; failed/queued counts as words, not
-a table I have to scan; a "most interesting comparison" shortcut.
+## Scenarios, in the user's voice
 
-### B. Did my change help? — the core loop
+### A. "Show me what's broken"
 
-I bumped `retrieval.limit` from 1 to 2. The comparison screen must lead with
-the sentence I came for: *"limit-2 beats limit-1: target-coverage
-0.833 → 1.000 (+0.167 over 3 pairs)"*, then show me **what I changed in
-actual values** (`limit: 1 → 2`), not two 64-char identities. Cases sorted by
-|Δ| so the one case that moved (+0.500) is row one.
+I don't open the tool to admire a completed campaign. I open it to find the
+cases where the bot let a user down. The first thing I want is a **failure
+gallery**: the questions with the worst verdicts, each showing the question
+text, what came back, what was expected, and the judge's words for why it
+fell short. Sorted by how badly, and by how often (a case that fails on every
+repeat is a bug; one that fails sometimes is flakiness).
 
-**Wants:** verdict strip; config *value* diff (needs backend: inline small
-config payloads like stage previews — the retrieval config artifact is 69 B);
-|Δ|-sorted cases; hashes out of the reading line.
+### B. "Says who?" — reading judge traces
 
-### C. Why did this case improve/regress? — the debugging loop
+Behind every score is a judge's verdict. Before I trust 0.5 I want to read
+the trace: what the judge was shown, what it concluded, in its own words. And
+over time I want calibration — when the judge and I disagree on ten examples,
+that's a judge problem, not a retrieval problem, and fixing retrieval against
+a miscalibrated judge is wasted work.
 
-`q-comparison` went from 0.5 to 1.0. I open the case and want the two
-pipelines **side by side**, stages aligned by name, chunk sets diffed:
-baseline retrieved `{chunk-b}`, challenger `{chunk-a, chunk-b}`, and the
-divergence started at `vector.raw`. Then I want to read chunk-a's text and
-the case's actual question to judge relevance myself.
+### C. "Why did this one fail?" — the autopsy
 
-**Wants:** side-by-side pipeline diff (buildable today — both routes exist);
-case input text preview (needs backend, 135 B artifact); chunk text (needs
-chunk-lab producer, deferred).
+For one failing question I want the full story in one view: the question, the
+chunks each stage fetched/merged/filtered/ranked, where the right chunk died
+(or was never fetched at all), and the chunk texts so I can judge relevance
+myself. The chunk-presence grid and the narrowing-funnel line answer "where";
+the chunk text answers "why". A failure autopsy is: *where* did the evidence
+go, then *should* it have survived.
 
-### D. Getting a feel — "let me poke at it"
+### D. "Did my fix work — and what did it break?"
 
-Before trusting metrics I want to touch the system: browse what questions are
-in the eval set, see what a case's ideal evidence is, and type my own query
-against an arm's sealed snapshot to watch what comes back, stage by stage.
-Reading tables never builds intuition; running five of my own queries does.
+After a change I don't want just a delta on the mean. I want **churn**:
+which failing cases now pass (fixed), which passing cases now fail
+(regressions), which still fail (untouched). A +0.167 mean that hides one
+regression is a worse trade than it looks. The paired slope graph shows this
+today; a fixed/broke/still-broken triage list would say it in words.
 
-**Wants:** case browser with real question text; a read-only **query
-playground** against a snapshot (non-mutating retrieval — a natural future
-`POST /playground` that executes but never records); chunk browser.
+### E. "Let me try it myself"
 
-### E. Judge skepticism — "says who?"
+Intuition comes from contact. I want to type my own question at a sealed
+arm and watch the pipeline handle it live — not recorded, not scored, just
+me poking the system the way a user would. Five hand-run queries teach me
+more about a reranker than any table.
 
-A 0.5 score is a judge's opinion. I want to see what the judge was shown and
-what it said, and eventually calibration ("how often does this judge agree
-with me?"). Deferred until answer/judge stages exist in trajectories.
+### F. "What exactly am I testing?" — in words
 
-### F. Writing it up — when hashes finally matter
+Arms, cases, and campaigns should describe themselves in prose, not slugs.
+`limit-2` should say "same recipe, but retrieval keeps 2 results instead
+of 1". `q-policy-negative` should say "asks for restricted content; passing
+means retrieving nothing". These sentences belong in the manifests and case
+definitions and should flow through the API — the person writing the
+experiment knows the why; the tool should carry it to the person reading the
+results.
 
-When I share results or pin an appendix, *then* I need exact identifiers:
-campaign, snapshots, digests. They belong in a detail tray on each screen —
-copyable, complete, out of the way. Deep links carry the rest.
+### G. "Can I cite this?" — trust and bookkeeping
 
-### G. Planning the next run — "what will it cost me?"
+When results go into a write-up, I need the boring things to be solid:
+journal verified, no hidden failures, budget honest, and every number
+traceable to episodes and artifacts. Identifiers stay one disclosure away,
+never in the reading line.
 
-If I change chunking, which layers recompute? The invalidation plan already
-answers this for two existing arms; a what-if against a hypothetical config
-needs backend support. Budget panel answers "can I afford another sweep."
+## The questions, ranked by how often they come up
 
-## The questions, ranked
+Every session:
 
-Working questions (every session):
+1. Which questions is the bot failing, and how badly?
+2. What did the judge actually say about each failure?
+3. For this failure — where in the pipeline did the right evidence die?
+4. What does this chunk/case actually say? (text, not IDs)
+5. Did my last change fix failures, and did it break anything that worked?
 
-1. Did the challenger win, by how much, over how many pairs?
-2. What did I actually change (values, not identities)?
-3. Which cases moved, and which single case should I look at first?
-4. Where in the pipeline did baseline and challenger diverge?
-5. What was the question asked in this case?
-6. What text is in the chunks that made the difference?
-7. Anything failed / unverified / over budget that makes this run untrustworthy?
+Regularly:
 
-Exploration questions (getting a feel):
+6. What am I actually testing, in words? (arm and case descriptions)
+7. What did my config change cost — what recomputes, what's reusable?
+8. Do I have budget left for another sweep?
+9. Do I trust the judge? (calibration, spot-check disagreements)
 
-8. What's in the eval set — what kinds of questions, which are negatives?
-9. What comes back if *I* ask my own question against this arm?
-10. Why was this chunk dropped at this stage (filter, dedupe, rerank)?
-11. What did the judge see and say; do I agree with it?
+Occasionally:
 
-Bookkeeping questions (occasionally):
-
-12. What exactly is this artifact (digest, size, sensitivity) — for citation?
-13. Which episodes does this number rest on (provenance chain)?
-14. How much budget is left; what did this campaign consume?
+10. Let me hand-run a query against this arm and watch.
+11. Full provenance for citation: episodes, artifacts, digests.
 
 ## Answerability map
 
 | Question | Status |
 | --- | --- |
-| 1, 3, 7, 14 | Answerable now — presentation changes only |
-| 4 | Answerable now — new side-by-side diff view over existing routes |
-| 12, 13 | Answered by provenance screen (keep, restyle) |
-| 2, 5 | Small backend ask: value previews on config-diff layers and case inputs, same sensitivity/size policy as stage previews |
-| 8 | Partially now (case IDs + modes); real text needs case-input previews |
-| 6, 10 | Needs chunk-lab producer (explicitly deferred in OPTKIT-007) |
-| 9 | Needs a read-only playground endpoint (future contract) |
-| 11 | Needs answer/judge trajectory stages + calibration projector (deferred) |
+| 3 (where evidence dies), 5 (per-case churn), 7, 8, 11 | Answerable now — served by the chunk grid, stage flow, slope graph, invalidation plan, meters, provenance |
+| 1, 4, 6 | Small backend asks: verdict/score surfaced per case with worst-first ordering; text previews for case inputs and chunk content within the existing sensitivity/size policy; human descriptions authored in manifests/cases and passed through the API |
+| 2, 9 | Needs judge trajectory stages (what the judge saw, its verdict text) and later a calibration projector |
+| 10 | Needs a read-only playground endpoint (execute, never record) |
 
-## Design consequences (this ticket)
+## Data graphics principles (Tufte, applied)
 
-- Verdict-first comparison header; |Δ|-sorted cases.
-- Hashes leave the reading line everywhere: identifier trays/disclosures per
-  panel; provenance remains the full-detail screen.
-- Friendlier surface: white background stays; drop the brutalist offset
-  shadows; hyperslop accent palette for meaning — green = healthy/measured/
-  reuse, purple = your direct change / links, yellow = derived recompute /
-  warnings, red = failure/violation. Missing data stays uncolored dither:
-  absence of color is absence of data.
+Graphics exist to answer a question faster than the table beneath them, and
+each is titled with its question:
+
+- **Paired slope graph** — "which cases moved, which regressed?" One line
+  per question from baseline score to challenger score; green rises, red
+  falls, gray flat; the mean is one bold line among its cases, so an average
+  can never hide its outliers.
+- **Chunk-presence grid** — "where did the evidence go?" Rows are chunks,
+  columns are pipeline stages, filled cells are presence. A chunk that dies
+  at the policy filter is visible as a row that stops.
+- **Stage-flow line** — "where does the candidate set narrow?" Candidate
+  counts across stages; narrowing segments drawn in red.
+- **Meter bars** — "how much room do I have left?" Spent ink against the
+  limit, word-sized, inline with the numbers.
+
+Rules: direct labels, no legends, no gridlines, no decoration; graphics
+word-sized or close; **missing values are never plotted as zero** — they are
+excluded and named beneath the graphic. Every colored mark also carries its
+word.
+
+## Prose principles
+
+Every section explains itself in one or two plain sentences: what this is,
+why it matters ("An arm is one complete recipe for answering questions…").
+The system's own descriptions (manifests, cases) should be written as prose
+at authoring time and surfaced everywhere the slug appears. Terse keywords
+are for machines; this tool is for a person.

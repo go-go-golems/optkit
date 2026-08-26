@@ -12,16 +12,23 @@ Owners: []
 RelatedFiles:
     - Path: ws://rag-ttc/apps/specialist/web/src/components/IdChip.tsx
       Note: IdTray disclosure demoting identifiers (commit 1e77d16cd)
+    - Path: ws://rag-ttc/apps/specialist/web/src/components/graphs.tsx
+      Note: 'Tufte data graphics: slope graph, chunk grid, stage flow, meter bars (commit baf6ce93f)'
     - Path: ws://rag-ttc/apps/specialist/web/src/screens/ComparisonScreen.tsx
       Note: Verdict strip, show-identifiers toggles, |delta|-sorted cases (commit 1e77d16cd)
     - Path: ws://rag-ttc/apps/specialist/web/src/styles/system.css
       Note: Accent palette semantics, flat sections, square buttons (commit 1e77d16cd)
+    - Path: ws://rag-ttc/assets/configs/experiments/optkit-rag/semantic-limit-v1.yaml
+      Note: Manifest rewritten with authored prose for experiment, arms, cases (commit f5e5a7e29)
+    - Path: ws://rag-ttc/pkg/ttc/specialistapi/projector.go
+      Note: Surfaces descriptions and case query text in cockpit/comparison (commit f5e5a7e29)
 ExternalSources: []
 Summary: Diary of the humanize pass on the specialist UI — scenarios document, hyperslop accent palette, flat sections, hash demotion, verdict strip.
 LastUpdated: 2026-08-25T22:05:00-04:00
 WhatFor: Record the UX-direction change and how it was implemented and validated.
 WhenToUse: Read before continuing specialist UI product work (side-by-side diff, previews, playground).
 ---
+
 
 
 # Diary
@@ -96,3 +103,72 @@ Wrote the persona-driven scenarios and questions document, then implemented the 
 
 - Palette tokens: accents `--green #2db878 / --purple #805bd7 / --red #ef4038 / --yellow #f2ad00`; text inks `--green-ink #1d7f53 / --purple-ink #6747b5 / --red-ink #cf2b24 / --yellow-ink #93690a`; washes `#e8f7ef / #f1ecfb / #fdecea / #fdf4dc`; grays `--muted #66686e`, `--line-soft #d5d5d0`.
 - The scenarios/questions document is the product roadmap: `design-doc/01-specialist-work-scenarios-and-questions.md`.
+
+## Step 2: Data graphics, failure-first reframing, and prose that lives in the data files
+
+Rewrote the scenarios document from the seat of its real user — someone improving a chatbot's retrieval, whose work runs on failures, judge traces, and examples rather than averages — and implemented the two halves that need no new producers: Tufte-principled data graphics, and authored prose carried in the experiment data files themselves, through the campaign spec, out the API, onto every screen.
+
+### Prompt Context
+
+**User prompt (verbatim):** "add sparklines and graphs and such (think about design principles like tufte, in terms of data representation, not style necessarily). Also, for your work, don't base it on what is already there, think as a human who is basically working to create better IR for a chatbot. We want to much more look at judge traces, verdicts, examples of failures, etc... rephrase." — followed mid-turn by: "all this technical scaffolding is to serve human needs, not code for the sake of code", "lso let's use more human readable prose to accompagny our data files and campaign configs and such. They should not just be terse keywords, we have the opportunity to write things out so that someone browsing the side understands what the things are and why.", and "are you expanding the data files and such with human prose, it shouldn't just be general information."
+
+**Assistant interpretation:** Three connected asks: (1) add data graphics guided by Tufte's representation principles; (2) rephrase the product framing around the human doing IR-improvement work — failure examples, judge verdicts and traces at the center; (3) put real authored prose into the experiment data files themselves (manifest, arms, cases) — not generic UI copy — and surface it wherever the data appears.
+
+**Inferred user intent:** A tool a person can browse and understand without insider knowledge: graphics that answer working questions at a glance, and experiments that explain themselves in their author's words.
+
+**Commit (code):** f5e5a7e29 — "Experiment data carries authored prose for the person reading results"; baf6ce93f — "Specialist UI: data graphics and prose that serve the reading human"
+
+### What I did
+
+- Rewrote `design-doc/01-specialist-work-scenarios-and-questions.md` in the user's voice: the work loop (read failures → hypothesize → change → re-run → churn), scenarios like "Show me what's broken", "Says who?" (judge traces), the failure autopsy, and a re-ranked question list with an answerability map.
+- Built `src/components/graphs.tsx`, each graphic titled by its question: **SlopeGraph** (which cases moved; the mean is one bold line among its cases so an average cannot hide outliers), **ChunkGrid** (chunk × stage presence matrix — where did the evidence go), **StageFlow** (candidate counts across stages, narrowing segments in red), **MeterBar** (budget headroom, word-sized). Missing values are excluded and named beneath the graphic, never plotted as zero.
+- Backend: added `description` fields to `experimentworkbench.Manifest`/`ManifestArm` and `optkitcampaign.RetrievalCase`/`Arm`/`RunOptions`/`CampaignSpec`; wired `service.Run` and `CampaignArms()` to carry them; surfaced them in `specialistapi` (`CampaignCockpit.Description`, `ArmSummary.Description`, `CaseSummary.Query`+`Description` — the case's actual question text was already persisted, just never surfaced).
+- Rewrote `assets/configs/experiments/optkit-rag/semantic-limit-v1.yaml` with real authored prose: what the experiment asks, what each arm trades, what each case exercises and what passing means (e.g. the negative case: "retrieving nothing relevant is the correct behavior").
+- Added `lede` support to Panel and wrote plain-language explanations for every section on cockpit, comparison, and pipeline; cases table now shows "The question asked" and "What it checks".
+- Rebuilt, re-ran the campaign (new campaign `campaign:fa569e901e…`), verified descriptions flow through the live API, screenshots archived (10–12).
+
+### Why
+
+- The v1 contract shows what is recorded; the person needs to know what it *means*. Descriptions authored at experiment-writing time are the only place the "why" exists — the tool's job is to carry them to the reader, not to substitute generic copy.
+- Graphics follow Tufte's representation ethic, not his look: data-ink, direct labels, small multiples, comparisons within eyespan — and the project's own rule, no fabricated zeros.
+
+### What worked
+
+- Full rag-ttc test suite + golangci-lint pass via the pre-commit hook on the backend commit; frontend 32/32 tests green.
+- `CaseSummary.Query` was free: the campaign spec already persisted the question text. Surfacing it answers "what was actually asked" with zero new storage.
+- The chunk grid makes the fixture legible instantly: chunk-b present in 12/12 stages, chunk-c alive only in the two vector stages before dying at the policy filter.
+
+### What didn't work
+
+- WebFetch strips CSS, so palette extraction needed raw curl+grep (recorded in Step 1; same session).
+- No real failures beyond that this round; the main risk was semantic: adding `Description` to `RetrievalCase` changes case artifact digests and episode semantic keys, so old stores' campaigns and new ones are distinct experiment identities. That is correct behavior (the description is part of reviewed intent), but it means re-running campaigns after enriching a manifest.
+
+### What I learned
+
+- The strict manifest decoder (`KnownFields(true)`) means data-file enrichment always requires schema changes first — descriptions cannot be smuggled in.
+- Writing the case descriptions was itself analysis: articulating "failing q-hybrid signalss a ranking problem, not a budget problem" is exactly the knowledge the UI should carry to the next reader.
+
+### What was tricky to build
+
+- Slope graph label collisions: with 3-case fixtures two left-side labels share y=1.000; solved with a tiny one-pass overlap resolver that pushes stacked labels apart in sorted order.
+- Deciding where descriptions live: per-arm prose must survive from manifest → campaign spec → projector without the manifest being consulted at resume time (spec is canonical), hence Description on `optkitcampaign.Arm` persisted in the spec rather than looked up from the manifest.
+
+### What warrants a second pair of eyes
+
+- The description fields participate in `record.SemanticDigest` of the manifest (identity change on prose edit). If prose-only edits should NOT create a new experiment identity, descriptions would need to be excluded from the digest — a deliberate contract decision for the backend owner.
+- ChunkGrid presents stage columns left-to-right as if sequential custody, but early stages are parallel retrieval legs (lexical vs vector). The grid stays truthful (pure presence), but a future version might group columns by leg.
+
+### What should be done in the future
+
+- The remaining scenarios-doc backlog: worst-first failure ordering with verdicts (needs judge/answer stages in trajectories), chunk text previews (chunk-lab), read-only playground, per-case fixed/broke/still-broken churn between journal points.
+
+### Code review instructions
+
+- Backend: `git show f5e5a7e29` — start at `optkitcampaign/system.go` (RetrievalCase), then `campaign.go` (Arm/CampaignSpec), `experimentworkbench/manifest.go`, `specialistapi/types.go`+`projector.go`; validate `GOWORK=off go test ./pkg/ttc/...`.
+- Frontend: `git show baf6ce93f` — start at `components/graphs.tsx`, then screen wiring; validate `pnpm typecheck && pnpm test`.
+- Live: rebuild, `campaign run` (fresh store — old stores lack descriptions), serve on 8091, open the cockpit; evidence in `various/screenshots/11-cockpit-prose.png` and `12-comparison-prose-graphs.png`.
+
+### Technical details
+
+- New API fields (all optional, additive): `cockpit.description`, `arms[].description`, `cases[].query`, `cases[].description` (cockpit and comparison arm summaries share `ArmSummary`).
+- Graphics palette reuses the semantic accent tokens; graphs encode with both color and position/weight, and every SVG carries a full-sentence `aria-label` restating its data.

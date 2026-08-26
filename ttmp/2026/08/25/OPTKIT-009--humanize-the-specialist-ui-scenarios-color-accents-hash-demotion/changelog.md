@@ -13,3 +13,12 @@ Scenarios/questions design doc written; UI restyled flat with hyperslop accents,
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/25/OPTKIT-009--humanize-the-specialist-ui-scenarios-color-accents-hash-demotion/design-doc/01-specialist-work-scenarios-and-questions.md — Product roadmap grounded in usage scenarios
 
+
+## 2026-08-25
+
+Step 2: scenarios doc rephrased around failure-first IR work; Tufte graphics (slope/chunk-grid/stage-flow/meters); description fields added to manifest/arm/case through campaign spec and API; manifest rewritten with authored prose; ledes on all panels (commits f5e5a7e29, baf6ce93f)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/optkitcampaign/system.go — RetrievalCase.Description joins the persisted case contract
+
