@@ -319,3 +319,22 @@ Types for registry + candidate; proposal editor screen; comparison screen render
 - **Registry** — the ordered, serializable catalog of sections and variables; single source of truth for manifest validation and UI rendering.
 - **Snapshot** — a materialized configuration with a content-derived identity.
 - **Trajectory** — the sealed event record of one episode's execution.
+
+## Appendix — Reader's guide for the architect review
+
+The review surface is smaller than the implementation surface. Read in this order, with these questions in hand.
+
+**Tier 1 — decision surface (read closely):**
+
+1. `optkit/space/` (whole package, seven small files). Load-bearing choice: the descriptor/closure split — serializable `VariableDescriptor`s for UI and manifests, typed `Variable[C,V]` closures for mutation, bound together at one site per layer. If this split is wrong, everything downstream is wrong.
+2. `optkit/record/` (`SemanticDigest`, `ContentID`). Open question flagged twice and never decided: should prose (hypothesis, Short/Long docs) participate in identity? Should a prose-only edit create a new experiment identity?
+3. `rag-ttc/pkg/ttc/optimization/`. Placement question: does the layered-config model stay in rag-ttc or lift to ragkit once coinvault converges on it? Cheap to decide now, expensive later.
+4. `rag-ttc/pkg/ttc/experimentworkbench/manifest.go` + `optkitcampaign/campaign.go`. Invariants the `candidates:` block must respect: strict decoding, spec canonical after creation, manifest never re-read.
+
+**Tier 2 — precedent and constraints:**
+
+5. `optkit/examples/numbergame/demo.go` — the only complete candidate-loop consumer; changes to `space` should leave it looking natural.
+6. `coinvault/configs/ragopt/` — including `shared/gate-policy.yaml` and `treatment-contract.yaml`, deliberately out of scope here. Ruling requested: do gate policies migrate into optkit now (numbergame's lexicographic decision is a hand-rolled instance) or stay app-level?
+7. `glazed/pkg/cmds/schema/` + `fields/` — the mirrored pattern. Sharpest question: mirror or reuse? This design mirrors (optkit stays dependency-light; experiment variables need domains, cost hints, and asset-ness that CLI flags lack). If optkit should instead depend on glazed's schema types, that decision must come first — it rewrites Step 1.
+
+**Tier 3 — boundaries to confirm uncrossed:** `ragkit/rag/types.go` (variables never leak into algorithms), `rag-ttc/pkg/ttc/specialistapi/types.go` (standing policy question: additive fields without schema version bumps — bless or veto), judgekit (future value-schema supplier only).
