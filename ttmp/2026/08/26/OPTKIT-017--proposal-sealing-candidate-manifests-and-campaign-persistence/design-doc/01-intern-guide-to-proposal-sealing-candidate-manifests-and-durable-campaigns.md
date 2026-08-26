@@ -12,34 +12,28 @@ DocType: design-doc
 Intent: long-term
 Owners: []
 RelatedFiles:
-    - Path: repo://optkit/examples/numbergame/demo.go
-      Note: |-
-        Existing CandidateProposed and SnapshotMaterialized event precedent
-        Candidate event precedent
     - Path: repo://optkit/space/candidate.go
-      Note: Candidate identity and structured intent produced by sealing
+      Note: Normalized structured intent and candidate identity
     - Path: repo://optkit/space/patch.go
-      Note: |-
-        Canonical assignment artifact and child snapshot mechanics used by sealing
-        Canonical sealing mechanics
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/design-doc/04-backend-first-optimization-workbench-program-roadmap.md
-      Note: Parent program goals dependencies exclusions and exit gates
-    - Path: repo://optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md
-      Note: Accepted workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9
-    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/manifest.go
-      Note: |-
-        Strict full-arm manifest loader extended with candidate authoring
-        Strict manifest input boundary
+      Note: Canonical assignment and child snapshot materialization
+    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/authoring_manifest.go
+      Note: Strict v3 baseline and candidate authoring contract
+    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/campaign_materializer.go
+      Note: Manifest-backed baseline and candidate materialization
+    - Path: repo://rag-ttc/pkg/ttc/experimentworkbench/sealing.go
+      Note: Materializer and idempotent SealProposal application service
     - Path: repo://rag-ttc/pkg/ttc/optkitcampaign/campaign.go
-      Note: |-
-        Durable campaign specification and initialization sequence
-        Durable spec and journal ordering
+      Note: Campaign spec v3 and persisted candidate records
+    - Path: repo://rag-ttc/pkg/ttc/optkitcampaign/candidate_facts.go
+      Note: Atomic command-indexed candidate and snapshot facts
 ExternalSources: []
 Summary: Design for replaying pure drafts through canonical Optkit sealing, strict patch-style candidate manifests, idempotent journal facts, and self-contained campaign persistence.
 LastUpdated: 2026-08-26T14:20:26.678499694-04:00
 WhatFor: Explain how a reviewed candidate becomes immutable patch/snapshot/candidate records that remain understandable without the source manifest.
 WhenToUse: Implement after OPTKIT-016 provides stable pure draft compilation.
 ---
+
+
 
 
 
@@ -375,7 +369,85 @@ GOWORK=off go run ./cmd/rag-ttc experiment optkit-rag campaign run \
 - Leaving unreferenced artifacts after failed sealing without documenting cleanup.
 - Candidate chaining increasing complexity beyond current product needs.
 
-## 16. Out of scope
+## 16. Implementation outcome
+
+Implemented on 2026-08-26 in Optkit commits `bde7ed03`, `88d12f45`, and `4d8d93f9`, and RAG-TTC commits `1e57f539`, `9e892965`, `80079176`, `c9342f66`, `2676b6f2`, `71336ef3`, `c3ec8b46`, and `71343d87`.
+
+### Explicit authoring schema migration
+
+The full-arm v2 wire schema was already occupied by OPTKIT-014, so candidate authoring advances explicitly to `rag-ttc.experiment-manifest/v3`. There is no fallback decoder, alias, or dual `arms + candidates` field set. The v2 fixture assets were removed and replaced by v3 fixtures.
+
+A v3 document contains:
+
+- one complete `baseline` pipeline;
+- one or more baseline-relative `candidates`;
+- fully qualified serialized mutations;
+- one nested structured `CandidateIntent` per candidate;
+- shared reviewed cases and experiment metadata.
+
+Candidate chaining is deliberately rejected: every candidate parent must equal the baseline ID. Mutation fields are exactly `variable` and `value`; YAML value nodes become JSON bytes before entering the compiler. Unknown fields, duplicate fields, duplicate mutation variables, old schemas, old `arms`, unknown parents, missing intent, unknown motivating cases, and unsealable drafts all fail strictly.
+
+Manifest semantic identity uses normalized compiler mutations rather than authored JSON whitespace. The resolved execution view contains the baseline plus compiler-produced candidate child pipelines and graphs; it does not perform a second mutation implementation.
+
+### Canonical materialization and public sealing
+
+`ProposalMaterializer.MaterializeProposal` validates the current catalog, parent record/value, draft digest, intent, and sealability before writing. It recompiles original mutations, stores the exact full catalog, replays normalized `After` values through `Binding.Assign` and `PatchBuilder`, then verifies:
+
+- patch base/result ancestry;
+- durable child config equals the compiled child;
+- durable snapshot identity verifies from canonical bytes;
+- durable child graph equals the compiled graph;
+- candidate identity includes normalized intent and semantic catalog provenance.
+
+The candidate proposal envelope `schema:rag-ttc.candidate-proposal/v1` stores draft digest, candidate, patch, child snapshot record, catalog ref, normalized mutations, parent/child graphs, and invalidation plan. Candidate identity is stable across display timestamps. A changed display timestamp changes envelope bytes, but the public `ProposalSealer` checks the command index before materialization and restores the original envelope on retry.
+
+`ProposalSealer.SealProposal` is the application operation for already-created campaigns. It compiles and verifies input, derives a normalized semantic seal-request digest, checks caller idempotency before any write, preflights campaign state, materializes through the same `ProposalMaterializer`, builds the durable candidate record, and appends facts.
+
+### Campaign specification and event custody
+
+Campaign creation uses `schema:rag-ttc.optkit-campaign-spec/v3`. Each stored arm carries its complete pipeline, snapshot record, and frozen graph. Candidate records additionally carry:
+
+- parent/treatment arm IDs;
+- normalized seal-request digest;
+- structured candidate and patch;
+- exact catalog, candidate-envelope, and snapshot-envelope refs;
+- canonical before/after mutations;
+- parent/child graphs and invalidation plan.
+
+The old parallel `ConfigGraphs` map was removed. `CampaignSpec.Validate` reconstructs dataset/trial identities and verifies every arm snapshot, graph, candidate ancestry, patch, ref, request digest, and plan before creation and again after restart.
+
+After `CampaignStarted`, each candidate appends one two-event command batch:
+
+```text
+CandidateProposed(candidate envelope)
+SnapshotMaterialized(child snapshot envelope)
+```
+
+`CandidateCommandID` derives a campaign-scoped command ID from the caller key. The SQLite command index returns the exact prior event batch on retry. The semantic seal-request digest distinguishes a retry from reuse of the key for different parent/draft/mutations/intent. Conflicts and invalid campaign state leave the journal head unchanged.
+
+### Store-canonical evidence
+
+The migrated fixture campaign produced:
+
+```text
+events: 49
+candidate events: 1
+snapshot events: 1
+candidate ID: candidate:1e6de48018f0850fe1bb838c4c7d9c920e284a2a0ce867f10df251061610358a
+child snapshot: snapshot:6658b47758de8eade33ebfe42e759c2a7cb39c21cd54925f6a6dacb3e0c1f84c
+unique direct payloads: 49
+unique nested payloads: 9
+```
+
+`campaign verify` now verifies both direct journal payloads and nested spec refs: snapshot configs, dataset case inputs, catalog, candidate envelope, snapshot envelope, and assignment values.
+
+A restart test interrupts after a terminal episode result, deletes the only source manifest, and completes through stored work/spec facts. A built-CLI proof runs a campaign from a temporary manifest, deletes that file, reopens status/verify/resume, and observes `49/49` events before/after resume. Specialist cockpit and comparison projection tests also succeed after manifest deletion and recover hypothesis, expected metric, motivation cases, mutation, snapshots, and graphs from the store.
+
+Dry-run still compiles candidate drafts but creates no store. Run seals exactly once. Full Optkit CI/race/lint/CGO and non-CGO checks, full RAG-TTC lint/test/vet/build, focused race suites, a 372-package acyclic dependency scan, CLI proofs, doctor, slip audit, and completed guide/diary delivery pass.
+
+Artifact stores are content-addressed but not transactionally coupled to journal append. All deterministic validation and campaign-state preflight occurs before materialization; a concurrent journal race after materialization may leave unreachable immutable bytes. No invalid event becomes reachable, and store garbage collection may safely remove unreachable content.
+
+## 17. Out of scope
 
 - Candidate comparison UI and APIs (OPTKIT-018/019);
 - interactive draft HTTP;
@@ -383,7 +455,7 @@ GOWORK=off go run ./cmd/rag-ttc experiment optkit-rag campaign run \
 - gate policies or promotion;
 - broad manifest language redesign unrelated to candidates.
 
-## 17. Exit criteria
+## 18. Exit criteria
 
 - v2 candidate manifest is strict and concise.
 - manifest and CLI sealing share `CompileProposal`/`SealProposal`.
@@ -393,7 +465,7 @@ GOWORK=off go run ./cmd/rag-ttc experiment optkit-rag campaign run \
 - source manifest can be removed without losing execution or explanation.
 - focused/full tests, fresh-store smoke, diary, doctor, and upload pass.
 
-## 18. File reference map
+## 19. File reference map
 
 - `optkit/space/patch.go:43-151` — canonical durable mutation.
 - `optkit/space/candidate.go:10-60` — candidate creation/identity.

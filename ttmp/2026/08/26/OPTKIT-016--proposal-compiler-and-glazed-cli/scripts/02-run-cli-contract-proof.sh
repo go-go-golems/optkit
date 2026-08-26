@@ -12,7 +12,7 @@ trap 'rm -rf "$TMP"' EXIT
   GOWORK=off go build -o "$TMP/rag-ttc" ./cmd/rag-ttc
 )
 
-MANIFEST="$RAG_TTC/assets/configs/experiments/optkit-rag/semantic-limit-v2.yaml"
+MANIFEST="$RAG_TTC/assets/configs/experiments/optkit-rag/semantic-limit-v3.yaml"
 "$TMP/rag-ttc" experiment optkit-rag catalog list --format json >"$TMP/catalog.json"
 "$TMP/rag-ttc" experiment optkit-rag catalog show --variable fusion.rrf_k --format json >"$TMP/variable.json"
 "$TMP/rag-ttc" experiment optkit-rag proposal compile \

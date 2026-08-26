@@ -413,7 +413,7 @@ The ticket index and `tasks.md` of each child ticket are authoritative for local
 | OPTKIT-014 | Aggregate RAG configuration | OPTKIT-012/013 | complete — v2 PipelineConfig, derived graphs, lifted lenses, campaigns/manifests, projections, and parity validation |
 | OPTKIT-015 | First real RAG variables | OPTKIT-013/014 | complete — runtime RRF injection, executable retrieval/fusion registry, fixture v3 parity, and proof evidence |
 | OPTKIT-016 | Pure compiler and CLI | OPTKIT-013–015 | complete — deterministic draft compiler, structured catalog/proposal CLI, shared graph planning, and 100-run no-write proof |
-| OPTKIT-017 | Sealing and persistence | OPTKIT-016 | guide validated and delivered; implementation pending |
+| OPTKIT-017 | Sealing and persistence | OPTKIT-016 | complete — strict candidate manifests, PatchBuilder sealing, campaign spec v3, idempotent facts, and manifest-removal restart proof |
 | OPTKIT-018 | Projection and command boundaries | OPTKIT-017 | guide validated and delivered; implementation pending |
 | OPTKIT-019 | React framework and RRF proof | OPTKIT-018 | superseded 2026-08-26 by OPTKIT-021–024 (PBUI adoption); exit criterion inherited by OPTKIT-023 |
 | OPTKIT-020 | Artifact-variable proof | OPTKIT-023 | guide validated and delivered; implementation pending (editor section lands as an OPTKIT-022 plugin) |

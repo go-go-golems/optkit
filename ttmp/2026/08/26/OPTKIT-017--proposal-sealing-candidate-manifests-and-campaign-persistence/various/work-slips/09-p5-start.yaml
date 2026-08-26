@@ -1,0 +1,66 @@
+almanach_studio_version: 1
+theme: brutalist
+paperWidth: 384
+bodyScale: 1
+feedLines: 8
+blocks:
+- id: head
+  type: row
+  data:
+    cols:
+    - w: 1fr
+      text: OPTKIT-017
+      preset: micro
+    - w: 1fr
+      text: P5 START
+      preset: micro
+      align: right
+- id: r1
+  type: rule
+  data:
+    weight: heavy
+- id: gap1
+  type: space
+  data:
+    size: s
+- id: title
+  type: text
+  data:
+    text: Candidate Facts Begin
+    preset: h1
+    lines: 3
+- id: gap2
+  type: space
+  data:
+    size: s
+- id: summary
+  type: text
+  data:
+    text: Append candidate and snapshot facts with one deterministic command, payload-conflict checks, and retry-safe journal
+      behavior.
+    preset: body
+- id: gap3
+  type: space
+  data:
+    size: m
+- id: did
+  type: list
+  data:
+    marker: —
+    lines: 2
+    items:
+    - derive stable sealing command ID
+    - append candidate and snapshot batch
+    - reject key reuse with new payload
+- id: r2
+  type: rule
+  data:
+    weight: hair
+- id: facts
+  type: kv
+  data:
+    items:
+    - - NEXT
+      - P6 campaign CLI integration
+    - - PHASE
+      - 5 OF 7

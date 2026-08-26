@@ -1,0 +1,65 @@
+almanach_studio_version: 1
+theme: brutalist
+paperWidth: 384
+bodyScale: 1
+feedLines: 8
+blocks:
+- id: head
+  type: row
+  data:
+    cols:
+    - w: 1fr
+      text: OPTKIT-017
+      preset: micro
+    - w: 1fr
+      text: P7 START
+      preset: micro
+      align: right
+- id: r1
+  type: rule
+  data:
+    weight: heavy
+- id: gap1
+  type: space
+  data:
+    size: s
+- id: title
+  type: text
+  data:
+    text: Restart And Removal Proof Begins
+    preset: h1
+    lines: 3
+- id: gap2
+  type: space
+  data:
+    size: s
+- id: summary
+  type: text
+  data:
+    text: Delete the source manifest, reopen the store, resume and project durable facts, then run full validation and delivery.
+    preset: body
+- id: gap3
+  type: space
+  data:
+    size: m
+- id: did
+  type: list
+  data:
+    marker: —
+    lines: 2
+    items:
+    - copy then delete source manifest
+    - restart status verify resume
+    - audit nested records and delivery
+- id: r2
+  type: rule
+  data:
+    weight: hair
+- id: facts
+  type: kv
+  data:
+    items:
+    - - NEXT
+      - OPTKIT-018 command API
+    - - PHASE
+      - 7 OF 7

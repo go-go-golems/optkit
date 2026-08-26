@@ -1,7 +1,7 @@
 ---
 Title: Proposal Sealing Candidate Manifests and Campaign Persistence
 Ticket: OPTKIT-017
-Status: active
+Status: complete
 Topics:
     - architecture
     - design
@@ -14,10 +14,11 @@ Owners: []
 RelatedFiles: []
 ExternalSources: []
 Summary: Seal validated proposal drafts through canonical Optkit mechanics and persist patch-style manifest candidates as complete campaign facts.
-LastUpdated: 2026-08-26T14:20:26.678499694-04:00
+LastUpdated: 2026-08-26T17:37:20.657943926-04:00
 WhatFor: Make concise candidate authoring durable, reproducible, and explainable without retaining the source manifest.
 WhenToUse: Implement after OPTKIT-016 establishes pure compilation.
 ---
+
 
 # Proposal Sealing Candidate Manifests and Campaign Persistence
 
@@ -37,7 +38,7 @@ This ticket defines the durable half of proposal authoring. It replays normalize
 
 ## Status
 
-Current status: **active**
+Current status: **complete** — strict v3 candidate manifests compile through the shared service, seal through PatchBuilder, persist complete campaign facts, record idempotently, and survive source-manifest removal/restart.
 
 ## Topics
 

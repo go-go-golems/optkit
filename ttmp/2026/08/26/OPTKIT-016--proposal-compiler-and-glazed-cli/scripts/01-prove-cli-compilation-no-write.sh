@@ -10,7 +10,7 @@ trap 'rm -rf "$TMP"' EXIT
 
 PROOF_ROOT="$TMP/watched"
 mkdir -p "$PROOF_ROOT"
-cp "$RAG_TTC/assets/configs/experiments/optkit-rag/semantic-limit-v2.yaml" "$PROOF_ROOT/manifest.yaml"
+cp "$RAG_TTC/assets/configs/experiments/optkit-rag/semantic-limit-v3.yaml" "$PROOF_ROOT/manifest.yaml"
 cat >"$PROOF_ROOT/mutations.yaml" <<'YAML'
 - variable: fusion.rrf_k
   value: 20
