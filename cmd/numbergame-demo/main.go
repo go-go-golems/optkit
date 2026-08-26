@@ -1,6 +1,6 @@
 // Command numbergame-demo runs the complete numbergame campaign into a local
 // store and exports one JSON bundle for the specialist Experiment Lab UI:
-// the candidate proposal (hypothesis, targets, risks), the configurations,
+// the candidate proposal (hypothesis, expected improvement, risks), the configurations,
 // the cases, every episode's measurements, the estimate, the decision, and
 // the journal timeline. The bundle is a teaching record — everything in it
 // was reconstructed from the sealed store, never from in-memory state.
@@ -25,16 +25,18 @@ import (
 )
 
 type bundleCandidate struct {
-	ID         string    `json:"id"`
-	Parent     string    `json:"parent"`
-	Patch      string    `json:"patch"`
-	Child      string    `json:"child"`
-	Proposer   string    `json:"proposer"`
-	Strategy   string    `json:"strategy"`
-	Hypothesis string    `json:"hypothesis"`
-	Targets    []string  `json:"targets,omitempty"`
-	Risks      []string  `json:"risks,omitempty"`
-	CreatedAt  time.Time `json:"created_at"`
+	ID                  string                    `json:"id"`
+	Parent              string                    `json:"parent"`
+	Patch               string                    `json:"patch"`
+	Child               string                    `json:"child"`
+	Proposer            space.Proposer            `json:"proposer"`
+	Strategy            string                    `json:"strategy"`
+	Hypothesis          string                    `json:"hypothesis"`
+	ExpectedImprovement space.ExpectedImprovement `json:"expected_improvement"`
+	Risks               []string                  `json:"risks,omitempty"`
+	Motivation          space.Motivation          `json:"motivation,omitempty"`
+	SemanticCatalogID   string                    `json:"semantic_catalog_id"`
+	CreatedAt           time.Time                 `json:"created_at"`
 }
 
 type bundleEpisode struct {
@@ -128,7 +130,7 @@ func run(root, out string) error {
 	}
 
 	result := bundle{
-		Schema:   "numbergame.lab-bundle/v1",
+		Schema:   "numbergame.lab-bundle/v2",
 		Campaign: string(summary.Campaign),
 		Decision: summary.Decision,
 		Estimate: bundleEstimate{
@@ -168,9 +170,10 @@ func run(root, out string) error {
 			result.Candidate = bundleCandidate{
 				ID: string(proposal.Candidate.ID), Parent: string(proposal.Candidate.Parent),
 				Patch: string(proposal.Candidate.Patch), Child: string(proposal.Candidate.Child),
-				Proposer: string(proposal.Candidate.Proposer), Strategy: proposal.Candidate.Strategy,
-				Hypothesis: proposal.Candidate.Hypothesis, Targets: proposal.Candidate.Targets,
-				Risks: proposal.Candidate.Risks, CreatedAt: proposal.Candidate.CreatedAt,
+				Proposer: proposal.Candidate.Proposer, Strategy: proposal.Candidate.Strategy,
+				Hypothesis: proposal.Candidate.Hypothesis, ExpectedImprovement: proposal.Candidate.ExpectedImprovement,
+				Risks: proposal.Candidate.Risks, Motivation: proposal.Candidate.Motivation,
+				SemanticCatalogID: string(proposal.Candidate.SemanticCatalogID), CreatedAt: proposal.Candidate.CreatedAt,
 			}
 		case campaign.EpisodeCompleted:
 			var completion numbergame.EpisodeCompletion

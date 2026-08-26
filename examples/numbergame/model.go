@@ -108,6 +108,29 @@ func NoiseVariable() space.Variable[Config, Noise] {
 	))
 }
 
+func Registry() (*space.Registry[Config], error) {
+	builder := space.NewRegistryBuilder[Config]()
+	if err := builder.AddSection(space.SectionMetadata{
+		ID: "math", Label: "Math", Short: "Deterministic arithmetic controls.",
+		Long: "Controls the deterministic arithmetic relation evaluated by the numbergame campaign.",
+	}); err != nil {
+		return nil, err
+	}
+	if err := builder.AddSection(space.SectionMetadata{
+		ID: "noise", Label: "Noise", Short: "Seeded perturbation controls.",
+		Long: "Controls deterministic seeded perturbations applied after the arithmetic relation.",
+	}); err != nil {
+		return nil, err
+	}
+	if err := space.Register(builder, "math", MultiplierVariable()); err != nil {
+		return nil, err
+	}
+	if err := space.Register(builder, "noise", NoiseVariable()); err != nil {
+		return nil, err
+	}
+	return builder.Build()
+}
+
 // SequenceClock supplies deterministic, monotonically increasing times for
 // integration tests and replayable examples.
 type SequenceClock struct {

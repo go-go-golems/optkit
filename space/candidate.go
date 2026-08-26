@@ -2,39 +2,138 @@ package space
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/go-go-golems/optkit/record"
 )
 
-type Candidate struct {
-	ID         record.CandidateID `json:"id"`
-	Parent     record.SnapshotID  `json:"parent"`
-	Patch      record.PatchID     `json:"patch"`
-	Child      record.SnapshotID  `json:"child"`
-	Proposer   record.ActorRef    `json:"proposer"`
-	Strategy   string             `json:"strategy"`
-	Hypothesis string             `json:"hypothesis"`
-	Targets    []string           `json:"targets,omitempty"`
-	Risks      []string           `json:"risks,omitempty"`
-	CreatedAt  time.Time          `json:"created_at"`
+type ProposerKind string
+
+const (
+	ProposerHuman  ProposerKind = "human"
+	ProposerLLM    ProposerKind = "llm"
+	ProposerSearch ProposerKind = "search"
+)
+
+type Proposer struct {
+	Kind     ProposerKind    `json:"kind"`
+	Identity record.ActorRef `json:"identity"`
 }
 
-func NewCandidate(parent record.SnapshotID, patch record.PatchID, child record.SnapshotID, proposer record.ActorRef, strategy, hypothesis string, targets, risks []string, createdAt time.Time) (Candidate, error) {
-	if hypothesis == "" {
+func (p Proposer) Validate() error {
+	switch p.Kind {
+	case ProposerHuman, ProposerLLM, ProposerSearch:
+	default:
+		return fmt.Errorf("unknown proposer kind %q", p.Kind)
+	}
+	if err := record.ValidateID("actor", string(p.Identity)); err != nil {
+		return fmt.Errorf("proposer identity: %w", err)
+	}
+	return nil
+}
+
+type ExpectedImprovement struct {
+	Metric string   `json:"metric"`
+	Groups []string `json:"groups,omitempty"`
+}
+
+type Motivation struct {
+	CaseIDs          []string      `json:"case_ids,omitempty"`
+	DiagnosticDigest record.Digest `json:"diagnostic_digest,omitempty"`
+}
+
+type CandidateIntent struct {
+	Proposer            Proposer            `json:"proposer"`
+	Strategy            string              `json:"strategy"`
+	Hypothesis          string              `json:"hypothesis"`
+	ExpectedImprovement ExpectedImprovement `json:"expected_improvement"`
+	Risks               []string            `json:"risks,omitempty"`
+	Motivation          Motivation          `json:"motivation,omitempty"`
+}
+
+type Candidate struct {
+	ID                  record.CandidateID  `json:"id"`
+	Parent              record.SnapshotID   `json:"parent"`
+	Patch               record.PatchID      `json:"patch"`
+	Child               record.SnapshotID   `json:"child"`
+	Proposer            Proposer            `json:"proposer"`
+	Strategy            string              `json:"strategy"`
+	Hypothesis          string              `json:"hypothesis"`
+	ExpectedImprovement ExpectedImprovement `json:"expected_improvement"`
+	Risks               []string            `json:"risks,omitempty"`
+	Motivation          Motivation          `json:"motivation,omitempty"`
+	SemanticCatalogID   record.Digest       `json:"semantic_catalog_id"`
+	CreatedAt           time.Time           `json:"created_at"`
+}
+
+func NewCandidate(parent record.SnapshotID, patch record.PatchID, child record.SnapshotID, intent CandidateIntent, semanticCatalogID record.Digest, createdAt time.Time) (Candidate, error) {
+	if err := record.ValidateID("snapshot", string(parent)); err != nil {
+		return Candidate{}, fmt.Errorf("candidate parent: %w", err)
+	}
+	if err := record.ValidateID("patch", string(patch)); err != nil {
+		return Candidate{}, fmt.Errorf("candidate patch: %w", err)
+	}
+	if err := record.ValidateID("snapshot", string(child)); err != nil {
+		return Candidate{}, fmt.Errorf("candidate child: %w", err)
+	}
+	if err := intent.Proposer.Validate(); err != nil {
+		return Candidate{}, err
+	}
+	if strings.TrimSpace(intent.Strategy) == "" {
+		return Candidate{}, fmt.Errorf("candidate strategy is required")
+	}
+	if strings.TrimSpace(intent.Hypothesis) == "" {
 		return Candidate{}, fmt.Errorf("candidate hypothesis is required")
 	}
+	if strings.TrimSpace(intent.ExpectedImprovement.Metric) == "" {
+		return Candidate{}, fmt.Errorf("candidate expected improvement metric is required")
+	}
+	groups, err := normalizeSet("expected improvement group", intent.ExpectedImprovement.Groups)
+	if err != nil {
+		return Candidate{}, err
+	}
+	caseIDs, err := normalizeSet("motivation case ID", intent.Motivation.CaseIDs)
+	if err != nil {
+		return Candidate{}, err
+	}
+	if intent.Motivation.DiagnosticDigest != "" {
+		if err := intent.Motivation.DiagnosticDigest.Validate(); err != nil {
+			return Candidate{}, fmt.Errorf("candidate diagnostic digest: %w", err)
+		}
+	}
+	seenRisks := make(map[string]struct{}, len(intent.Risks))
+	risks := make([]string, len(intent.Risks))
+	for index, risk := range intent.Risks {
+		if strings.TrimSpace(risk) == "" {
+			return Candidate{}, fmt.Errorf("candidate risk %d is blank", index)
+		}
+		if _, exists := seenRisks[risk]; exists {
+			return Candidate{}, fmt.Errorf("duplicate candidate risk %q", risk)
+		}
+		seenRisks[risk] = struct{}{}
+		risks[index] = risk
+	}
+	if err := semanticCatalogID.Validate(); err != nil {
+		return Candidate{}, fmt.Errorf("candidate semantic catalog identity: %w", err)
+	}
+
+	normalizedExpected := ExpectedImprovement{Metric: intent.ExpectedImprovement.Metric, Groups: groups}
+	normalizedMotivation := Motivation{CaseIDs: caseIDs, DiagnosticDigest: intent.Motivation.DiagnosticDigest}
 	identity := struct {
-		Parent     record.SnapshotID `json:"parent"`
-		Patch      record.PatchID    `json:"patch"`
-		Child      record.SnapshotID `json:"child"`
-		Proposer   record.ActorRef   `json:"proposer"`
-		Strategy   string            `json:"strategy"`
-		Hypothesis string            `json:"hypothesis"`
-		Targets    []string          `json:"targets,omitempty"`
-		Risks      []string          `json:"risks,omitempty"`
-	}{parent, patch, child, proposer, strategy, hypothesis, targets, risks}
-	digest, _, err := record.SemanticDigest("schema:optkit.candidate-identity/v1", identity)
+		Parent              record.SnapshotID   `json:"parent"`
+		Patch               record.PatchID      `json:"patch"`
+		Child               record.SnapshotID   `json:"child"`
+		Proposer            Proposer            `json:"proposer"`
+		Strategy            string              `json:"strategy"`
+		Hypothesis          string              `json:"hypothesis"`
+		ExpectedImprovement ExpectedImprovement `json:"expected_improvement"`
+		Risks               []string            `json:"risks,omitempty"`
+		Motivation          Motivation          `json:"motivation,omitempty"`
+		SemanticCatalogID   record.Digest       `json:"semantic_catalog_id"`
+	}{parent, patch, child, intent.Proposer, intent.Strategy, intent.Hypothesis, normalizedExpected, risks, normalizedMotivation, semanticCatalogID}
+	digest, _, err := record.SemanticDigest("schema:optkit.candidate-identity/v2", identity)
 	if err != nil {
 		return Candidate{}, err
 	}
@@ -43,15 +142,29 @@ func NewCandidate(parent record.SnapshotID, patch record.PatchID, child record.S
 		return Candidate{}, err
 	}
 	return Candidate{
-		ID:         record.CandidateID(rawID),
-		Parent:     parent,
-		Patch:      patch,
-		Child:      child,
-		Proposer:   proposer,
-		Strategy:   strategy,
-		Hypothesis: hypothesis,
-		Targets:    append([]string(nil), targets...),
-		Risks:      append([]string(nil), risks...),
-		CreatedAt:  createdAt.UTC(),
+		ID: record.CandidateID(rawID), Parent: parent, Patch: patch, Child: child,
+		Proposer: intent.Proposer, Strategy: intent.Strategy, Hypothesis: intent.Hypothesis,
+		ExpectedImprovement: normalizedExpected, Risks: risks, Motivation: normalizedMotivation,
+		SemanticCatalogID: semanticCatalogID, CreatedAt: createdAt.UTC(),
 	}, nil
+}
+
+func normalizeSet(name string, values []string) ([]string, error) {
+	if len(values) == 0 {
+		return nil, nil
+	}
+	seen := make(map[string]struct{}, len(values))
+	out := make([]string, 0, len(values))
+	for index, value := range values {
+		if strings.TrimSpace(value) == "" {
+			return nil, fmt.Errorf("%s %d is blank", name, index)
+		}
+		if _, exists := seen[value]; exists {
+			continue
+		}
+		seen[value] = struct{}{}
+		out = append(out, value)
+	}
+	sort.Strings(out)
+	return out, nil
 }

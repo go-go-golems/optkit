@@ -108,6 +108,10 @@ func RunDemo(ctx context.Context, options DemoOptions) (DemoSummary, error) {
 		}
 	}()
 
+	registry, err := Registry()
+	if err != nil {
+		return DemoSummary{}, err
+	}
 	configCodec := ConfigCodec()
 	baseline, err := space.MaterializeSnapshot(ctx, profile.Artifacts, SystemID, configCodec, Config{Multiplier: 2, Noise: NoiseNone})
 	if err != nil {
@@ -122,9 +126,18 @@ func RunDemo(ctx context.Context, options DemoOptions) (DemoSummary, error) {
 		return DemoSummary{}, err
 	}
 	candidate, err := space.NewCandidate(
-		baseline.ID, patch.ID, challenger.ID, "actor:demo", "manual-coordinate/v1",
-		"Set the multiplier to three so outputs match the target relation on all development cases.",
-		[]string{"target.accuracy"}, []string{"a fixed multiplier may overfit other target relations"}, clock.Now(),
+		baseline.ID, patch.ID, challenger.ID,
+		space.CandidateIntent{
+			Proposer:   space.Proposer{Kind: space.ProposerHuman, Identity: "actor:demo"},
+			Strategy:   "manual-coordinate/v1",
+			Hypothesis: "Set the multiplier to three so outputs match the target relation on all development cases.",
+			ExpectedImprovement: space.ExpectedImprovement{
+				Metric: "target.accuracy", Groups: []string{"development", "exact-target"},
+			},
+			Risks:      []string{"a fixed multiplier may overfit other target relations"},
+			Motivation: space.Motivation{CaseIDs: []string{"case-01", "case-02", "case-03", "case-04"}},
+		},
+		registry.Catalog().SemanticID, clock.Now(),
 	)
 	if err != nil {
 		return DemoSummary{}, err
@@ -181,13 +194,13 @@ func RunDemo(ctx context.Context, options DemoOptions) (DemoSummary, error) {
 		return DemoSummary{}, err
 	}
 
-	candidateRef, err := artifact.PutCanonical(ctx, profile.Artifacts, "schema:numbergame.candidate-proposal/v1", artifact.SensitivityInternal, CandidateProposal{
+	candidateRef, err := artifact.PutCanonical(ctx, profile.Artifacts, "schema:numbergame.candidate-proposal/v2", artifact.SensitivityInternal, CandidateProposal{
 		Candidate: candidate, Patch: patch.PatchRecord,
 	})
 	if err != nil {
 		return DemoSummary{}, err
 	}
-	if _, err := appendArtifactFact(ctx, profile, campaignID, campaign.CandidateProposed, "schema:numbergame.candidate-proposal/v1", string(candidate.ID), candidateRef, nil); err != nil {
+	if _, err := appendArtifactFact(ctx, profile, campaignID, campaign.CandidateProposed, "schema:numbergame.candidate-proposal/v2", string(candidate.ID), candidateRef, nil); err != nil {
 		return DemoSummary{}, err
 	}
 	childRef, err := artifact.PutCanonical(ctx, profile.Artifacts, "schema:optkit.snapshot/v1", artifact.SensitivityInternal, challenger.SnapshotRecord)
