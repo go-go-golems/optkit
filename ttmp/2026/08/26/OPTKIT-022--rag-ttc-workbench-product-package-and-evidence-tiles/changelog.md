@@ -13,3 +13,8 @@ Created ticket and wrote the full intern guide: pbui product model, package scaf
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-022--rag-ttc-workbench-product-package-and-evidence-tiles/design-doc/01-intern-guide-ragttc-workbench-product-package-and-evidence-tiles.md — Primary implementation guide
 
+
+## 2026-08-26
+
+Uploaded the four-guide PBUI track bundle (OPTKIT-021-024 PBUI Workbench Track Guides.pdf) to /ai/2026/08/26/OPTKIT-021-PBUI-workbench on the reMarkable.
+

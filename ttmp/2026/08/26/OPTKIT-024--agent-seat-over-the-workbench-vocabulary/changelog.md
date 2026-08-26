@@ -13,3 +13,8 @@ Created ticket and wrote the intern guide: pbui-chat vocabulary export, mentions
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-024--agent-seat-over-the-workbench-vocabulary/design-doc/01-intern-guide-agent-seat-over-the-workbench-vocabulary.md — Primary design guide
 
+
+## 2026-08-26
+
+Uploaded the four-guide PBUI track bundle (OPTKIT-021-024 PBUI Workbench Track Guides.pdf) to /ai/2026/08/26/OPTKIT-021-PBUI-workbench on the reMarkable.
+

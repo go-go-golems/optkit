@@ -13,3 +13,8 @@ Created ticket and wrote the full intern guide: draft-document lifecycle with de
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-023--propose-workspace-draft-document-and-rrf-vertical-slice/design-doc/01-intern-guide-propose-workspace-draft-document-and-rrf-slice.md — Primary implementation guide
 
+
+## 2026-08-26
+
+Uploaded the four-guide PBUI track bundle (OPTKIT-021-024 PBUI Workbench Track Guides.pdf) to /ai/2026/08/26/OPTKIT-021-PBUI-workbench on the reMarkable.
+
