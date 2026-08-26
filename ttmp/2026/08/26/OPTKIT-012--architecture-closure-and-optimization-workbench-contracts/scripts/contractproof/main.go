@@ -74,25 +74,23 @@ func main() {
 	ctx := context.Background()
 	codec := space.NewJSONCodec[Config](record.SchemaID("schema:optkit.contract-proof-config/v1"))
 	intCodec := space.NewJSONCodec[int](record.SchemaID("schema:optkit.contract-proof-count/v1"))
-	variable := space.Variable[Config, int]{
-		Descriptor: space.VariableDescriptor{
-			ID:          "proof.count",
-			Name:        "Count",
-			Description: "Contract proof count.",
-			ValueSchema: intCodec.Schema(),
-			Domain:      space.IntRange(1, 10).Descriptor(),
+	defaultValue := 2
+	variable, err := space.NewVariable(
+		space.VariableMetadata{
+			ID: "proof.count", Key: "count", Label: "Count",
+			Short: "Contract proof count.", Long: "Count used to prove generic binding erasure.",
+			BindingVersion: "contract-proof/v1",
 		},
-		Lens: space.Lens[Config, int]{
+		space.Lens[Config, int]{
 			Get: func(config Config) int { return config.Count },
 			Put: func(config Config, value int) (Config, error) {
 				config.Count = value
 				return config, nil
 			},
 		},
-		Domain: space.IntRange(1, 10),
-		Codec:  intCodec,
-	}
-	if err := variable.Validate(); err != nil {
+		space.IntRange(1, 10), intCodec, &defaultValue,
+	)
+	if err != nil {
 		panic(err)
 	}
 

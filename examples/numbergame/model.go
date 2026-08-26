@@ -53,26 +53,34 @@ func ConfigCodec() space.JSONCodec[Config] {
 	return space.NewJSONCodec[Config]("schema:numbergame.config/v1")
 }
 
+func mustVariable[C, V any](variable space.Variable[C, V], err error) space.Variable[C, V] {
+	if err != nil {
+		panic(err)
+	}
+	return variable
+}
+
 func MultiplierVariable() space.Variable[Config, int] {
 	codec := space.NewJSONCodec[int]("schema:numbergame.multiplier/v1")
 	domain := space.IntRange(1, 10)
-	return space.Variable[Config, int]{
-		Descriptor: space.VariableDescriptor{
-			ID: "math.multiplier", Name: "Multiplier",
-			Description: "Integer multiplied by every input.",
-			ValueSchema: codec.Schema(), Domain: domain.Descriptor(),
+	defaultValue := 2
+	return mustVariable(space.NewVariable(
+		space.VariableMetadata{
+			ID: "math.multiplier", Key: "multiplier", Label: "Multiplier",
+			Short:    "Integer multiplied by every input.",
+			Long:     "Controls the deterministic arithmetic multiplier applied before optional seeded noise.",
+			CostHint: space.CostLow, BindingVersion: "numbergame.multiplier/v1",
 			Probes: []string{"numbergame.config.exercised/v1"},
 		},
-		Lens: space.Lens[Config, int]{
+		space.Lens[Config, int]{
 			Get: func(c Config) int { return c.Multiplier },
 			Put: func(c Config, value int) (Config, error) {
 				c.Multiplier = value
 				return c, c.Validate()
 			},
 		},
-		Domain: domain,
-		Codec:  codec,
-	}
+		domain, codec, &defaultValue,
+	))
 }
 
 func NoiseVariable() space.Variable[Config, Noise] {
@@ -80,23 +88,24 @@ func NoiseVariable() space.Variable[Config, Noise] {
 	domain := space.Choices(map[Noise]string{
 		NoiseNone: "No noise", NoiseSmall: "Small seeded noise", NoiseLarge: "Large seeded noise",
 	})
-	return space.Variable[Config, Noise]{
-		Descriptor: space.VariableDescriptor{
-			ID: "noise.mode", Name: "Noise mode",
-			Description: "Seeded pseudo-random perturbation applied after multiplication.",
-			ValueSchema: codec.Schema(), Domain: domain.Descriptor(),
+	defaultValue := NoiseNone
+	return mustVariable(space.NewVariable(
+		space.VariableMetadata{
+			ID: "noise.mode", Key: "mode", Label: "Noise mode",
+			Short:    "Seeded pseudo-random perturbation applied after multiplication.",
+			Long:     "Selects the deterministic seeded-noise profile used to perturb multiplied values.",
+			CostHint: space.CostLow, BindingVersion: "numbergame.noise/v1",
 			Probes: []string{"numbergame.config.exercised/v1"},
 		},
-		Lens: space.Lens[Config, Noise]{
+		space.Lens[Config, Noise]{
 			Get: func(c Config) Noise { return c.Noise },
 			Put: func(c Config, value Noise) (Config, error) {
 				c.Noise = value
 				return c, c.Validate()
 			},
 		},
-		Domain: domain,
-		Codec:  codec,
-	}
+		domain, codec, &defaultValue,
+	))
 }
 
 // SequenceClock supplies deterministic, monotonically increasing times for

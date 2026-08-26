@@ -15,27 +15,37 @@ type testConfig struct {
 
 func multiplierVariable() Variable[testConfig, int] {
 	codec := NewJSONCodec[int]("schema:test.int/v1")
-	return Variable[testConfig, int]{
-		Descriptor: VariableDescriptor{ID: "math.multiplier", Name: "Multiplier", ValueSchema: codec.Schema(), Domain: IntRange(1, 10).Descriptor()},
-		Lens: Lens[testConfig, int]{
+	value := 2
+	variable, err := NewVariable(
+		VariableMetadata{ID: "math.multiplier", Key: "multiplier", Label: "Multiplier", Short: "Integer multiplier.", Long: "Integer multiplier used by the test configuration.", BindingVersion: "test.multiplier/v1"},
+		Lens[testConfig, int]{
 			Get: func(c testConfig) int { return c.Multiplier },
 			Put: func(c testConfig, value int) (testConfig, error) { c.Multiplier = value; return c, nil },
 		},
-		Domain: IntRange(1, 10), Codec: codec,
+		IntRange(1, 10), codec, &value,
+	)
+	if err != nil {
+		panic(err)
 	}
+	return variable
 }
 
 func modeVariable() Variable[testConfig, string] {
 	codec := NewJSONCodec[string]("schema:test.mode/v1")
 	domain := Choices(map[string]string{"none": "None", "small": "Small"})
-	return Variable[testConfig, string]{
-		Descriptor: VariableDescriptor{ID: "noise.mode", Name: "Noise", ValueSchema: codec.Schema(), Domain: domain.Descriptor()},
-		Lens: Lens[testConfig, string]{
+	value := "none"
+	variable, err := NewVariable(
+		VariableMetadata{ID: "noise.mode", Key: "mode", Label: "Noise", Short: "Noise choice.", Long: "Noise choice used by the test configuration.", BindingVersion: "test.noise/v1"},
+		Lens[testConfig, string]{
 			Get: func(c testConfig) string { return c.Mode },
 			Put: func(c testConfig, value string) (testConfig, error) { c.Mode = value; return c, nil },
 		},
-		Domain: domain, Codec: codec,
+		domain, codec, &value,
+	)
+	if err != nil {
+		panic(err)
 	}
+	return variable
 }
 
 func TestLensLaws(t *testing.T) {
