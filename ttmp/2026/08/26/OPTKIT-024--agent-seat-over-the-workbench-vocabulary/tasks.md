@@ -2,7 +2,7 @@
 
 ## TODO
 
-- [ ] Implement vocabulary export build step with golden JSON test <!-- t:spir -->
+- [x] Implement vocabulary export build step with golden JSON test <!-- t:spir -->
 - [ ] Integrate mention resolver and chat tile with Go catalog entry <!-- t:k233 -->
 - [ ] Wire verb router local-family delegation with actor attribution and verb log <!-- t:6evp -->
 - [ ] Implement approval flow for danger verbs with approvalId plumbing <!-- t:quhg -->

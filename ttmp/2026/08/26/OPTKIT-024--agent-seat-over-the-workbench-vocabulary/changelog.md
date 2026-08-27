@@ -23,3 +23,12 @@ Uploaded the four-guide PBUI track bundle (OPTKIT-021-024 PBUI Workbench Track G
 
 Guide retargeted to pbui 0.8.0: kernel rules with goldens-first row spec, translator edges, primary invocation, capability-gated seal, registry-generated vocabulary (pbui commit 6efeaeb)
 
+
+## 2026-08-27
+
+P1: agent vocabulary export build step + golden (rag-ttc c2204f985) — registry.vocabulary() composed with translator edges, type docs, typed verb table
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/agent/vocabulary.ts — The vocabulary generator
+
