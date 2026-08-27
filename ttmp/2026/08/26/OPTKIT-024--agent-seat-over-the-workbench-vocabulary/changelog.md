@@ -32,3 +32,12 @@ P1: agent vocabulary export build step + golden (rag-ttc c2204f985) — registry
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/agent/vocabulary.ts — The vocabulary generator
 
+
+## 2026-08-27
+
+P2+P3 core: pbui-chat 0.3.0 reference codec (user ruling) + 'any' field type; rag-ttc chat layer mounted — one routed, attributed verb path live (pbui e09ab55/917c04a, rag-ttc b76000a1d)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/chat/router.ts — The single dispatcher — codec, validation, attribution
+

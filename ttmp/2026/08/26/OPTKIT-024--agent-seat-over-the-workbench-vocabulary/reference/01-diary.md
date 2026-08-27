@@ -98,3 +98,92 @@ export build step with golden (OPTKIT-024 P1)"
 ### Code review instructions
 - Start at apps/workbench/web/src/agent/vocabulary.ts, then the golden
   test; regenerate with `pnpm vocab` and confirm no diff.
+
+## Step 2: The Codec Ruling and the Chat Layer Mount (pbui e09ab55, 917c04a; rag-ttc b76000a1d)
+
+The wire-convention fork was put to the program owner: migrate the
+product's 22 value shapes to value-IS-the-wire-reference, or give pbui-chat
+a product reference codec. Ruling: the codec ("ok, do it" on option 2).
+pbui-chat 0.3.0 gained `createPbuiChat({referenceAdapter})` with the old
+convention as the default; rag-ttc supplies one adapter over its existing
+refKey/refFromKey and keeps its proven presentation layer untouched. On
+top of that, the whole chat layer mounted: chat.Provider now routes EVERY
+verb — human click or agent output — through one validated, attributed
+path to the sink.
+
+### Prompt Context
+
+**User prompt (verbatim):** "1. would be tsx side? or what would it mean?"
+then "ok, do it."
+
+**Assistant interpretation:** Explain what the full value-shape migration
+would entail; on the ruling, implement the codec option and continue P2.
+
+**Inferred user intent:** Keep the proven 022/023 layer stable; pay the
+integration cost in the chat package where it belongs.
+
+**Commits (code):** pbui e09ab55 (referenceAdapter, chat 0.3.0), pbui
+917c04a ('any' verb field type, TS+Go), rag-ttc b76000a1d (chat layer).
+
+### What I did
+- pbui-chat 0.3.0: `ReferenceAdapter{toProduct, fromProduct}` option;
+  every wire↔product crossing (RefPresentation, composer insert-object,
+  accept tool, form ref fields, label lookups, router accept) goes through
+  the context's adapter; identity default keeps all consumers green.
+- Wire contract: new 'any' verb field type (TS schema+validate+zod
+  derivation, Go vocabulary.go) — a mutation value is typed by the
+  CATALOG, and a coarse wire type would refuse legitimate scalars.
+- rag-ttc src/chat/: zod verb schema typechecked against ProductVerb;
+  ONE wire vocabulary (replaces the P1 bespoke artifact — pnpm vocab now
+  writes src/chat/vocabulary.json, Go-embeddable); refs codec;
+  router (conversation verbs → chat layer, all else → sink with actor
+  attribution); chat instance; conversation pointer documents
+  (ragttc.conversation/v1) reconciled so chat tiles satisfy the host.
+- `unresolved` presentation type: a mention nothing answers renders as an
+  inert chip, never a fabricated value.
+- sink.onPerform(verb, {actor}); all trace writes through one bound
+  recorder.
+- Go host: conversation + pbui.widget formats, chat catalog entries; pbui
+  module pin bumped to upstream main (pkg/pbuichat exists there), which
+  pulled pinocchio 0.11.16 — the customer appserver's manifest handler now
+  forwards the required executor identity, with its test updated.
+- Live verification: app boots with the chat layer; Inspect on an arm
+  lands as '#1 human inspect the arm …' through router → sink.
+
+### What didn't work
+- Module-cycle TDZ crashes, twice: the runtime's facts imported the
+  workbench (fixed with workbenchSlot.ts, the reference product's
+  dependency-light-slot pattern), and the router's sink import pulled the
+  workbench into the chat's evaluation chain (fixed with a lazy import).
+- A menu click silently did nothing: the router validated the PRODUCT-
+  shaped ref (no wire id) and rejected — rejection is data, invisible.
+  Fixed with the OUTBOUND codec on router.perform, plus a console.warn on
+  rejected outcomes so the next silent pit announces itself.
+- GOWORK=off lefthook gate failed on the old pbui pin (no pkg/pbuichat);
+  bumping to upstream main broke the colleague's appserver via pinocchio
+  0.11.16's new manifest identity — forwarded, tests green.
+
+### What I learned
+- Upstream pbui main moved TODAY (e54210fefb3b) — the local pbui branch
+  task/use-optkit (0.9.0 + envelope + codec) will need a merge/rebase
+  before anything is pushed; flag for the user.
+- HMR + dynamic import("/src/…") probes create second module instances;
+  assert through the DOM or window hooks set by the app itself.
+
+### What warrants a second pair of eyes
+- The double codec round-trip (product ref → wire → product) on every
+  local menu verb — correct, but a reviewer should confirm the wire trace
+  is worth the conversion (it is what the verb log will store).
+- The appserver identity forward is minimal — whether the customer app's
+  real client sends clientInstanceId/connectionId is the colleague's call.
+
+### What should be done in the future
+- P4 approval flow; P5 agent principal; P6 chat server mount + scripted
+  exit session; verb-log reporting turns on with the server.
+
+### Code review instructions
+- Start at rag-ttc apps/workbench/web/src/chat/ (router.ts, refs.ts,
+  vocabulary.ts), then the pbui-chat referenceAdapter (packages/pbui-chat
+  src/types.ts + createPbuiChat.tsx).
+- Validate: pnpm test + typecheck in the web app; GOWORK=off make test in
+  rag-ttc; pnpm -r test in pbui.
