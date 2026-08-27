@@ -59,3 +59,12 @@ P5: agent principal — multi-principal bearer auth on serve, agent granted comp
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/principals.go — The grants and the multi-token authenticator
 
+
+## 2026-08-27
+
+P6: exit criterion met durably — journal seq 21 proposer {llm, actor:agent-workbench}, human-adjusted mutation, approvalId in trace, 22/22 verified. Seal rule amended for non-human proposers (found by the human's first Approve); approvals persist; scripted session as integration test; --stop-after seeding flag (rag-ttc 2e28e2cc1). Ticket complete; chat-server mount release-gated as task 75ds
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/experimentworkbench/workbench_service.go — The amended proposer/principal seal rule
+

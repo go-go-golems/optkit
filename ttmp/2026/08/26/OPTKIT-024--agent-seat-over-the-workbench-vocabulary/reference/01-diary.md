@@ -299,3 +299,116 @@ authorizer.
 ### Code review instructions
 - cmd/rag-ttc/cmds/experiments/optkitrag/principals.go + serve.go diff;
   validate with `GOWORK=off go test ./cmd/rag-ttc/cmds/experiments/optkitrag/`.
+
+## Step 5: The Exit-Criterion Session — and the Contract It Found (rag-ttc 2e28e2cc1)
+
+The session ran twice, and the first run's failure was the most valuable
+artifact of the phase. The scripted agent (the router driven with
+actor:"agent" — the model-backed agent minus the model) authored a draft
+on a fresh checkpointed store, the human adjusted its mutation in the
+open proposal tile, the agent's seal parked, and the human's FIRST
+Approve click hit: "forbidden: candidate proposer does not match
+authenticated principal" — the pre-agent-era seal rule forcing proposer
+identity to the authenticated principal, which makes an approved agent
+seal impossible by construction (the agent may not seal; the approver may
+not carry proposer=llm). The human then refreshed, the parked approval
+(per-browser, unpersisted) vanished, and the ordinary human seal button
+sealed candidate ae4b46… with HUMAN provenance — a durable, honest, WRONG
+answer to the exit criterion, caught by decoding the journal payload.
+
+Second run, after the fixes: journal seq 21 CandidateProposed carries
+proposer {kind: "llm", identity: "actor:agent-workbench"}, mutations
+fusion.rrf_k 60 → 30 (the HUMAN'S adjusted value), the agent's
+hypothesis; the verb trace holds "#31 agent proposal.seal
+approval:appr-mtbqxgvm-1 performed"; the journal verifies 22/22 with all
+nested payloads. The exit criterion is met.
+
+### Prompt Context
+
+**User prompt (verbatim):** "forbidden candidate proposer does not match
+authenticated principal [interrupted] k i tried again and it worked this
+time, maybe a refresh issue or so?" then "I do get a lot of
+failures_unavailable campaign campaign:3f84c055… not found in the
+different tiles" then "done"
+
+**Assistant interpretation:** The first approve failed on a server rule;
+the retry that "worked" needed forensic verification (it was the human
+path); the stale tiles needed cleanup; the final "done" is the corrected
+approve.
+
+**Inferred user intent:** A truthful exit criterion — not a seal that
+merely happened, but one whose provenance is right.
+
+**Commit (code):** rag-ttc 2e28e2cc1 (seal rule + approvals persistence +
+hook peeks + scripted-session test); pbui 3-file 'object'-accepts-arrays
+fix committed separately in pbui.
+
+### What I did
+- experimentworkbench.Seal: human proposers must be the principal
+  (unchanged anti-impersonation); non-human proposers seal through a
+  seal-granted approving principal, declared identity kept as provenance,
+  anonymous non-human refused. Test covers all three branches.
+- Approvals slice persists per browser — a refresh can no longer orphan a
+  parked request into the silent human-path trap.
+- src/test/agent-session.test.ts: the scripted session as an integration
+  test (mention resolution through the codec, co-edited draft with
+  interleaved actor attribution, park → grant → one-shot attempt).
+- The 'stop-after' seeding affordance (campaign run --stop-after
+  after_lease + experimentworkbench.RunUntil) — 023 needed this and had
+  no recorded path.
+- Live session driven end to end with the user clicking both Approve
+  attempts; stale dead-campaign tiles cleaned (their pointer documents
+  discarded), which answered the user's failures_unavailable complaint.
+- Wire-contract fix found live: 'object' verb fields now accept arrays
+  (string lists) on both TS and Go sides — intent.setRisks was
+  unperformable.
+
+### What worked
+- The layered honesty: the wrong seal was DETECTABLE because the journal
+  records proposer provenance, the trace records actors, and nothing
+  fabricates success. Every failure in the session announced itself.
+
+### What didn't work
+- open.draft-tile silently "performed" while placing nothing: openView
+  needs a splittable target placement, the deep-corner first leaf hit the
+  split-depth cap, and the router's outcome ("delegated") is not the
+  sink's outcome ("refused"). Worked around with tile.activate on a
+  shallow pane; TWO follow-ups flagged below.
+- Dynamic import("/src/…") probes under vite again created a second
+  module universe (its own workbench + its OWN document sync competing
+  with the app's) — the reason first-run tiles vanished. The dev hook now
+  carries same-instance read peeks; the diary's standing rule: after HMR,
+  assert through the DOM or app-installed hooks only.
+
+### What was tricky to build
+- Deciding where the approving human lives durably: the amended rule
+  keeps proposer=agent in the candidate; the approving human is the
+  authenticated actor of the seal call and the trace's approvalId row.
+  A NAMED approver inside the candidate intent would be an OPTKIT-018
+  schema addition — flagged as ADR note, not decided silently.
+
+### What warrants a second pair of eyes
+- The seal-rule amendment is in the colleague's package
+  (experimentworkbench) — small and tested, but the provenance semantics
+  deserve their review.
+- Router outcome vs sink outcome ("performed" = delegated): honest but
+  confusing; consider propagating the sink's refusal into the router
+  outcome.
+- openView's no-splittable-target refusal is invisible to agents; a
+  fallback placement search (any splittable leaf) would make "open"
+  reliable regardless of activation state.
+
+### What should be done in the future
+- Task 75ds (release-gated): chat-server mount with the embedded
+  vocabulary + scripted scenario or model profile; flip verb-log
+  reporting on. Needs a published pbui carrying 'any' and the
+  array-tolerant 'object'.
+- The two openView/outcome follow-ups above.
+
+### Code review instructions
+- The seal rule: pkg/ttc/experimentworkbench/workbench_service.go (Seal)
+  + workbench_service_test.go; the session test:
+  apps/workbench/web/src/test/agent-session.test.ts.
+- Validate: GOWORK=off go test ./pkg/ttc/experimentworkbench/ and pnpm
+  test (47) in apps/workbench/web; the journal evidence lives in the
+  scratchpad store-agent (campaign:51717a2f…, seq 21).
