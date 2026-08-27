@@ -229,3 +229,116 @@ context), 71ed43e29 (workbenchhost)
 ### Technical details
 - Live evidence campaign: campaign:bb66b363386e1b36edf7aed238b17f9d
   (2 arms, 3 cases, paired Δ 0.1667, journal seq 47 verified).
+
+## Step 3: The Slope Graph — Plot Marks Become Kernel Objects (rag-ttc b1c139589)
+
+With 023 sealed, the 022 tails came due. The first was the compare tile's
+missing centerpiece: the paired slope graph as a plot document whose marks
+are live presentations. The adapter boundary from §7 now exists (`src/plot/`
+is the only importer of plot types), and every point on the graph carries
+the same delta menu as the per-case row — right-clicking a dot on a chart
+opens the challenger autopsy, because the kernel does not know the dot is a
+dot.
+
+### Prompt Context
+
+**User prompt (verbatim):** "make sure to read the ticket design doc and
+diaries, and commit at appropriate intervals and keep a detailed diary as
+you work (using the diary format from the skill) Print out a brutalist work
+slip with the plan / different phases for the ticket. then before stsarting
+a phase, plrint a split about the phase, and print one when the phase is
+done. (in case you forgot)"
+
+**Assistant interpretation:** Continue the OPTKIT-022 tails (slope graph,
+doc-host sync, a11y, worst-first) with the full working discipline: design
+doc + diaries first, work slips per phase, diary steps, commits at
+intervals.
+
+**Inferred user intent:** The tails should get the same rigor as the main
+ticket phases — reviewable history, printed plan, no silent scope.
+
+**Commit (code):** rag-ttc b1c139589 — "workbench-ui: paired slope graph in
+the compare tile via the plot adapter"
+
+### What I did
+- `src/plot/adapters.ts`: the sole plot boundary. `slopeProjection()`
+  projects `PairedCaseResult[]` into a `hyperslop.plot` document — a
+  per-case line layer (group=case, color=trend up/down/flat), a bold mean
+  line (stat summary mean, §6.6 "mean among its cases"), and an interactive
+  point layer — then calls `renderPlot`. Returns the scene plus `plotted`
+  and `missing[]` (case ids excluded because a side is unmeasured).
+- `src/plot/SlopeGraph.tsx`: renders `PlotHost` with `renderInteractive`
+  wrapping every point hit in `<Presentation svg reference={delta…}>`; the
+  missing list is named beneath the graphic.
+- CompareApp: new "slope" section; case rows now sorted by |Δ| (missing
+  last) per §6.6.
+- styles: slope tone tokens referencing the existing tone palette; plot
+  stylesheet imported in main.tsx (it inherits the pbui tokens on its own).
+- Goldens in `src/test/slope-plot.test.ts` (5 tests): measured pairs
+  plotted, missing named, 6 interactive points carrying case ids, mean path
+  spans both sides, all-missing input yields no plot rather than zeros.
+- Live verification: resumed store-live's campaign (6 episodes ran,
+  completed, paired Δ 0.1667), opened a live comparison via arm menu →
+  "Compare with…" → accept, confirmed 6 `<g data-pbui="presentation">`
+  points and the delta menu (Open comparison / Open challenger autopsy /
+  Inspect / Add to watchlist) opening from a plot mark.
+
+### Why
+- Task bubz's last open piece; §7 makes the adapter boundary a structural
+  rule ("nothing else imports plot types"), and the slope graph is the
+  proof that plot marks and kernel objects compose.
+
+### What worked
+- Goldens-first again: the scene-walk test found the real mark count and
+  layer ids on the first run after one grammar fix.
+- The plot stylesheet inherits pbui tokens by falling back through
+  `var(--pbui-…)`, so the graph matched the workbench theme with zero
+  theme-bridging CSS.
+
+### What didn't work
+- `mapping: { color: { kind: "constant", value: "mean" } }` — the grammar
+  refuses constant color mappings: `channel.type.invalid: Channel color
+  requires a field mapping.` Fixed by adding a constant-valued `series`
+  column to every row and mapping the mean layer's color to that field.
+- Playwright could not click the first slope point: two cases share score
+  1.0 at both sides, so their circles coincide and the top one intercepts
+  the pointer. Real overlap, not a bug — clicked the unique q-comparison
+  point instead.
+
+### What I learned
+- Line geoms never carry `interaction` in the scene (only symbols, bars,
+  errorbars, boxplots do), so the interactive surface of a slope graph is
+  its endpoints — which is also the honest surface: a click means "this
+  case on this side".
+- `hit.values` is the raw projected row, so the adapter can smuggle the
+  case id through the scene without any side table.
+
+### What was tricky to build
+- The mean line needed a color identity to be distinguishable, but the
+  grammar only maps fields. Symptom: null scene with one error diagnostic.
+  Cause: constant refs are legal for most channels but not color. Solution:
+  a `series: "mean"` column on every row; the summary stat groups by x and
+  the constant column collapses to one line. The categorical color scale
+  then carries both fields' values (up/down/flat from trend, mean from
+  series) in one domain.
+
+### What warrants a second pair of eyes
+- Overlapping equal-score points: ties render as coincident circles and
+  only the topmost is clickable. Fine for 3 fixture cases; a jitter or
+  dodge position may be wanted for real densities.
+- The slope viewport is fixed at 480×250 inside an overflow-x container; a
+  resize-observer viewport would track the tile instead.
+
+### What should be done in the future
+- Churn triage list (fixed / broke / still-broken) from §6.6 still absent —
+  it needs a per-case verdict threshold the read API does not expose yet.
+
+### Code review instructions
+- Start at `apps/workbench/web/src/plot/adapters.ts` (the document and
+  projection), then `SlopeGraph.tsx` (renderInteractive), then the goldens.
+- Validate: `pnpm test` and `pnpm typecheck` in `apps/workbench/web`.
+
+### Technical details
+- store-live campaign campaign:3f84c0554dcfe54df51919e994352c1b is now
+  COMPLETED (49 events, 6 episodes, paired Δ 0.1667) — it refuses new
+  candidates from here; future seal demos need a fresh store.

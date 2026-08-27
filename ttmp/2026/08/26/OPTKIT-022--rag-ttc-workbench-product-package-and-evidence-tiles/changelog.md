@@ -33,3 +33,12 @@ Product built and live-verified: scaffold+vocabulary+kernel rules+translators+si
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/pbui/actions.ts — The v1 action registry — frozen wire names
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/workbenchhost/documents.go — ADR I validators incl. focus episode/chunk amendment
 
+
+## 2026-08-27
+
+Tails P1: compare slope graph via plot adapter — src/plot/ boundary, renderInteractive delta presentations, mean line, missing-by-name; goldens (rag-ttc b1c139589)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/plot/adapters.ts — The sole plot boundary; slope document and projection
+
