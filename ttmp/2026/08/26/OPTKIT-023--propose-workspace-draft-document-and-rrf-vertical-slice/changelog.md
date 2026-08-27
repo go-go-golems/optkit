@@ -28,3 +28,8 @@ Guide retargeted to pbui 0.8.0: kernel rules with goldens-first row spec, transl
 
 Propose workspace implemented and live-verified to the armed seal confirmation (rag-ttc d195d9528 draft format, e2fda8c13 frontend). Remaining: seal click (user's), fusion parity fixture, fresh-store validation, trial wiring (CLI-only this slice).
 
+
+## 2026-08-27
+
+Exit criterion met: full RRF slice through the UI on a fresh store — draft, mutation via kernel primary, compile, evidence via accept, human SEAL click → candidate:b1393360bf8dcd… durable and journal-verified (19 events, all payloads). Parity fixture pins RRF arithmetic at recorded precision. Fixes: mount-only draft activation, SealBar renders seal outcome (rag-ttc f7d67fcde). trial.run stays CLI-side this slice.
+

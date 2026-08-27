@@ -152,3 +152,99 @@ piece with the evidence tiles.
 - Live evidence: catalog semantic id sha256:d3034d1d…30b6 (matches the
   OPTKIT-015 recorded id); compile digest sha256:b56f41ebc27ea… for
   fusion.rrf_k=20 on limit-1.
+
+## Step 2: The Seal Landed — and What the Two Attempts Taught (rag-ttc f7d67fcde)
+
+The exit criterion is met: on a fresh checkpointed campaign store, the full
+RRF slice ran through the UI and the user's SEAL click produced
+candidate:b1393360bf8dcd…, verified in the journal (19 events, every direct
+and nested payload). The FIRST seal attempt failed honestly with the
+server's own campaign_conflict — the fixture campaign had been resumed to
+completion for cockpit evidence, and OPTKIT-017's state machine refuses new
+candidates on a completed campaign. That failure, and the re-run, surfaced
+two real defects now fixed.
+
+### Prompt Context
+
+**User prompt (verbatim):** "i clicked." (the campaign_conflict attempt),
+then "done" (the successful seal on the fresh store); earlier in the same
+arc: "shouldnt' case:campaign:…/q-comparison remove be a semantic obejct?"
+and "can the \"remove\" be added as a contextual action with our new action
+framework?"
+
+**Assistant interpretation:** Complete the exit criterion; fix what the
+live run exposes; make evidence entries live presentations with a
+contextual kernel remove rule.
+
+**Inferred user intent:** The slice should not merely work once — the
+failure modes and interaction seams should be honest and kernel-native.
+
+### What I did
+- Restarted the fixture server on a fresh checkpointed store (running
+  campaigns accept candidates; campaign ids are journal-assigned, so the
+  draft had to be re-authored against the new id).
+- Fixed draft-activation ping-pong: ProposalApp activates its draft on
+  MOUNT only. The body-keyed effect re-fired on every workbench document
+  clone, so an older tile stomped a newer draft's activation — observed as
+  a mutation landing on the dead draft.
+- SealBar renders the seal attempt's outcome via a fixed RTK cache key
+  (`fixedCacheKey: "seal"`); the campaign_conflict had shown only in the
+  trace.
+- Evidence entries re-materialize as live presentations (refFromKey, the
+  read-time inverse of refKey) and "Remove from evidence" became an
+  inherited contextual rule on `inspectable` gated by the new
+  draftEvidenceKeys fact — appearing on an attached object's menu wherever
+  it is presented, with attach turning INAPPLICABLE once attached (an
+  attach that would touch nothing must not exist).
+- Recorded the fusion parity fixture from the live probe and pinned it:
+  every contribution equals weight/(k+rank) at recorded precision; the
+  OPTKIT-015 evidence numbers appear verbatim (before 1/61 =
+  0.01639344262295082, after 1/21 = 0.047619047619047616).
+
+### Why
+- Tasks gs7w and 5thg; the user's two review points; the honest failure.
+
+### What worked
+- Every failure surfaced with a stable machine code end to end: server →
+  sink → trace (and now SealBar). Nothing was invented client-side.
+- The compile digest was IDENTICAL across stores for identical authoring
+  input — content-addressing making the re-author cheap to trust.
+
+### What didn't work
+- Attempt one: campaign_conflict (completed campaigns refuse candidates) —
+  environmental, not a defect, but it exposed the two real defects above.
+- Two intent tiles with the same aria-labels broke strict-mode locators
+  during the re-drive; targeting by emptiness worked, and discarding the
+  dead draft cleaned the board.
+
+### What I learned
+- "The workbench store clones the whole document on every mutation" is a
+  sharp edge for any effect keyed on derived document state; key on ids.
+
+### What was tricky to build
+- The parity fixture needed the REAL draft digest (my reconstruction of it
+  was wrong once — the server's 409 on a stale digest is itself the
+  contract working); the fixture records the server's response verbatim
+  and the test's closed-form check makes hand-patching impossible.
+
+### What warrants a second pair of eyes
+- Backend owner: candidate cand-b56f41 exists as a candidate record; the
+  comparison projection rightly refuses it as an arm until a trial
+  materializes it — confirm that is the intended surface for sealed-but-
+  untrialed candidates.
+
+### What should be done in the future
+- trial.run over HTTP (or a documented CLI handoff) — refused honestly in
+  the UI this slice; frontend sync to the workbench document host; the
+  022 tails (plot adapter, a11y sweep, worst-first projection).
+
+### Code review instructions
+- rag-ttc f7d67fcde and 0ba28d7fd: src/apps/ProposalApp.tsx (mount-only
+  activation), src/apps/IntentApp.tsx (SealBar outcome, evidence
+  presentations), src/pbui/actions.ts (evidence-remove rule + attach
+  partition), src/test/rrf-parity.test.ts.
+- Validate: pnpm test (17); campaign verify on the store shows 19/19/5.
+
+### Technical details
+- candidate:b1393360bf8dcd… on campaign:3f84c0554dcfe54df51919e994352c1b,
+  arm_id cand-b56f41, parent limit-1, draft digest sha256:b56f41ebc27ea….
