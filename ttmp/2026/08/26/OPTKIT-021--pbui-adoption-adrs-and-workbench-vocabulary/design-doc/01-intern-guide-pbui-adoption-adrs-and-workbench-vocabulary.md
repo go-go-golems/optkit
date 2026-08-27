@@ -436,7 +436,15 @@ body:
   campaign: "campaign:..."
   case: "case:q-hybrid"            # optional
   arm: "arm:baseline"              # optional
+  episode: "episode:..."           # optional — autopsy/judge/chunk content
+                                   # is episode-scoped in the projections
+  chunk: "chunk:..."               # optional — the chunk tile's subject
 ```
+
+(`episode` and `chunk` were added during OPTKIT-022 implementation: a chunk
+tile cannot fetch content without the episode whose chunk catalog holds it.
+Both are opaque bounded ids exactly like the original three; the derived-
+state rule is untouched.)
 
 Pointer documents exist so doc-bound evidence tiles (`autopsy`, `judge`,
 `chunk`, `compare`) get linked-view behavior and idempotent "go to existing
