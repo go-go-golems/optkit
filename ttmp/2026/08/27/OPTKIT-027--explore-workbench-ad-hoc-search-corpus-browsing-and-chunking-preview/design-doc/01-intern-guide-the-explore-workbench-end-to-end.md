@@ -243,17 +243,29 @@ type SearchInput struct {
 ```
 
 Internally it prepares the query, calls `Service.Retrieve`, and hydrates the
-result into tool output. The stages you will see, for the default hybrid
-route:
+result into tool output. The stages are **twelve**, verified by running
+`rag-ttc search --stages` against a real bundle rather than read off a design
+document:
 
 ```text
-lexical.raw           bleve BM25 over representation texts        → ranked hits
-lexical.collapsed     collapse multiple representations per chunk → best per chunk
-lexical.policy        source-role policy filter                   → allowed only
-vector.knn            exact vector search over embeddings         → ranked hits
-fusion.rrf            reciprocal rank fusion of the channels      → fused ranking
-final                 limit + evidence ledger admission           → returned results
+lexical.raw               bleve BM25 over representation texts   → ranked hits
+lexical.collapsed         best representation per chunk          → one per chunk
+lexical.policy_filtered   source-role policy filter              → allowed only
+vector.raw                exact vector search over embeddings    → ranked hits
+vector.collapsed          best representation per chunk          → one per chunk
+vector.policy_filtered    source-role policy filter              → allowed only
+retrieval.fused           reciprocal rank fusion of the channels → fused ranking
+retrieval.policy_recheck  policy applied again post-fusion       → survivors
+retrieval.reranked        reranker, or a pass-through when off   → final order
+evidence.hydrated         chunk text loaded from the content store
+evidence.admitted         evidence-ledger admission budget
+evidence.returned         what the caller actually receives
 ```
+
+Two observations that matter for the UI: the lexical and vector channels have
+**symmetric** stage triples, so a trail can show them side by side; and policy
+is applied twice — once per channel and once after fusion — so "why did this
+disappear?" has two possible answers and the stage name distinguishes them.
 
 ### 3.2 What a search records — and this is the important part
 
