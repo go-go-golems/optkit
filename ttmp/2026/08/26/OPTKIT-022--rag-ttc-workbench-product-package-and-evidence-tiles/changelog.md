@@ -60,3 +60,12 @@ Tails P3: watchlist as ragttc.watchlist/v1 document — Redux slice deleted, fac
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/watchlist.ts — Watchlist document read/write and snapshot-fact derivation
 
+
+## 2026-08-27
+
+Tails P4: worst-first failures projection in specialistapi (recorded facts only, verdict_excerpt omitted — no recorded source) + FailuresApp renders it; live-verified (rag-ttc ad9833025). Tails complete; h3q0's a11y half deferred by user.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/specialistapi/failures.go — The worst-first projection — ordering and counting of recorded observations
+

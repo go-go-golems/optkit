@@ -526,3 +526,89 @@ becomes a ragttc.watchlist/v1 document"
 - Start at `apps/workbench/web/src/watchlist.ts`, then the sink switch
   arms and readFacts.
 - Validate: `pnpm test` (33) and `pnpm typecheck` in apps/workbench/web.
+
+## Step 6: Worst-First From the Server (rag-ttc ad9833025)
+
+The last tail: §9's "one backend ask" implemented as an additive read
+projection in specialistapi, and the failures tile reduced to a renderer.
+The projector orders recorded observations and counts recorded statuses; it
+recomputes nothing, and what has no recorded source (verdict prose) it
+omits rather than invents.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3 — same working directive)
+
+**Assistant interpretation:** P4 of the tails: build the worst-first
+failures endpoint the design settled, then point the tile at it.
+
+**Inferred user intent:** The failure gallery should rank on the server so
+every client (including the OPTKIT-024 agent) reads the same ordering.
+
+**Commit (code):** rag-ttc ad9833025 — "specialistapi: worst-first failures
+projection; the tile stops sorting"
+
+### What I did
+- `pkg/ttc/specialistapi/failures.go`: `Projector.Failures(campaign, arm?,
+  limit)` → FailurePage (`rag-ttc.campaign-failure-page/v1`): per case, the
+  single worst RECORDED observation (arm, episode, score, status), plus
+  failure_count (recorded status == "failed" only) and episode_count
+  (episodes with any recorded observation). Ordering: measured ascending
+  by worst score, missing (no measured episode) after, ties on case id.
+  Route + tests (worst-first invariant, arm filter, HTTP limits/404).
+- FailuresApp: client-side sort deleted; rows are live `verdict`
+  presentations (worst episode context: autopsy/inspect/watch), missing
+  cases are `case` presentations naming their recorded status; honors an
+  optional focus.arm.
+- Deviation from the settled §9 shape, recorded here for the ADR trail:
+  `verdict_excerpt` is ABSENT — observations carry construct/status/score
+  only, and the deterministic coverage instrument records no verdict
+  prose. Absence, never fabrication. If a prose-verdict instrument lands,
+  the field can return as recorded fact.
+
+### Why
+- Task 90dl's "wire worst-first projection when OPTKIT-018 lands" note;
+  ranking belongs where the facts are, and the agent seat must read the
+  same order humans see.
+
+### What worked
+- The fixture-store test harness (fixtureProjector runs a real campaign in
+  TempDir) made the worst-first invariant testable end to end in 1.5s.
+- Live: "Open worst-first failures" from the campaign menu → the tile
+  ranked q-comparison (0.5 on limit-1) first with verdict menus firing.
+
+### What didn't work
+- A compound restart command (`pkill` in the same shell chain) killed its
+  own process group — exit 144, no server. Restart as a separate command.
+- After my runtime.tsx/sink.ts edits, HMR split the pbui module: tiles
+  rendered "PBUI components must be rendered inside their Provider"
+  (Provider from the old module instance, hooks from the new). A full
+  reload heals it; mid-HMR crash noise is not a product bug.
+
+### What I learned
+- `measure.Observation` carries no prose: instruments here record decimal
+  values and statuses. Any "excerpt"-like field in a projection must trace
+  to a recorded artifact or stay out.
+
+### What was tricky to build
+- Defining failure_count honestly: without a recorded pass threshold, "low
+  score" is NOT a recordable failure — only instrument-declared "failed"
+  statuses count. The comment in failures.go pins this so a future reader
+  does not "fix" it into recomputation.
+
+### What warrants a second pair of eyes
+- Sort places missing-only cases AFTER measured failures per §9 — the old
+  client sort had them FIRST; if operators preferred the old emphasis,
+  that is a product call to revisit.
+- EpisodeCount counts recorded observations, not scheduled episodes; on a
+  mid-run campaign the two differ and the name could mislead.
+
+### What should be done in the future
+- Cursor pagination if case sets outgrow one page (the case page has it;
+  failures currently truncates at limit).
+
+### Code review instructions
+- Start at `pkg/ttc/specialistapi/failures.go`, then the http.go route and
+  the rewritten FailuresApp.tsx.
+- Validate: `GOWORK=off go test ./pkg/ttc/specialistapi/` and `pnpm test`
+  + `pnpm typecheck` in apps/workbench/web.
