@@ -18,3 +18,8 @@ Created ticket and wrote the full intern guide: PBUI adoption rationale, ADRs G-
 
 Uploaded the four-guide PBUI track bundle (OPTKIT-021-024 PBUI Workbench Track Guides.pdf) to /ai/2026/08/26/OPTKIT-021-PBUI-workbench on the reMarkable.
 
+
+## 2026-08-26
+
+Guide retargeted to pbui 0.8.0: kernel-only actions, translator edges, capability-based seal gating, primary invocation (pbui commit 6efeaeb)
+

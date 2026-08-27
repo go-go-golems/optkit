@@ -66,7 +66,7 @@ be unenforceable.
 **Deliverables:**
 
 - ADRs G through L (sections 4–9), reviewed and accepted.
-- The presentation vocabulary table (types, value shapes, tones, conversions)
+- The presentation vocabulary table (types, value shapes, tones, translators)
   and the verb inventory, pinned in this document.
 - The workbench document format specifications.
 - A package/dependency diagram proving the layering is acyclic.
@@ -139,26 +139,54 @@ object model:
   is the type *as the interface understands it* — `{docId, name}` and
   `{docId, channel}` are both objects to TypeScript, but one is a `field` and
   one is a `channel`, and that distinction is the whole mechanism.
-- A **descriptor** (`PresentationDescriptor`) is one pure file per type:
-  `label(value, env)`, `describe(value, env)`, `actions(value, env)`, `tone`.
-  Descriptors hold no React and no store access.
-- An **action** is a menu entry whose `verb` is **serializable data, never a
-  closure**. Unavailable actions carry `disabledBecause: string` and render
-  greyed with the reason; hiding a verb hides the rule that makes it
-  unavailable.
-- `createPbui({registry, defaultEnvironment, conversions})` returns
-  `{Provider, Presentation, ObjectMenu, MouseDocLine, AcceptBanner, usePbui}`.
-  The Provider's `onPerform(verb)` is **the product boundary where verbs become
-  effects** — the only seam.
+- A **descriptor** (`PresentationDescriptor`) is REPRESENTATION only, one
+  pure file per type: `label(value, env)`, `describe(value, env)`, `tone`.
+  Descriptors hold no React, no store access, and — since pbui 0.8.0 — no
+  actions.
+- **Actions are kernel declarations** (PBUI-ACTIONS-2/3). The product builds
+  a `createActionRegistry({graph, scopes, contributions})` over a nominal
+  type graph; a contribution is an exact rule, an inherited rule, or a
+  bounded family. A rule's `test` returns four-state availability
+  (`available` / `unavailable(reason)` / `inapplicable` / `hidden`), its
+  `bind` returns a **serializable verb, never a closure**, and its metadata
+  (`label`, `group`, `order`, `danger`, `primary`) is presentation-only —
+  changing it never changes which rule wins. Unavailable actions render
+  greyed with their reason and carry NO bound verb; hiding a verb hides the
+  rule that makes it unavailable. A tie between rules is returned as data
+  and renders as a non-executable diagnostic row.
+- `createPbui({registry, defaultEnvironment, actions, snapshotFor,
+  translators})` returns `{Provider, Presentation, ObjectMenu, MouseDocLine,
+  AcceptBanner, AcceptChooser, usePbui}`. `actions` + `snapshotFor` are
+  REQUIRED: rules never read live stores — `snapshotFor(query, env)` builds
+  an immutable `SelectionSnapshot {revision, scopes, modes, capabilities,
+  product}` and every resolution is a pure function of registry + query +
+  snapshot. Clicking a menu row **re-resolves against a fresh snapshot**
+  before the verb is delegated (same action, same candidate, still
+  available — else the click is refused). The Provider's `onPerform(verb)`
+  is **the product boundary where verbs become effects** — the only seam.
+- A bare left click resolves the kernel's **primary invocation**: the unique
+  available action marked `metadata.primary` performs (through the same
+  fresh revalidation); zero or several open the menu. The per-instance
+  `activate` prop remains for host-owned clicks (selection, expansion).
 - **Accept mode** (`pbui.accept({types, prompt, filter})`) is the cross-tile
-  object-request protocol: while a request is pending, every presentation whose
-  reference satisfies the request lights up (`data-state="acceptable"`) in
-  every tile and workspace, and a left click resolves the promise.
-  **Conversions** let one type stand in for another during accept.
+  object-request protocol: while a request is pending, every presentation
+  whose reference satisfies the request lights up
+  (`data-state="acceptable"`) in every tile and workspace, and a left click
+  resolves the promise. Satisfaction is typed: a graph SUBTYPE satisfies the
+  request with the ORIGINAL reference, and **translator edges** let one type
+  stand in for another — a genuine tie between edges opens an explicit
+  chooser instead of picking by registration order.
 
 Key files: `pbui/src/presentation/types.ts` (the exact interfaces),
-`pbui/src/presentation/createPbui.tsx` (kernel),
-`pbui/src/presentation/registry.ts` (`createPresentationRegistry`).
+`pbui/src/presentation/actions/` (the action kernel: type graph, registry,
+resolver, availability, fresh revalidation),
+`pbui/src/presentation/translators/` (typed accept),
+`pbui/src/presentation/createPbui.tsx` (the integration surface),
+`pbui/src/presentation/registry.ts` (`createPresentationRegistry` — the
+representation-only descriptor registry). The guide targets **pbui 0.8.0**,
+which deleted every pre-kernel mechanism (descriptor `actions()`,
+`conversions`, the legacy engine); nothing in this program may reference
+them.
 
 **The workbench layer** (`pbui/packages/pbui-workbench/`) is the tiling shell:
 
@@ -425,7 +453,7 @@ resolve — see ADR H boundary rules.
 ## 7. ADR J — The presentation vocabulary
 
 **Question.** Which presentation types does the product declare, with what
-value shapes, tones, and conversions?
+value shapes, tones, and translators?
 
 **Decision.** The v1 vocabulary below. Adding a type later is one descriptor
 file plus a registry line (the normal PBUI extension path); *changing* a value
@@ -478,41 +506,67 @@ healthy, improvement, reuse; **red** = failure and regression; **uncolored
 dither** = missing or unavailable — missing is never rendered as zero, and a
 missing measurement's presentation says so in its label.
 
-### 7.4 Conversions
+### 7.4 Translators
 
-Registered with `createPbui({conversions})`; each is a pure function from one
-reference to another:
+Registered with `createPbui({translators})`; each is a DECLARED EDGE
+`{id, from, to, match, translate}` with a stable id, resolved by the kernel's
+nearest-scope-then-priority ladder — a genuine tie between edges opens the
+`AcceptChooser` rather than picking by registration order. All eight edges
+are unconditional (no `when`); the translate functions are pure:
 
 ```text
-verdict         → case          (a verdict stands in where a case is accepted)
-delta           → case
-candidate      → arm            (its child arm)
-trial          → arm
-episode        → case
-stage-candidate → chunk         (a ranked result stands in for its chunk)
-layer          → section        (a pipeline layer stands in for its catalog section)
-arm            → campaign
+ragttc.verdict-to-case      verdict         → case   (a verdict stands in where a case is accepted)
+ragttc.delta-to-case        delta           → case
+ragttc.candidate-to-arm     candidate       → arm    (its child arm)
+ragttc.trial-to-arm         trial           → arm
+ragttc.episode-to-case      episode         → case
+ragttc.stagecand-to-chunk   stage-candidate → chunk  (a ranked result stands in for its chunk)
+ragttc.layer-to-section     layer           → section
+ragttc.arm-to-campaign      arm             → campaign
 ```
 
-Conversions are why "ATTACH EVIDENCE ↦ click a case" also lights up every
+Translators are why "ATTACH EVIDENCE ↦ click a case" also lights up every
 verdict chip and every slope-graph mark: the accept request names `case`, and
-the conversion graph supplies the rest.
+the edges supply the rest. Graph SUBTYPING needs no edge at all — if the
+vocabulary ever grows a subtype (say `rrf-variable` under `variable`), a
+click on it satisfies a `variable` request with the ORIGINAL reference.
 
-### 7.5 Environment
+### 7.5 Environment and snapshot — two readers, cleanly split
 
-The descriptor environment is deliberately narrow (the datalab lesson):
+pbui 0.8.0 makes the split structural. **Descriptors** (representation) read
+the environment; **rules** (actions) read only the immutable
+`SelectionSnapshot` that `snapshotFor` builds per query. Nothing reads both.
 
 ```ts
+/** Representation only: what labels need. */
 interface WorkbenchEnvironment {
-  activeDraftDocId: string | null;   // where "add mutation" lands
-  campaignName(id: string): string;  // display names for labels
+  campaignName(id: string): string;
   armDescription(id: string): string;
-  canSeal: boolean;                  // authorization surface, from OPTKIT-018
+}
+
+/** What rules decide on. Derived facts only; revision moves iff they move. */
+interface WorkbenchFacts {
+  activeDraftDocId: string | null;   // where "add mutation" lands
+  draftSealable: boolean;            // from the last compile, for row reasons
+}
+
+function snapshotFor(query, env): SelectionSnapshot<WorkbenchFacts> {
+  return {
+    revision: `${facts.activeDraftDocId}|${facts.draftSealable}|${caps}`,
+    scopes: ["workbench", "global"],
+    modes: new Set(),                       // e.g. "sealed-view" later
+    capabilities: new Set(canSeal ? ["seal"] : []),  // from OPTKIT-018 auth
+    product: facts,
+  };
 }
 ```
 
-Anything a descriptor needs beyond this is carried in the presentation value
-by the component that presented it.
+Authorization is a CAPABILITY, not an environment boolean: the
+`proposal.seal` rule tests `snapshot.capabilities.has("seal")`, which is the
+same mechanism the pbui-chat demo's approver flow proved — and it means the
+SealBar and the menu row render from one resolved action and cannot
+disagree. Anything a rule needs beyond the snapshot is carried in the
+presentation value by the component that presented it.
 
 ## 8. ADR K — Verbs and the verb sink
 
@@ -539,7 +593,9 @@ open.provenance   {ref}
 Each writes-or-finds a pointer document (`ragttc.focus/v1` /
 `ragttc.comparison/v1`) and issues `view.open {appId, documents}`; pbui's
 idempotent open (identical bindings → go to existing tile) prevents tile
-proliferation.
+proliferation. The click-to-open gestures are declared as kernel rules with
+`metadata.primary` — a left click on a case chip performs `open.autopsy`
+through fresh revalidation; there is no separate `activate` wiring.
 
 ### 8.2 Draft verbs (mutate the `ragttc.proposal-draft/v1` document)
 
@@ -575,10 +631,13 @@ Rules:
 - `proposal.compile` is fired by the sink automatically after draft verbs
   (debounced), reflecting the backend guarantee that compilation is pure.
   Results land in an RTK Query cache keyed by `(docId, documentRevision)`.
-- Danger verbs carry `danger: true` in their actions, render with the danger
-  affordance, and require the confirmation step in the performing tile
-  (`intent`'s SealBar; `trial`'s run bar). Seal sends the OPTKIT-018
-  idempotency key; a retry after a network failure re-sends the same key.
+- Danger verbs carry `danger: true` in their RULE METADATA, render with the
+  danger affordance, and require the confirmation step in the performing tile
+  (`intent`'s SealBar; `trial`'s run bar). The seal rule's availability tests
+  `capabilities.has("seal")` (§7.5), so an unauthorized menu row is greyed
+  with its reason and carries NO bound verb — nothing downstream can execute
+  it. Seal sends the OPTKIT-018 idempotency key; a retry after a network
+  failure re-sends the same key.
 - The sink returns per-verb success/failure and **must propagate rejection**:
   a verb that touched nothing must not report as performed (the pbui-workbench
   lesson; agents read "performed" as "the change landed").
@@ -616,7 +675,13 @@ later without breakage:
   ships is a vocabulary version bump;
 - every verb is fully serializable (already guaranteed by ADR K);
 - danger flags are part of the verb definition, not the UI, so approval
-  requirements transfer to agents automatically.
+  requirements transfer to agents automatically;
+- the export is GENERATED from the action registry and type graph
+  (`listReachable()`, rule metadata, danger flags) plus descriptor labels —
+  never hand-maintained — so "the menu and the agent disagree about what
+  exists" is unrepresentable, and renaming a rule IS the vocabulary bump
+  (PBUI-ACTIONS-3 Phase B lands the generator in pbui just before
+  OPTKIT-024 starts).
 
 No agent implementation happens before OPTKIT-023 proves the human path.
 
@@ -696,11 +761,16 @@ HTTP surfaces; `specialistapi` and the command API import nothing frontend.
   in ADR I is mechanical on purpose; resist the temptation to cache a plan "for
   offline viewing" — staleness bugs in recomputation bills destroy trust in
   the tool.
-- **Do not let descriptors fetch.** `actions(value, env)` is called at menu
-  render time and must be pure; anything requiring a fetch belongs in the
-  value (resolved by the presenting component) or in the environment.
-- **Do not hide unavailable actions.** `disabledBecause` with the reason,
-  greyed, per the pbui rule.
+- **Do not let snapshots evaluate.** `snapshotFor` derives cheap facts only
+  (ids, flags, schema-level lookups), and its `revision` must be composed
+  from exactly those facts so it moves iff they move. Anything requiring a
+  fetch belongs in the presentation value (resolved by the presenting
+  component); rules read `snapshot.product` and nothing else.
+- **Do not hide unavailable actions.** `unavailable(reason)` renders the row
+  greyed with its reason, per the pbui rule; `inapplicable` is for
+  not-relevant (permits an override fallback), `hidden` for
+  policy-suppressed (blocks the fallback too). Choosing between them is a
+  semantics decision, not styling.
 - **Do not put referential validation in the document validator** (ADR H
   boundary); a workbench document naming a deleted campaign must still load so
   its tiles can render honest error states.
