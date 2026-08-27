@@ -275,3 +275,109 @@ flags that open a bundle.
   --profile-registries "$HOME/.config/pinocchio/profiles.yaml,$PWD/profiles.yaml" \
   --profile ttc-live-openai
 ```
+
+## Step 3: The Explore Workspace (rag-ttc 49131106a)
+
+Two tiles and a second workspace. You type a question, you get real results
+from the real bundle, and clicking one shows its path through all twelve
+stages with the fusion contributions that decided its rank. The whole slice
+touches no campaign, no journal, and no measurement.
+
+Three bugs surfaced only in the browser, and each was a fact about the
+system rather than a typo. The most useful was the last one.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 1 — "Do slice 1-3 in that ticket"),
+then "go ahead."
+
+**Assistant interpretation:** P3 — the ask and trail tiles over the P2
+endpoint, plus the workspace that holds them.
+
+**Commit (code):** rag-ttc 49131106a
+
+### What I did
+- `run` and `hit` presentation types, descriptors, type-graph nodes, and
+  three action contributions; `ask.run` / `ask.clear` / `open.trail` verbs.
+- `api/explore.ts` (RTK Query), `store/runs.ts` (bounded scratch-run slice),
+  `AskApp`, `TrailApp`, explore styles.
+- `ragttc.explore-focus/v1`: a pointer with no campaign, validated in Go,
+  because exploration has none and the focus format requires one.
+- Go catalog entries for `ask` and `trail`; the workbench document became
+  two workspaces, Evidence and Explore.
+- 8 new tests (55 total green), vocabulary regenerated, live-verified in the
+  browser end to end.
+
+### Why
+- Task pgsn. The endpoint existed; this is the surface that makes it usable
+  without curl.
+
+### What worked
+- The kernel did what it promised. `target.attach`-style reuse was not even
+  needed: declaring `hit` in the type graph gave it Inspect for free, and
+  the disabled "Open the chunk" row renders its own reason —
+  *"a scratch run has no episode chunk catalog"* — visibly, in the menu.
+- The trail immediately taught something true. For "when should I prune a
+  panicle hydrangea?", the chunk containing *"Panicle Hydrangea (but not
+  mop-heads)"* was **bm25 rank 15** (0.0887) but **vector rank 5** (0.5397),
+  and at fusion the vector channel contributed more (0.01538 vs 0.01333),
+  carrying it to rank 4. It was found by meaning, not by words — which is
+  exactly the question the tile exists to answer.
+
+### What didn't work
+Three browser-only failures, in the order they appeared:
+
+1. **`id_mismatch` on every sync push.** `layout(spec, {id})` had been
+   setting the DOCUMENT id; moving to `workspaces([...])` without a second
+   argument let the library mint a fresh one, so the sync pushed
+   `wb-8ad156f6…` to the path `ragttc-workbench` and was refused. Fixed by
+   passing `{ id: "ragttc-workbench" }` explicitly.
+2. **`unknown_application`.** The running server predated the catalog
+   change. Not a code bug — a reminder that the Go catalog and the React app
+   registry are two halves of one contract and both have to be rebuilt.
+3. **`duplicate_singleton`.** I put `trace` in both workspaces. **A
+   singleton is unique per DOCUMENT, not per workspace**, so the whole
+   document was unrepresentable. The Explore workspace is now `ask` (a
+   singleton used nowhere else) beside `trail` (doc-bound).
+
+Diagnosing (3) took longer than it should have because the sync logged
+`create refused (422)` with no body while the push path logged the full
+reason. That asymmetry is now fixed — the create path logs the validator's
+message, which named the duplicate instantly.
+
+### What I learned
+- Singleton scope is document-wide. Any workspace beyond the first can only
+  contain doc-bound tiles plus singletons no other workspace claims. This
+  constrains every future workspace and belongs in the workspace design
+  guidance, not in one diary entry.
+- The `trail` binding must be `Required: false`. A required binding makes a
+  tile unrepresentable in a default layout, because the layout is created
+  before any pointer exists. The tile already had an honest empty state;
+  the catalog just had to agree that the state is legal.
+
+### What was tricky to build
+- Deciding where scratch runs live. A workbench document would have made
+  them agent-visible and reload-proof, but a `SearchOutput` carries the full
+  text of every chunk any stage touched, and the document host has no
+  sensitivity model for content. They are a bounded in-memory slice (cap 8,
+  evicting from both the order and the map) and the trace records that the
+  search happened. Losing them on reload is the correct behaviour.
+
+### What warrants a second pair of eyes
+- `verbFamily` classifies `ask.run` as a command so the sink reports its
+  outcome like an API call, while `open.trail` is navigation by prefix. The
+  classification drives trace semantics, so it is worth one reviewer's look.
+- The explore routes are unauthenticated (read tier). Fine for this corpus;
+  wrong the moment restricted sources are indexed.
+
+### What should be done in the future
+- P4 corpus/document tiles, P5 the chunking split.
+- The stage order shows `evidence.returned` before `evidence.admitted`,
+  which reads as a causality that is not there. Worth confirming with the
+  retrieval owner whether the recorded order is meaningful.
+
+### Code review instructions
+- Start at `src/apps/TrailApp.tsx` (the transpose of the autopsy), then
+  `src/store/runs.ts` and the three contributions in `src/pbui/actions.ts`.
+- Validate: `pnpm test && pnpm exec tsc --noEmit`, then serve a bundle, open
+  the Explore workspace, ask something, and click a result.

@@ -27,3 +27,12 @@ Step 2: POST /api/rag/v1/search + explore status route; adapter moved to the com
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/exploreapi/exploreapi.go — The explore projections and their typed refusals
 
+
+## 2026-08-27
+
+Step 3: ask + trail tiles, run/hit types, explore pointer format, two workspaces; three browser-only bugs (document id, stale catalog, duplicate singleton) (commit 49131106a)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/apps/TrailApp.tsx — One hit's path through every stage
+
