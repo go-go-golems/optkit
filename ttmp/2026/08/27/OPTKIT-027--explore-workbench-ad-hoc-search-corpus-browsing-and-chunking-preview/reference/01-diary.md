@@ -487,3 +487,113 @@ being chunked, embedded and indexed as retrievable evidence. This is the
   `src/apps/CorpusApp.tsx`, `DocumentApp.tsx`, `SplitApp.tsx`.
 - Validate: `go test ./pkg/ttc/exploreapi/`, `pnpm test`, then open the
   Material workspace and choose "Compare chunking…" on any document.
+
+## Step 5: Representations, Lanes, and a Bundle Worth Comparing (rag-ttc 21c9a0c99)
+
+The dangling-reference fix, a real summary bundle to test it against, and
+two-lane comparison so the two bundles can be asked the same question. This
+step spent real money on purpose: S12 is plumbing until a bundle actually
+carries generated summaries.
+
+### Prompt Context
+
+**User prompt (verbatim):** "what is documentHasHeading for, and why is it
+client side? or is it backend side?" … "ok, now am I able to see embeddings
+computation runs in this ticket? or is that in other tickets? which SXX did
+we cover from the user stories?" … "what's the S12 issue about?" … "Ok, do
+all. real money is fine"
+
+**Assistant interpretation:** Close S12 properly — composition, UI, and a
+bundle with summaries — plus the gaps named while answering: embedding
+identity in the survey, and lanes for S13.
+
+**Inferred user intent:** Not a demo. Make the surface tell the truth about
+a bundle that actually has something to tell.
+
+**Commit (code):** rag-ttc 21c9a0c99
+
+### What I did
+- `SearchTool.RegisterRepresentations` (delegating like `AddRoute`), an
+  opt-in `ragsearch.Options.LoadRepresentations`, and the registration call
+  in `NewSessionRegistry`. The serving path is unchanged and does not opt in.
+- Built `rk-7e257c3a…` — 200 documents, 1979 chunks, **3958
+  representations**, 1979 generation calls, 6m27s.
+- The trail resolves `representation_id` through the chunk catalogue and
+  renders the matched **kind and text**; an unresolvable id says
+  "(unresolved)" instead of posing as an answer.
+- The explore server became **multi-bundle**: `Server{Bundles, Primary}`,
+  `--index-bundle` repeatable, `?bundle=` on the browse routes, `bundle` in
+  the search request and response.
+- The ask tile grew lanes and a rank-aligned comparison (moved / new /
+  dropped).
+- The survey reports embedding provider, model, dimensions and lexical
+  backend.
+
+### What worked
+- **The comparison answered a real question in one query.** Asking "how do I
+  prune hydrangeas?" of both bundles: `1 moved · 4 new · 4 dropped`. With
+  summaries, ranks 4/6/7 are *Easy Winter Pruning*, *How and When To Prune
+  Fruit Trees* and *March in the Garden* — pruning-specific articles. Without
+  them, those slots are duplicate *How to Plant Hydrangeas* chunks. 65 of 92
+  resolvable matches in the summary bundle came from summary text.
+- The whole S12 chain now reads as intended: a stage says `on summary
+  "Mop-Head hydrangeas: remove thin, weak or dead branches…"` rather than
+  `on rep-bd277f18d87669fe`.
+
+### What didn't work
+- **The build died at item 380 of 1979**: `run Geppetto inference: An error
+  occurred while processing the request`, classified **fatal**, so no retry
+  and the whole run aborted. Re-running resumed from cache (`hits=382`) and
+  finished — but the only reason I knew any of it was tailing a log file.
+  This is stories S39 and S40 happening for real, and the strongest argument
+  yet for OPTKIT-028.
+- **A python string-replace silently no-op'd for the second time**, so
+  `NewSessionRegistry` never got its registration call and representations
+  stayed unresolvable through a full serve-and-curl cycle. Verifying the
+  live response is what caught it; the compiler could not. Standing rule for
+  the rest of this work: after a scripted edit, grep for the thing that was
+  supposed to appear.
+- The refusal taxonomy needed splitting. With several bundles, "no bundle is
+  open" is neither a search fact nor a corpus fact, so `no_bundle_open` was
+  added beside `search_unavailable`, `corpus_unavailable` and
+  `bundle_not_found`.
+
+### What I learned
+- **flowkit already emits periodic progress**: `INF flow progress … hits=382
+  items=1041 misses=659 quarantined=0 retries=0 step=generation total=1979
+  work_calls=64`, every 30 seconds, with the counters OPTKIT-028's job tile
+  wants. The 028 design assumed `flow.Report` was purely terminal and
+  proposed snapshot files as the way in. There may be a cheaper path — a log
+  sink or an existing hook — and that should be checked before building the
+  snapshot writer.
+- Naming bundles by **bundle id** rather than by path was the right call: a
+  lane, a search response, and every recorded result then name the same
+  thing, so a comparison cannot silently be between something other than
+  what the label says.
+
+### What was tricky to build
+- Deciding whether an unknown bundle name should fall back to the primary.
+  It must not: silently answering from a different bundle than the caller
+  named would make every lane comparison a lie while looking perfectly
+  normal. It is a 404 by name, with the open names listed.
+
+### What warrants a second pair of eyes
+- `LoadRepresentations` holds every representation in memory — 3958 here,
+  35,506 for the full corpus. Opt-in keeps it off the serving path, but a
+  reviewer should confirm the explore server is the only caller.
+- Opening N bundles means N bleve locks and N inspections at startup. Fine
+  for two; worth a thought before someone passes six.
+
+### What should be done in the future
+- Check flowkit for an existing progress hook before OPTKIT-028 P1.
+- The summary bundle deserves a real measurement against the 148-query
+  evaluation set. The lane comparison says summaries changed retrieval on
+  one query; only a campaign says whether they improved it.
+
+### Code review instructions
+- `internal/customer/ragsearch/ragsearch.go` (opt-in load + registration),
+  `pkg/ttc/exploreapi/exploreapi.go` (multi-bundle Server),
+  `src/apps/AskApp.tsx` (lanes), `src/apps/TrailApp.tsx` (representation
+  resolution).
+- Validate: serve two bundles with repeated `--index-bundle`, add a lane,
+  ask one question, then open a hit's trail and read what it matched on.

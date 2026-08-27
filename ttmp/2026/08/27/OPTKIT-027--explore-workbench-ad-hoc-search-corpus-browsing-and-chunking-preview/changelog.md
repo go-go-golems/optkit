@@ -45,3 +45,12 @@ Steps 4-5: corpus survey/documents/document projections, chunking split preview,
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/exploreapi/corpus.go — The corpus projections over indexbundle
 
+
+## 2026-08-27
+
+Step 5: representation resolution end to end (S12), multi-bundle server with ask lanes (S13), embedding identity in the survey; summary bundle rk-7e257c3a built with 1979 generation calls (commit 21c9a0c99)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/internal/customer/ragsearch/ragsearch.go — Opt-in representation loading that makes matched text resolvable
+
