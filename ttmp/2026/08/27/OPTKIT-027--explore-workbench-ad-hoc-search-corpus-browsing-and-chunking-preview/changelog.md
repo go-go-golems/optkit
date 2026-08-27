@@ -63,3 +63,8 @@ Step 6: font sizes — raw 0.75rem (12px) was larger than base (11.5px); reverte
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/test/typography.test.ts — Fails on any raw font size in the stylesheet
 
+
+## 2026-08-27
+
+Ticket complete: guide corrected to what shipped (repeatable --index-bundle, refusal-code taxonomy, the two path quirks, the singleton-per-document rule, and the evaluate step)
+

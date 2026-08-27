@@ -1,7 +1,7 @@
 ---
 Title: 'Intern Guide: The Explore Workbench, End to End'
 Ticket: OPTKIT-027
-Status: active
+Status: complete
 Topics:
     - design
     - ui
@@ -624,32 +624,51 @@ chunk" would offer an operation that cannot mean anything.
 
 ### 7.2 New routes
 
+As built. Every browse route takes an optional `?bundle=<bundle_id>`;
+absent means the primary. `/search` takes `bundle` in its body.
+
 | Route | Method | Auth | Spends |
 |---|---|---|---|
+| `/api/rag/v1/explore` | GET | none | nothing |
 | `/api/rag/v1/search` | POST | none (read tier) | one query embedding |
-| `/api/rag/v1/corpora` | GET | none | nothing |
-| `/api/rag/v1/corpora/{id}/survey` | GET | none | nothing |
-| `/api/rag/v1/corpora/{id}/documents` | GET | none | nothing |
-| `/api/rag/v1/corpora/{id}/documents/{docId}` | GET | none | nothing |
-| `/api/rag/v1/corpora/{id}/documents/{docId}/chunk` | POST | none | nothing |
+| `/api/rag/v1/corpus/survey` | GET | none | nothing |
+| `/api/rag/v1/corpus/documents` | GET | none | nothing |
+| `/api/rag/v1/corpus/documents/{document}` | GET | none | nothing |
+| `/api/rag/v1/corpus/documents/{document}/chunk` | POST | none | nothing |
 
-Every response uses the existing error envelope:
+Every response uses the existing error envelope. The refusal codes form a
+taxonomy worth knowing, because each names a different problem:
 
-```json
-{ "error": { "code": "bundle_not_configured",
-             "message": "serve was started without --index-bundle" } }
+```text
+no_bundle_open             nothing is open at all
+bundle_not_found           a name was given and no bundle has it
+search_unavailable         the bundle is browsable but cannot answer queries
+corpus_unavailable         the bundle is open but holds no inspection
+document_text_unavailable  chunks resolve; the source corpus does not
+chunking_failed            the setting was fine, this document could not cut
 ```
+
+An unknown bundle name is refused **by name** rather than falling back to
+the primary: answering from a different bundle than the caller asked about
+would make every lane comparison a lie while looking perfectly normal.
 
 ### 7.3 New serve flags
 
 ```text
---index-bundle PATH     immutable bundle directory; absent disables the
-                        search and corpus routes with a typed error
---tool-config PATH      retrieval tool configuration yaml
+--index-bundle PATH     REPEATABLE. Immutable bundle directory, relative to
+                        the repository root. The first is the primary; a
+                        search may name any of them, which is how two
+                        bundles are compared on one question. Absent
+                        disables the explore routes with a typed error.
+--tool-config PATH      retrieval tool configuration yaml (required with a bundle)
 --repository-root PATH  root every other path resolves under (default .)
+--scratch-directory P   retrieval verifier scratch
 --profile NAME          geppetto profile carrying the embedding role
 --profile-registries L  comma-separated registry sources
 ```
+
+Serve is built with the geppetto middleware chain, so the whole profile
+section is available on it.
 
 ## 8. File reference
 
@@ -721,32 +740,70 @@ which is worse than one that is incomplete.
 
 ## 10. Running it end to end
 
+These are the exact invocations that work, with the two path quirks that
+cost an hour each to discover.
+
 ```bash
-# 1. build a small bundle (needs an OpenAI key on the profile)
+REG="$HOME/.config/pinocchio/profiles.yaml,$PWD/profiles.yaml"
+
+# 1. build. --output-root and --cache-directory must be ABSOLUTE: the content
+#    store builds a SQLite URI from the path and reads a leading dot as a URI
+#    authority ("invalid uri authority: .cache").
+#    Default representations are `raw`, and the default summarizer is
+#    `extractive` (free). Real LLM summaries need BOTH
+#    `--representations raw,summary` AND `--summarizer generator`.
 ./rag-ttc index build \
   --corpus datasets/ttc/corpus.json \
-  --output-root .cache/rag-ttc/indexes \
-  --profile-registries "$HOME/.config/pinocchio/profiles.yaml,$PWD/profiles.yaml" \
-  --profile ttc-live-openai \
+  --output-root "$PWD/.cache/rag-ttc/indexes" \
+  --cache-directory "$PWD/.cache/rag-ttc" \
+  --profile-registries "$REG" --profile ttc-live-openai \
   --embedding-budget 2500 --max-estimated-usd 1.00 --allow-unpriced-provider
+# add --dry-run first: it prints documents, chunks, representations and
+# generation calls without spending anything.
 
 # 2. look at what it produced
-./rag-ttc inspect corpus stats     --bundle .cache/rag-ttc/indexes/<id>
-./rag-ttc inspect corpus documents --bundle .cache/rag-ttc/indexes/<id>
+./rag-ttc inspect corpus stats     --bundle "$PWD/.cache/rag-ttc/indexes/<id>"
+./rag-ttc inspect corpus documents --bundle "$PWD/.cache/rag-ttc/indexes/<id>"
 
-# 3. search it from the terminal
-./rag-ttc search --bundle .cache/rag-ttc/indexes/<id> \
+# 3. search from the terminal. --bundle here must be RELATIVE to
+#    --repository-root: ragsearch.Open refuses a path outside the root, so
+#    the absolute path the build command PRINTS is rejected by search.
+./rag-ttc search --bundle ".cache/rag-ttc/indexes/<id>" \
   --tool-config assets/configs/tool-qa/production-v1.yaml \
-  --query "where is my order?" --stages
+  --repository-root "$PWD" --scratch-directory ".cache/rag-ttc/scratch" \
+  --profile-registries "$REG" --profile ttc-live-openai \
+  --query "where is my order?" --limit 5 --stages
 
-# 4. serve it and open the workbench
-./rag-ttc experiment optkit-rag serve \
-  --store .cache/rag-ttc/store --listen 127.0.0.1:8517 \
-  --workbench-docs-store .cache/rag-ttc/docs \
-  --index-bundle .cache/rag-ttc/indexes/<id> \
-  --tool-config assets/configs/tool-qa/production-v1.yaml
-cd apps/workbench/web && pnpm dev
+# 4. serve one or TWO bundles and open the workbench
+./rag-ttc experiment optkit-rag campaign serve \
+  --store "$PWD/.cache/rag-ttc/serve-store" --listen 127.0.0.1:8541 \
+  --workbench-token explore-token --workbench-actor actor:operator \
+  --workbench-docs-store "$PWD/.cache/rag-ttc/serve-docs" \
+  --index-bundle ".cache/rag-ttc/indexes/<summary-id>" \
+  --index-bundle ".cache/rag-ttc/indexes/<raw-id>" \
+  --tool-config assets/configs/tool-qa/production-v1.yaml \
+  --repository-root "$PWD" --scratch-directory ".cache/rag-ttc/scratch" \
+  --profile-registries "$REG" --profile ttc-live-openai
+
+cd apps/workbench/web && SPECIALIST_API=http://127.0.0.1:8541 pnpm dev
+# Explore workspace: ask a question, "+ lane" to compare bundles, click a
+# result for its trail. Material workspace: corpus survey, document, split.
+
+# 5. measure, rather than eyeball. This is the step that decides things.
+./rag-ttc index evaluate \
+  --corpus datasets/ttc/corpus.json --evaluation datasets/ttc/evaluation.json \
+  --bundles "$PWD/.cache/rag-ttc/indexes/<a>,$PWD/.cache/rag-ttc/indexes/<b>" \
+  --cache-directory "$PWD/.cache/rag-ttc" \
+  --profile-registries "$REG" --profile ttc-live-openai \
+  --embedding-budget 400 --max-estimated-usd 1.00 --allow-unpriced-provider \
+  --artifact "$PWD/.cache/rag-ttc/eval.json"
 ```
+
+A layout note that will confuse you once: a **singleton tile is unique per
+DOCUMENT, not per workspace**, so a second workspace can only hold doc-bound
+tiles plus singletons no other workspace claims. Putting `trace` in two
+workspaces makes the whole document unrepresentable
+(`duplicate_singleton`).
 
 ## 11. Glossary
 

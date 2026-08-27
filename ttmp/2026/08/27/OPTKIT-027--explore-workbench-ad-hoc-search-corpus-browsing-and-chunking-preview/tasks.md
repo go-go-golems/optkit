@@ -7,4 +7,4 @@
 - [x] P3 ask + trail tiles (run/hit types, verbs, scratch run slice) <!-- t:pgsn -->
 - [x] P4 corpus projections + corpus/document tiles <!-- t:dmdm -->
 - [x] P5 chunk split preview endpoint + split tile <!-- t:e9p7 -->
-- [ ] P6 Explore workspace, vocabulary regen, live smoke <!-- t:thn9 -->
+- [x] P6 Explore workspace, vocabulary regen, live smoke <!-- t:thn9 -->

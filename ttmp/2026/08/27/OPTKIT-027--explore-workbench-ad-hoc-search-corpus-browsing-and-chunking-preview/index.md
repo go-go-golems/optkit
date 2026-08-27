@@ -1,7 +1,7 @@
 ---
 Title: 'Explore Workbench: Ad-hoc Search, Corpus Browsing, and Chunking Preview'
 Ticket: OPTKIT-027
-Status: active
+Status: complete
 Topics:
     - design
     - ui
@@ -31,7 +31,7 @@ WhenToUse: ""
 
 ## Status
 
-Current status: **active**
+Current status: **complete**
 
 ## Topics
 
