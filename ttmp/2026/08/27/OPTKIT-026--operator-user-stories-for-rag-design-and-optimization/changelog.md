@@ -31,3 +31,8 @@ Design for theme 3: run/hit/chunkPreview types, trail + split tiles, ask lanes, 
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/specialistapi/types.go — StageSummary — the lossy projection the design fixes
 
+
+## 2026-08-27
+
+Theme 9 (Running the work): 12 stories S37-S48 for long-running jobs — build phases, judge batches watched live, multi-turn conversation evaluation, control, dependencies, overnight handoff
+

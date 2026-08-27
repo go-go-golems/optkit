@@ -11,7 +11,7 @@ Intent: long-term
 Owners: []
 RelatedFiles: []
 ExternalSources: []
-Summary: Thirty-six user stories for the person responsible for a RAG system's quality, written from needs rather than from existing surfaces — corpus knowledge, ground truth, exploration, experiments, judging, decisions, longevity, and delegation to an assistant.
+Summary: Forty-eight user stories for the person responsible for a RAG system's quality, written from needs rather than from existing surfaces — corpus knowledge, ground truth, exploration, experiments, judging, decisions, longevity, delegation to an assistant, and running the long jobs that produce all of it.
 LastUpdated: 2026-08-27T13:45:01.475999225-04:00
 WhatFor: The needs-first basis from which the workbench's remaining surfaces and ticket slicing are derived.
 WhenToUse: Read before designing any new surface; use as the acceptance vocabulary for OPTKIT-026 and successors.
@@ -45,6 +45,12 @@ derived from it rather than the other way around.
 
 These stories are a first overview. Each will be fleshed out with concrete
 acceptance criteria, data requirements, and surface design later.
+
+Story numbers are stable identifiers, not a reading order: Theme 9 was added
+after the first eight and keeps numbers S37 onward so that references from
+the design documents stay valid. It belongs, in workflow order, beside
+Theme 4 — it is about the long-running jobs that produce everything the
+other themes look at.
 
 ---
 
@@ -605,9 +611,220 @@ too tightly to get any leverage from the delegation.
 
 ---
 
+## Theme 9 — Running the work
+
+*Added after the first eight themes; belongs beside Theme 4 in workflow
+order. Where Theme 4 is about designing an experiment, this theme is about
+the hours during which machines are actually working — building indexes,
+embedding a corpus, generating summaries, calling judges, and running
+multi-turn conversations — and about my ability to see, steer, and trust
+that work.*
+
+### S37 — See everything that is running, in one place
+
+At any moment I may have an index build going, a campaign working through
+episodes, and a judge batch catching up, and all three compete for the same
+API quota and the same money. Without one place that shows all of it, I
+discover a stalled build only when I wonder why the campaign never started,
+and I discover a runaway spend when the invoice arrives. This view is not a
+dashboard for its own sake — it is how I answer "is anything wrong right
+now?" in five seconds instead of five minutes.
+
+1. Open one view listing every active piece of work, whatever kind it is.
+2. For each, see what it is, what it is working on, how far along it is, how
+   fast it is going, and what it has spent.
+3. See the work queued behind it, and what each queued item is waiting for.
+4. Drill into any one of them.
+5. See recently finished work with its outcome, so "did that finish?" is
+   answerable without hunting through logs.
+
+### S38 — Watch a long build progress by phase, not by spinner
+
+Embedding a large corpus is not one operation. It is chunking, then
+representation generation, then embedding, then index construction, and each
+phase has a different cost, a different failure mode, and a different
+duration. A single bar across the whole thing tells me nothing I can act on:
+I cannot tell whether the summarizer is slow, whether embedding is being
+rate-limited, or whether I am about to exhaust the budget in a phase that
+has not started yet. The phases are the granularity at which I can
+intervene, so they must be the granularity I see.
+
+1. See the phases in order, with the current one marked.
+2. For each phase: units done of total, current rate, elapsed time,
+   projected remaining, and cost so far.
+3. See projections for phases not yet started, derived from what the
+   completed phases actually measured rather than from a guess.
+4. Be warned when a projection crosses a ceiling before the phase reaches it.
+5. Drill into the active phase to watch individual units.
+
+### S39 — Start, pause, stop, and resume without losing work
+
+I need to be able to stop things. A build started with the wrong summarizer,
+a campaign that is obviously going nowhere, a judge batch running against a
+rubric I have just realised is broken — stopping must take effect
+immediately, must not corrupt what has already completed, and must leave me
+able to resume rather than restart. Anything less makes me reluctant to
+start work at all, and that hesitancy is the expensive failure, not the
+wasted run.
+
+1. Start work from a description of what it will do and what it will cost.
+2. Pause: in-flight units finish, nothing new is claimed.
+3. Stop: the same, and the work is recorded as stopped by me rather than
+   failed on its own.
+4. Resume later from where it stopped, with the completed portion intact.
+5. See at any moment exactly what is durable and what would be lost.
+
+### S40 — See failures grouped by cause, while the work is still running
+
+Long runs fail in clusters, and the cluster is the diagnosis. Four hundred
+rate-limit errors mean slow down. Four hundred "document not found" mean my
+inputs are wrong. Four hundred timeouts against one model mean the provider
+is degraded and I should stop. A flat list of four hundred failures hides
+all three readings, and I need them while the run is still going, because
+two of them mean I should intervene now.
+
+1. See failures grouped by cause, with counts, accumulating live.
+2. Open a group and read the actual error from one of its members.
+3. See whether a group is still growing or has stopped.
+4. Retry an entire group once its cause is fixed, without re-running the
+   successes.
+5. Mark a group as expected so it stops demanding attention.
+
+### S41 — Inspect one unit of work while it is in flight
+
+When something looks wrong in aggregate, the fastest diagnosis is to look at
+one unit in full: this chunk's summarization prompt and exactly what came
+back, this judge call's rubric and verdict, this episode's retrieval, this
+conversation's turns. Aggregates tell me that something is wrong; a single
+unit tells me what it is. Without this, a misbehaving run is a statistic I
+can only guess about.
+
+1. Pick any unit from a running job.
+2. See its complete inputs, including the exact prompt wherever a model is
+   involved.
+3. See its output, or its error, in full and unabridged.
+4. See what it cost and how long it took.
+5. Get from there to the configuration that produced it.
+
+### S42 — Watch judgments arrive, and stop early if the rubric is broken
+
+A judge batch has a property nothing else in this system has: its output is
+readable prose I can evaluate immediately. If the first ten verdicts show
+the judge misunderstanding the rubric, or scoring something I never asked
+about, then the remaining eleven hundred calls are wasted money producing a
+misleading result. Reading judgments as they arrive is the cheapest quality
+control available anywhere in this program, and it only works if I can see
+them before the batch finishes.
+
+1. See verdicts streaming in as they are produced, newest first.
+2. Read the rationale and the evidence behind any of them.
+3. See the score distribution forming, so a judge stuck at one value becomes
+   obvious within a dozen calls.
+4. Stop the batch on the spot.
+5. Fix the rubric and restart, with the already-judged portion either kept
+   or discarded — my choice, stated explicitly rather than assumed.
+
+### S43 — Evaluate a whole conversation, not a single query
+
+What customers actually use is a multi-turn assistant that retrieves several
+times, carries context between turns, and can be right on turn one and wrong
+on turn three because of what it retrieved on turn two. Scoring isolated
+queries measures a component; scoring conversations measures the product.
+Multi-turn evaluation needs to be a first-class kind of run with its own
+results, not a script somebody wrote once and nobody can reproduce.
+
+1. Define a scenario: an opening question, the follow-ups, and what a good
+   conversation must achieve by the end.
+2. Run it against a configuration, with each turn doing its own retrieval
+   and tool calls.
+3. See the conversation as the unit of result, with a conversation-level
+   verdict.
+4. See each turn underneath it, with that turn's retrieval and its own
+   verdict.
+5. Compare scenarios across configurations the same way single questions
+   compare.
+
+### S44 — Find the turn where a conversation went wrong
+
+Multi-turn failures propagate. When the final answer is wrong, the cause is
+usually two turns earlier: a bad retrieval that entered the context and was
+never corrected. Without per-turn visibility all I know is that the
+conversation failed, which tells me nothing about what to change — and
+"the assistant was wrong" is not a finding I can act on.
+
+1. Open a failed conversation.
+2. See its turns in sequence, each with its verdict and what it retrieved.
+3. See where the verdict first degraded, marked.
+4. Open that turn's retrieval with the same explanation surfaces a single
+   query gets.
+5. Carry the finding out as a new question, a flag, or a proposal.
+
+### S45 — Re-run one conversation after a change
+
+When I fix something a single conversation exposed, I want to test the fix
+against that conversation in seconds — not by re-running a suite of two
+hundred and waiting an hour. The tight loop is what makes multi-turn
+debugging feasible at all; without it I will avoid multi-turn work and go
+back to measuring components.
+
+1. From a failed conversation, re-run it against a different configuration.
+2. See the new run beside the old one, turn by turn.
+3. See which turns changed and which did not.
+4. Decide whether the fix holds, and only then queue the full suite.
+
+### S46 — Leave it running overnight and know what happened
+
+The big runs take hours and I am not going to watch them. What I need in the
+morning is not a log file but an answer: did it finish, what did it cost,
+what failed and why, and is there anything that needs a decision from me
+before the next step can start. Without that, every overnight run costs me
+an hour of reconstruction before I can do any actual work.
+
+1. Start the work and leave.
+2. Come back to a summary: what completed, what failed grouped by cause,
+   total cost against the ceiling, and duration.
+3. See what stopped and needs a decision, separated from what merely
+   finished.
+4. Get from any line of that summary to the underlying detail.
+5. Have the summary persist, so it is still there next week when someone
+   asks what that run did.
+
+### S47 — Steer throughput without editing configuration files
+
+Concurrency and batch size are the two levers that matter during a long run.
+Too aggressive and I get rate-limited, or throttled by a provider I need to
+stay on good terms with. Too timid and a build takes all night for no
+reason. These are runtime decisions made in response to observed behaviour,
+and having to stop the run and edit a file to make them means I will simply
+not make them.
+
+1. See the current concurrency, batch size, and observed rate.
+2. Change them while the work is running.
+3. See the effect on throughput and error rate within a minute.
+4. Have the change recorded, so a run's throughput history is part of its
+   record rather than something I remember doing.
+
+### S48 — Know what a job depends on, and be refused when the substrate is not ready
+
+Jobs form a chain: ingest, then build, then campaign, then judge. Running a
+campaign against a half-built index produces results that look entirely real
+and are not, and that is a class of mistake I will never catch by reading
+numbers afterwards. The system knows the dependency. It should enforce it
+rather than let me start something that cannot be valid.
+
+1. See, for any queued job, what it depends on and whether that dependency
+   is satisfied.
+2. Be refused, with the reason stated, when starting something whose inputs
+   are incomplete.
+3. Queue work to start automatically when the thing it waits for completes.
+4. See a chain as one thing when it is one intention, with the phase it has
+   reached.
+
+---
+
 ## What this set implies
 
-Five observations fall out of the stories once they are read together. They
+Seven observations fall out of the stories once they are read together. They
 are noted here as consequences to test during fleshing-out, not as design
 decisions.
 
@@ -629,6 +846,19 @@ decisions.
 - **Decision records are the actual product.** S28 and S33 describe the
   artifact with the longest useful life, and it is the one with no home
   today. Everything else produces evidence; these produce the conclusion.
+- **Work itself is a first-class object the program does not have.** Theme 9
+  is about builds, judge batches, campaigns, sweeps and conversation suites.
+  Every one of them is long-running, budgeted, failure-prone, phased, and
+  resumable, and today each is modelled separately or not at all. One job
+  model — phases, units, failure causes, control, cost — would serve all of
+  them; a progress surface built per kind is the expensive path and the one
+  that produces five inconsistent answers to "is anything wrong?".
+- **Multi-turn evaluation is a different unit, not a bigger query.** S43–S45
+  need a result whose subject is a conversation with turns beneath it, each
+  turn carrying its own retrieval and its own verdict. This is the one place
+  in the whole set where the existing measurement chain has to be *extended*
+  rather than merely surfaced — everywhere else the record already holds
+  what the story needs.
 
 ## Consequence for ticket slicing
 
