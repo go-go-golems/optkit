@@ -54,3 +54,12 @@ Step 5: representation resolution end to end (S12), multi-bundle server with ask
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/internal/customer/ragsearch/ragsearch.go — Opt-in representation loading that makes matched text resolvable
 
+
+## 2026-08-27
+
+Step 6: font sizes — raw 0.75rem (12px) was larger than base (11.5px); reverted to the stylesheet's existing wb-faint role and added a guard test (commit 4449993bc)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/test/typography.test.ts — Fails on any raw font size in the stylesheet
+

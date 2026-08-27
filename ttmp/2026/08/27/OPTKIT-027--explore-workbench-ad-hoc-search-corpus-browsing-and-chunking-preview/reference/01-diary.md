@@ -597,3 +597,73 @@ a bundle that actually has something to tell.
   resolution).
 - Validate: serve two bundles with repeated `--index-bundle`, add a lane,
   ask one question, then open a hit's trail and read what it matched on.
+
+## Step 6: The Font Sizes, and Why They Kept Drifting (rag-ttc 4449993bc)
+
+The user pointed at the trail tile and said the text was a bit too large,
+again, and asked whether a preset list of font styles would stop it
+recurring. Both halves of that were right, and the root cause was worse than
+"no scale exists".
+
+### Prompt Context
+
+**User prompt (verbatim):** "Make sure to be consistent about font sizes,
+you keep doing the font a bit too large (here for the bm25 rank 12, etc...).
+Why does that keep happening, is it hard to eep that consistent? Can't we
+have like a preset list of font styling and then just use those?"
+
+**Assistant interpretation:** Fix the sizes, find why it recurs, and put
+something in place that keeps it from recurring.
+
+**Commit (code):** rag-ttc 4449993bc
+
+### What I did
+- Replaced every raw `font-size: 0.75rem` in the explore styles with the
+  stylesheet's existing role class.
+- Removed the two role classes I had just invented (`.wb-detail`,
+  `.wb-meta`) after discovering the codebase already had one.
+- `src/test/typography.test.ts`: fails on any raw font size in the
+  stylesheet, and pins that `.wb-faint` carries colour and size together.
+
+### What I learned — two corrections, the second on myself
+
+**1. The numbers were inverted.** The pbui scale is `--pbui-fs-micro 8.5px`,
+`tiny 9.5`, `small 10.5`, `base 11.5`, `title 13`. I had written
+`font-size: 0.75rem` in five places meaning "smaller". **0.75rem is 12px** —
+larger than base. Every "secondary" annotation was rendering bigger than the
+content it annotated. That is exactly what the user was seeing, and it is
+why it read as subtly wrong rather than obviously wrong.
+
+**2. There already was a preset list, and I did not use it.** The first 500
+lines of the stylesheet use `var(--pbui-fs-*)` consistently; every raw size
+in the file was mine. So the answer to "is it hard to keep consistent?" is
+no — I introduced a second convention beside a working one, which is the
+harder failure to notice because each new file looks self-consistent.
+
+Worse, my first fix compounded it: I added `.wb-detail` and `.wb-meta` as
+new role classes without checking `.wb-faint`, which already carried BOTH
+the muted colour and `--pbui-fs-tiny`. That made three overlapping ways to
+say "secondary", resolved only by CSS source order. I removed them and used
+the class that was already there.
+
+### What was tricky to build
+- The guard test initially failed on its own explanatory comment, which
+  quotes `font-size: 0.75rem` as the example. It strips CSS comments before
+  scanning: a lint that trips on prose about the rule gets disabled.
+
+### What warrants a second pair of eyes
+- `.wb-faint` conflates emphasis and size deliberately in this stylesheet.
+  That is a real design decision with a cost — text that should be muted but
+  full-size has no class — and if that case ever appears, the answer is a new
+  class for it, not a size override at the call site.
+
+### What should be done in the future
+- The same audit for the tiles written before this ticket. The guard covers
+  the stylesheet, but inline `style={{ fontSize }}` in TSX would slip past
+  it; a quick grep says there are none today.
+
+### Code review instructions
+- `src/styles.css` (the typography note and the explore block) and
+  `src/test/typography.test.ts`.
+- Validate: `pnpm vitest run src/test/typography.test.ts`, then open a trail
+  and check that no annotation is larger than the chip it annotates.
