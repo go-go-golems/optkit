@@ -1,0 +1,93 @@
+== docmgr doctor ==
+## Doctor Report (1 findings)
+
+### OPTKIT-011
+
+- ✅ All checks passed
+
+## Doctor Report (1 findings)
+
+### OPTKIT-012
+
+- ✅ All checks passed
+
+## Doctor Report (1 findings)
+
+### OPTKIT-013
+
+- ✅ All checks passed
+
+## Doctor Report (1 findings)
+
+### OPTKIT-014
+
+- ✅ All checks passed
+
+## Doctor Report (1 findings)
+
+### OPTKIT-015
+
+- ✅ All checks passed
+
+## Doctor Report (1 findings)
+
+### OPTKIT-016
+
+- ✅ All checks passed
+
+## Doctor Report (1 findings)
+
+### OPTKIT-017
+
+- ✅ All checks passed
+
+## Doctor Report (1 findings)
+
+### OPTKIT-018
+
+- ✅ All checks passed
+
+## Doctor Report (1 findings)
+
+### OPTKIT-019
+
+- ✅ All checks passed
+
+## Doctor Report (1 findings)
+
+### OPTKIT-020
+
+- ✅ All checks passed
+
+== child guide and diary structure ==
+OPTKIT-012: guide=639 lines diary=214 lines upload=OK
+OPTKIT-013: guide=477 lines diary=213 lines upload=OK
+OPTKIT-014: guide=492 lines diary=214 lines upload=OK
+OPTKIT-015: guide=409 lines diary=214 lines upload=OK
+OPTKIT-016: guide=441 lines diary=214 lines upload=OK
+OPTKIT-017: guide=402 lines diary=214 lines upload=OK
+OPTKIT-018: guide=448 lines diary=214 lines upload=OK
+OPTKIT-019: guide=449 lines diary=215 lines upload=OK
+OPTKIT-020: guide=394 lines diary=215 lines upload=OK
+== placeholder scan ==
+== upload receipts ==
+OK: uploaded OPTKIT-012 Architecture Contracts Guide.pdf -> /ai/2026/08/26/OPTKIT-012
+OK: uploaded OPTKIT-013 Catalog and Bindings Guide.pdf -> /ai/2026/08/26/OPTKIT-013
+OK: uploaded OPTKIT-014 Pipeline Config Guide.pdf -> /ai/2026/08/26/OPTKIT-014
+OK: uploaded OPTKIT-015 Fusion and RAG Catalog Guide.pdf -> /ai/2026/08/26/OPTKIT-015
+OK: uploaded OPTKIT-016 Proposal Compiler CLI Guide.pdf -> /ai/2026/08/26/OPTKIT-016
+OK: uploaded OPTKIT-017 Proposal Sealing Guide.pdf -> /ai/2026/08/26/OPTKIT-017
+OK: uploaded OPTKIT-018 Workbench API Guide.pdf -> /ai/2026/08/26/OPTKIT-018
+OK: uploaded OPTKIT-019 React Workbench RRF Guide.pdf -> /ai/2026/08/26/OPTKIT-019
+OK: uploaded OPTKIT-020 Prompt Asset Variable Guide.pdf -> /ai/2026/08/26/OPTKIT-020
+optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/various/remarkable-upload.log:OK: uploaded OPTKIT-011 Backend First Workbench Roadmap.pdf -> /ai/2026/08/26/OPTKIT-011
+optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/various/remarkable-program-diary-upload.log:OK: uploaded OPTKIT-011 Program Planning Diary.pdf -> /ai/2026/08/26/OPTKIT-011
+== baseline focused tests ==
+ok  	github.com/go-go-golems/optkit/space	0.002s
+ok  	github.com/go-go-golems/optkit/examples/numbergame	0.193s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optimization	0.007s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/experimentworkbench	0.245s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	0.586s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/search	0.005s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/specialistapi	0.912s
+AUDIT OK: roadmap + nine child ticket packages + diaries + uploads + baseline tests

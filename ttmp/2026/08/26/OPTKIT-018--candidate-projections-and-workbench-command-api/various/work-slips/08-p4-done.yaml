@@ -1,0 +1,88 @@
+almanach_studio_version: 1
+theme: brutalist
+paperWidth: 384
+bodyScale: 1
+feedLines: 8
+blocks:
+- id: head
+  type: row
+  data:
+    cols:
+    - w: 1fr
+      text: OPTKIT-018
+      preset: micro
+    - w: 1fr
+      text: P4 DONE
+      preset: micro
+      align: right
+- id: r1
+  type: rule
+  data:
+    weight: heavy
+- id: gap1
+  type: space
+  data:
+    size: s
+- id: title
+  type: text
+  data:
+    text: Command Service Is Authoritative
+    preset: h1
+    lines: 3
+- id: gap2
+  type: space
+  data:
+    size: s
+- id: summary
+  type: text
+  data:
+    text: Authorized compile, RRF preview, and seal share stored parent resolution, principal binding, typed errors, and restart-safe
+      idempotency.
+    preset: body
+- id: gap3
+  type: space
+  data:
+    size: m
+- id: did
+  type: list
+  data:
+    marker: —
+    lines: 2
+    items:
+    - resolved verified stored parents
+    - ran actual before-after preview
+    - sealed and restored exact retry
+- id: r2
+  type: rule
+  data:
+    weight: hair
+- id: facts
+  type: kv
+  data:
+    items:
+    - - COMMIT
+      - bf734fda0
+    - - NEXT
+      - P5 strict HTTP adapters
+    - - FULL CI
+      - PASS
+    - - ACTOR
+      - BOUND
+- id: r3
+  type: rule
+  data:
+    weight: hair
+- id: decide
+  type: row
+  data:
+    cols:
+    - w: 1fr
+      text: SCAN FOR COMMIT
+      preset: caption
+    - w: 120
+      blocks:
+      - id: qr
+        type: qr
+        data:
+          value: https://github.com/the-tree-center/rag-ttc/commit/bf734fda0
+          size: 110

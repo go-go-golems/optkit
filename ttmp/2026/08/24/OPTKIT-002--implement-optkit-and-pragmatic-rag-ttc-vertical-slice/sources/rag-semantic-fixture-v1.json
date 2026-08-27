@@ -1,0 +1,173 @@
+{
+  "schema": "rag.semantic-fixture/v1",
+  "version": 1,
+  "corpus_id": "cross-product-tiny-corpus-v1",
+  "documents": [
+    {
+      "id": "doc-a",
+      "source_uri": "https://example.test/guides/blue-ice",
+      "title": "Blue Ice Guide",
+      "text": "Blue Ice is an evergreen tree with silver-blue foliage.",
+      "metadata": {
+        "access_scopes": "public",
+        "source_role": "guide"
+      }
+    },
+    {
+      "id": "doc-b",
+      "source_uri": "https://example.test/products/blue-ice",
+      "title": "Blue Ice Product",
+      "text": "Blue Ice grows in full sun and reaches fifteen feet.",
+      "metadata": {
+        "access_scopes": "public",
+        "source_role": "product"
+      }
+    },
+    {
+      "id": "doc-c",
+      "source_uri": "fixture://analyst/inventory-schema",
+      "title": "Inventory Schema",
+      "text": "The inventory table stores quantity and warehouse identifiers.",
+      "metadata": {
+        "access_scopes": "analyst",
+        "source_role": "schema_doc"
+      }
+    }
+  ],
+  "chunks": [
+    {
+      "id": "chunk-a",
+      "document_id": "doc-a",
+      "ordinal": 0,
+      "text": "Blue Ice is an evergreen tree with silver-blue foliage.",
+      "chunker": "semantic-fixture-v1"
+    },
+    {
+      "id": "chunk-b",
+      "document_id": "doc-b",
+      "ordinal": 0,
+      "text": "Blue Ice grows in full sun and reaches fifteen feet.",
+      "chunker": "semantic-fixture-v1"
+    },
+    {
+      "id": "chunk-c",
+      "document_id": "doc-c",
+      "ordinal": 0,
+      "text": "The inventory table stores quantity and warehouse identifiers.",
+      "chunker": "semantic-fixture-v1"
+    }
+  ],
+  "representations": [
+    {
+      "id": "rep-a",
+      "chunk_id": "chunk-a",
+      "kind": "raw",
+      "text": "Blue Ice evergreen silver-blue foliage"
+    },
+    {
+      "id": "rep-b",
+      "chunk_id": "chunk-b",
+      "kind": "raw",
+      "text": "Blue Ice full sun fifteen feet"
+    },
+    {
+      "id": "rep-c",
+      "chunk_id": "chunk-c",
+      "kind": "raw",
+      "text": "inventory table quantity warehouse"
+    }
+  ],
+  "channels": {
+    "lexical": [
+      {
+        "representation_id": "rep-b",
+        "chunk_id": "chunk-b",
+        "document_id": "doc-b",
+        "channel": "lexical",
+        "rank": 1,
+        "score": 10
+      },
+      {
+        "representation_id": "rep-a",
+        "chunk_id": "chunk-a",
+        "document_id": "doc-a",
+        "channel": "lexical",
+        "rank": 1,
+        "score": 9
+      }
+    ],
+    "vector": [
+      {
+        "representation_id": "rep-c",
+        "chunk_id": "chunk-c",
+        "document_id": "doc-c",
+        "channel": "vector",
+        "rank": 1,
+        "score": 0.9
+      },
+      {
+        "representation_id": "rep-b",
+        "chunk_id": "chunk-b",
+        "document_id": "doc-b",
+        "channel": "vector",
+        "rank": 2,
+        "score": 0.8
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "q-hybrid",
+      "mode": "positive",
+      "query": "How large does Blue Ice grow?",
+      "required_groups": [["chunk-b"]],
+      "allowed_scopes": ["public"]
+    },
+    {
+      "id": "q-comparison",
+      "mode": "positive",
+      "query": "Compare the Blue Ice product with its growing guide.",
+      "required_groups": [["chunk-a"], ["chunk-b"]],
+      "allowed_scopes": ["public"]
+    },
+    {
+      "id": "q-policy-negative",
+      "mode": "authorization_negative",
+      "query": "Which inventory table stores quantity?",
+      "forbidden_chunks": ["chunk-c"],
+      "allowed_scopes": ["public"]
+    },
+    {
+      "id": "q-no-answer",
+      "mode": "answer_only",
+      "query": "What is the warranty for Blue Ice?",
+      "expected_abstention": true,
+      "allowed_scopes": ["public"]
+    }
+  ],
+  "expectations": {
+    "stage_chunk_ids": {
+      "lexical_raw": ["chunk-b", "chunk-a"],
+      "vector_raw": ["chunk-c", "chunk-b"],
+      "fused": ["chunk-b", "chunk-a", "chunk-c"],
+      "returned": ["chunk-b", "chunk-a"],
+      "admitted": ["chunk-b", "chunk-a"]
+    },
+    "public_vector_chunk_ids": ["chunk-b"],
+    "public_product_chunk_ids": ["chunk-b"],
+    "evidence": {
+      "max_items": 2,
+      "max_runes": 240,
+      "labels": {
+        "chunk-b": "E1",
+        "chunk-a": "E2"
+      },
+      "repeat_chunk_id": "chunk-b",
+      "rejected_chunk_id": "chunk-c"
+    },
+    "answer": {
+      "citation_labels": ["E1", "E2"],
+      "abstention_case_id": "q-no-answer"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+# Changelog
+
+## 2026-08-26
+
+- Initial workspace created
+
+
+## 2026-08-26
+
+Created a substantive ticket description, actionable implementation tasks, a detailed intern architecture/design/implementation guide, and a strict research diary
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/design-doc/01-intern-guide-to-optkit-catalogs-domains-bindings-and-candidate-intent.md — Primary evidence-backed implementation guide
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/reference/01-implementation-diary.md — Chronological research and continuation record
+
+## 2026-08-26
+
+Validated and committed the intern guide/diary package in 428f6b8f5391dc851d989364b21a9d727c78cfc0; uploaded OPTKIT-013 Catalog and Bindings Guide.pdf to /ai/2026/08/26/OPTKIT-013
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/reference/01-implementation-diary.md — Validation commit and delivery record
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/various/remarkable-upload.log — Explicit successful reMarkable upload evidence
+
+## 2026-08-26
+
+Pinned the accepted OPTKIT-012 workbench contract revision b1fcf17a29f89921e9e1c42049de0486a35511f9 as this ticket's upstream implementation boundary
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-012--architecture-closure-and-optimization-workbench-contracts/design-doc/01-intern-guide-to-optimization-workbench-architecture-and-contracts.md — Normative aggregate config catalog binding identity provenance and compatibility decisions
+
+## 2026-08-26
+
+Implemented lossless value specs, deterministic catalog identities, executable typed registries, candidate intent v2, and the persisted numbergame proof (commits 1949a1d, 72c0cae, 9f2d534, c482572, 4b90f21, 6567319)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/examples/numbergame/registry_test.go — Complete serialized-versus-typed proof
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/space/binding.go — Registry and binding implementation
+
+
+## 2026-08-26
+
+All production, validation, documentation, diary, and work-slip requirements complete; ready for OPTKIT-014
+
+## 2026-08-26
+
+Rendered and uploaded the completed implementation guide/diary bundle as OPTKIT-013 Catalog Bindings Implementation Complete.pdf
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-013--optkit-semantic-catalog-and-executable-variable-bindings/various/remarkable-implementation-upload.log — Explicit successful current implementation upload evidence

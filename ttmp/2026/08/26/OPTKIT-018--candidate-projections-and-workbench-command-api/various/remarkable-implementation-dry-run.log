@@ -1,0 +1,8 @@
+DRY: layout=default
+DRY: bundle name=OPTKIT-018 Workbench Command API Final Complete
+DRY: remote-dir=/ai/2026/08/26/OPTKIT-018
+DRY: include /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-018--candidate-projections-and-workbench-command-api/index.md (title="index")
+DRY: include /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-018--candidate-projections-and-workbench-command-api/design-doc/01-intern-guide-to-candidate-read-projections-and-the-workbench-command-api.md (title="01-intern-guide-to-candidate-read-projections-and-the-workbench-command-api")
+DRY: include /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-018--candidate-projections-and-workbench-command-api/reference/01-implementation-diary.md (title="01-implementation-diary")
+DRY: pandoc <bundle> -> <tmp>/OPTKIT-018 Workbench Command API Final Complete.pdf
+DRY: upload OPTKIT-018 Workbench Command API Final Complete.pdf -> /ai/2026/08/26/OPTKIT-018

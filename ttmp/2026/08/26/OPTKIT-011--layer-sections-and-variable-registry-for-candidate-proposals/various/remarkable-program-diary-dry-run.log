@@ -1,0 +1,7 @@
+DRY: layout=default
+DRY: bundle name=OPTKIT-011 Program Planning Diary
+DRY: remote-dir=/ai/2026/08/26/OPTKIT-011
+DRY: include /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/index.md (title="index")
+DRY: include /home/manuel/workspaces/2026-08-24/use-optkit/optkit/ttmp/2026/08/26/OPTKIT-011--layer-sections-and-variable-registry-for-candidate-proposals/reference/01-program-planning-diary.md (title="01-program-planning-diary")
+DRY: pandoc <bundle> -> <tmp>/OPTKIT-011 Program Planning Diary.pdf
+DRY: upload OPTKIT-011 Program Planning Diary.pdf -> /ai/2026/08/26/OPTKIT-011

@@ -1,0 +1,11 @@
+campaign: campaign:85ee2ef3a5b86d663c053236a405c41d
+status: completed
+events: 49
+candidate_events: 1
+snapshot_events: 1
+candidate_command: command:015ab87c381e8332a352bc37a9551a528eab9c63ba1350ce82025d7e81ed0e6b
+candidate_id: candidate:1e6de48018f0850fe1bb838c4c7d9c920e284a2a0ce867f10df251061610358a
+child_snapshot: snapshot:6658b47758de8eade33ebfe42e759c2a7cb39c21cd54925f6a6dacb3e0c1f84c
+unique_direct_payloads: 49
+unique_nested_payloads: 9
+result: PASS - campaign CLI compiled then sealed one durable candidate

@@ -1,0 +1,20 @@
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/experimentworkbench	0.391s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	0.764s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optimization	0.009s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag	0.022s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/experimentworkbench	1.832s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	2.373s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag	1.132s
+MANIFEST_VALIDATION=PASS
+PER_ARM_GRAPH_INSPECTION=PASS
+DIRECT_CONFIG_DIFF=PASS
+INVALIDATION_PLAN=PASS
+DRY_RUN_NO_MUTATION=PASS
+MANIFEST_CAMPAIGN_RUN=PASS
+CAMPAIGN_STATUS=PASS
+CAMPAIGN_CUSTODY=PASS
+IDEMPOTENT_RESUME=PASS
+GLAZED_HELP_SURFACE=PASS
+CAMPAIGN=campaign:50891db3dd5931b7ef70fb0246fad986
+TRIAL=trial:505a28c96b6668480f731bd55851b747e1a5dcbbb1a31fdf272042ca953664fa
+OPTKIT_006_WORKBENCH_VALIDATION=PASS

@@ -1,0 +1,10 @@
+campaign: campaign:1fbe39050065dbd8e4543367d5a3c0cd
+specialist_read_only: true
+catalog_semantic_id: sha256:d3034d1d61cb5da92649bf9d199015e25a6e5223ed50741f594ceba2093730b6
+draft_digest: sha256:b56f41ebc27ea8dbca4964a9d5592f94aafd96503703304c9e904647c09c0e4e
+preview_probe: fusion.rrf-contributions/v1
+candidate_id: candidate:3fc3c902b5d459be5f60ffc40c60ad5941c4c9287cb437afd45e478b93b83314
+candidate_actor: actor:live-smoke
+unauthorized_catalog_status: 401
+idempotent_retry_equal: true
+result: PASS - live composed server read and command workflow

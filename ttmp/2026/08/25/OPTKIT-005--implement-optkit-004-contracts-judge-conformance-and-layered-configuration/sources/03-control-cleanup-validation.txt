@@ -1,0 +1,29 @@
+Preparing worktree (detached HEAD fda4ad6)
+ok  	github.com/go-go-golems/optkit/artifact	0.050s
+ok  	github.com/go-go-golems/optkit/artifact/filesystem	0.135s
+?   	github.com/go-go-golems/optkit/artifact/memory	[no test files]
+ok  	github.com/go-go-golems/optkit/budget	0.062s
+ok  	github.com/go-go-golems/optkit/campaign	0.031s
+ok  	github.com/go-go-golems/optkit/cmd/optkit	0.818s
+ok  	github.com/go-go-golems/optkit/episode	0.004s
+ok  	github.com/go-go-golems/optkit/examples/numbergame	0.619s
+ok  	github.com/go-go-golems/optkit/experiment	0.014s
+ok  	github.com/go-go-golems/optkit/internal/archtest	0.015s
+ok  	github.com/go-go-golems/optkit/internal/boundary	0.294s
+ok  	github.com/go-go-golems/optkit/internal/sqlite	0.050s
+ok  	github.com/go-go-golems/optkit/internal/web	1.290s
+?   	github.com/go-go-golems/optkit/local	[no test files]
+ok  	github.com/go-go-golems/optkit/measure	0.011s
+?   	github.com/go-go-golems/optkit/projection	[no test files]
+ok  	github.com/go-go-golems/optkit/query	0.653s
+ok  	github.com/go-go-golems/optkit/record	0.006s
+?   	github.com/go-go-golems/optkit/scheduler	[no test files]
+ok  	github.com/go-go-golems/optkit/space	0.009s
+ok  	github.com/go-go-golems/optkit/store/sqlite	0.072s
+ok  	github.com/go-go-golems/optkit/system	0.003s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	0.627s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag	0.008s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/optkitcampaign	2.145s
+OPTKIT_COMMIT=fda4ad62c97de2db4d85eab78aea926a7d474f5f
+RAG_TTC_COMMIT=ebb6cbc63f37cd0090ccdd1661a7e512640b21db
+CONTROL_CLEANUP_VALIDATION=PASS

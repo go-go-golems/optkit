@@ -1,0 +1,9 @@
+runs: 100
+draft_digest: sha256:1e9eaa7482f129cdd3069d0aa8cd016e600bbc6de6dccb2445d9133b871afb2d
+before_tree_sha256: ad2257c2be2188627b84d292ac194444c0fb4922af35c66edb43ef4737287e22
+after_tree_sha256: ad2257c2be2188627b84d292ac194444c0fb4922af35c66edb43ef4737287e22
+watched_files: 2
+sqlite_files: 0
+artifact_directories: 0
+journal_paths: 0
+result: PASS - repeated CLI compilation performed no durable writes

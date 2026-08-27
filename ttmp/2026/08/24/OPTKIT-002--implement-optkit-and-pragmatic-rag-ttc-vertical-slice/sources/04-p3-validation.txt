@@ -1,0 +1,101 @@
+++ git rev-parse --show-toplevel
++ optkit_root=/home/manuel/workspaces/2026-08-24/use-optkit/optkit
+++ cd /home/manuel/workspaces/2026-08-24/use-optkit/optkit/..
+++ pwd
++ workspace_root=/home/manuel/workspaces/2026-08-24/use-optkit
++ rag_ttc_root=/home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc
++ cd /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc
++ GOWORK=off
++ go test ./pkg/ttc/search ./internal/customer/ragsearch -count=1
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/search	0.005s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/ragsearch	0.015s
++ GOWORK=off
++ go test -race ./pkg/ttc/search ./internal/customer/ragsearch -count=1
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/search	1.034s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/ragsearch	1.115s
++ GOWORK=off
++ go test ./... -count=1
+?   	github.com/the-tree-center/rag-ttc	[no test files]
+?   	github.com/the-tree-center/rag-ttc/cmd/generate-sample-data	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc	0.384s
+?   	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/admineval	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/corpus	0.047s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/diagnosticreview	0.042s
+?   	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/answerquality	5.916s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/experiments/chunkcompare	0.278s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/indexes	0.612s
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/knowledge	0.125s
+?   	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/queries	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/cmd/rag-ttc/cmds/tooleval	0.225s
+ok  	github.com/the-tree-center/rag-ttc/cmd/ttc-admin	0.207s
+?   	github.com/the-tree-center/rag-ttc/cmd/ttc-garden	[no test files]
+?   	github.com/the-tree-center/rag-ttc/examples/01_chunking	[no test files]
+?   	github.com/the-tree-center/rag-ttc/examples/06_end_to_end_experiment	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/archive	1.667s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/assistant	3.851s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/chatserver	2.951s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/chatserver/pb/ragttc/chat/v1	0.006s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/eval	0.020s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/feedback/annotation	1.737s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/feedback/comment	0.744s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/feedback/judgment	0.276s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/operations	0.013s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/opsruntime	0.012s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/storage	0.081s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/tui	0.569s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/tui/render	0.004s
+ok  	github.com/the-tree-center/rag-ttc/internal/admin/tui/theme	0.004s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/appserver	0.190s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/gardenprompt	0.002s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/mockruntime	0.041s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/ragsearch	0.062s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/realchatexport	0.317s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/realruntime	0.030s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/statusintent	0.042s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/ttcwidgets	0.025s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/webapp	0.090s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/webchatcmd	0.107s
+ok  	github.com/the-tree-center/rag-ttc/internal/customer/widgetintent	0.039s
+ok  	github.com/the-tree-center/rag-ttc/internal/ragoptassets	0.022s
+ok  	github.com/the-tree-center/rag-ttc/internal/ragprovider/geppetto	0.045s
+ok  	github.com/the-tree-center/rag-ttc/internal/ragprovider/geppetto/codex	0.021s
+?   	github.com/the-tree-center/rag-ttc/internal/ragprovider/geppetto/profile	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/internal/storeconfig	0.019s
+?   	github.com/the-tree-center/rag-ttc/internal/testfixture	[no test files]
+?   	github.com/the-tree-center/rag-ttc/pkg	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/pkg/chatfeedback	0.331s
+ok  	github.com/the-tree-center/rag-ttc/pkg/chatsessions	0.032s
+?   	github.com/the-tree-center/rag-ttc/pkg/mixedttc/agenttrace	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/connected	0.017s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/connectedconfig	0.045s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/diagnostic	0.034s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/knowledge	1.212s
+ok  	github.com/the-tree-center/rag-ttc/pkg/mixedttc/knowledge/retrieve	0.022s
+ok  	github.com/the-tree-center/rag-ttc/pkg/redact	0.027s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/knowledgetools	0.012s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/productcatalog	0.443s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/representations	0.450s
+?   	github.com/the-tree-center/rag-ttc/pkg/ttc/review	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/sampledata	0.007s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/search	0.031s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/toolanswer	0.041s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/toolconfig	0.043s
+?   	github.com/the-tree-center/rag-ttc/pkg/ttc/tooleval	[no test files]
+ok  	github.com/the-tree-center/rag-ttc/scripts/parc-corpus	0.023s
++ GOWORK=off
++ go build ./...
++ GOWORK=off
++ go vet ./...
++ GOWORK=off
++ golangci-lint run
+0 issues.
++ make glazed-lint
+GOWORK=off go build -buildvcs=false -o /tmp/rag-ttc-glazed-lint github.com/go-go-golems/glazed/cmd/tools/glazed-lint
+GOWORK=off go vet -vettool=/tmp/rag-ttc-glazed-lint ./...
++ git diff --check
+++ git rev-parse HEAD
++ printf 'P3_COMMIT=%s\n' d4c5adab410f351067ffe1b70ade4c6e98239032
+P3_COMMIT=d4c5adab410f351067ffe1b70ade4c6e98239032
++ printf 'P3_VALIDATION=PASS\n'
+P3_VALIDATION=PASS

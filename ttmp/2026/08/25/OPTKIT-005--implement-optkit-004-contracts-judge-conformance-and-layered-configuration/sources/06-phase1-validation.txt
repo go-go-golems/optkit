@@ -1,0 +1,13 @@
+ok  	github.com/go-go-golems/judgekit/judging	0.012s
+ok  	github.com/go-go-golems/judgekit/assessment	0.005s
+ok  	github.com/go-go-golems/judgekit/protocol	0.003s
+ok  	github.com/go-go-golems/judgekit/judging	1.109s
+ok  	github.com/go-go-golems/judgekit/assessment	1.022s
+ok  	github.com/go-go-golems/judgekit/protocol	1.020s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/judgeinstrument	0.010s
+ok  	github.com/the-tree-center/rag-ttc/pkg/ttc/judgeinstrument	1.064s
+SEALED_ANSWER_REMEASUREMENT=PASS
+EVIDENCE_HIDDEN_EXTRACTION=PASS
+CACHE_BYPASS_PROBE=PASS
+TYPED_MISSING_FAILURE_STATES=PASS
+PHASE_1_VALIDATION=PASS

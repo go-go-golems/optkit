@@ -1,0 +1,9 @@
+campaign: campaign:af79a7d98eb5856a32414187e758bdb7
+manifest_present_after_run: false
+status_after_reopen: completed
+resume_status: completed
+events_before_after_resume: 49/49
+candidate_id: candidate:1e6de48018f0850fe1bb838c4c7d9c920e284a2a0ce867f10df251061610358a
+child_snapshot: snapshot:6658b47758de8eade33ebfe42e759c2a7cb39c21cd54925f6a6dacb3e0c1f84c
+nested_payloads_verified: True
+result: PASS - source manifest removal did not affect restart or explanation facts

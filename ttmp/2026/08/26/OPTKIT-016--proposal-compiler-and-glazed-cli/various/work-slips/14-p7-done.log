@@ -1,0 +1,25 @@
+layout: optkit/ttmp/2026/08/26/OPTKIT-016--proposal-compiler-and-glazed-cli/various/work-slips/14-p7-done.yaml
+dry_run: false
+height: 678
+layout_member: 14-p7-done.yaml
+ok: true
+printed: true
+printer_response:
+    ok: true
+rendered_at: "2026-08-26T20:55:33Z"
+response:
+    height: 678
+    ok: true
+    printed: true
+    printerResponse:
+        ok: true
+    renderedAt: "2026-08-26T20:55:33Z"
+    width: 384
+source_kind: file
+status_code: 200
+url: https://almanach.crib.scapegoat.dev/api/render-and-print
+width: 384
+
+---
+
+printed: yes
