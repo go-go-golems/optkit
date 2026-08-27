@@ -169,15 +169,18 @@ every leg, the mean over per-query values two ways and compared both against
 the report's own aggregate.
 
 ```
-hit_rate_at@1: 137 of 144 per-query records have no "1" key
-hit_rate_at@5:  43        "
-hit_rate_at@10: 38        "
-every other metric: 0 missing keys anywhere
+across the artifact's SIX legs (864 per-query records):
+  hit_rate_at@1  137 records have no "1" key   (16-32 of 144 per leg)
+  hit_rate_at@5   43        "
+  hit_rate_at@10  38        "
+  every other metric: 0 missing keys anywhere
 ```
 
 So the honest rule is *not* the obvious one. "Missing is never zero" is a
-program-wide invariant here, and applying it uniformly would have reported
-hit_rate@1 as 7 graded questions out of 144. The rule that is actually true:
+program-wide invariant here, and applying it uniformly removes exactly the
+misses from the denominator and leaves only the hits: hit_rate@1 would read
+**1.0000 on every leg**, against true values of 0.7778 to 0.8889. A metric
+that can only ever report perfection. The rule that is actually true:
 
 - `hit_rate_at`: absent cutoff means **false**.
 - everything else: absent cutoff means **unmeasured**, and stays absent.

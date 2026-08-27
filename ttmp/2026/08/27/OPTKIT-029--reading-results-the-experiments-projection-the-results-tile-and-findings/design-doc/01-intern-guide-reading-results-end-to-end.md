@@ -271,8 +271,11 @@ its own averaging reads the missing key back as 0. Every other metric writes
 its zeros.
 
 So for that metric — and only that metric — an absent cutoff means *false*,
-not *unknown*. Reading it as ungraded drops 137 of 144 questions at k=1;
-reading another metric's absence as zero invents observations nobody made.
+not *unknown*. Reading it as ungraded removes exactly the misses from the
+denominator and leaves only the hits behind, so **hit_rate@1 reads 1.0000 on
+every leg** against true values between 0.7778 and 0.8889 — a metric that can
+never report anything but perfection. Reading another metric's absence as zero
+makes the opposite error and invents observations nobody made.
 
 `evalartifact.PerQuery` encodes exactly that rule, and
 `TestPerQueryMeansMatchTheReport` checks every metric on every leg against

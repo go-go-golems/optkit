@@ -55,8 +55,9 @@ fitted per leg, and why the comparison tile leads with counts. **And
 `hit_rate_at` omits its zeros**: upstream writes `HitRateAt[cutoff] = 1` only
 on a hit and averages the absence back as 0, so for that metric — and only
 that metric — a missing cutoff means *false*, not *unknown*. Applying the
-program-wide "missing is never zero" rule uniformly would report hit_rate@1
-as 7 graded questions out of 144. `evalartifact.PerQuery` encodes the real
+program-wide "missing is never zero" rule uniformly drops exactly the misses
+from the denominator and makes hit_rate@1 read 1.0000 on every leg, against
+true values of 0.7778 to 0.8889. `evalartifact.PerQuery` encodes the real
 rule and `TestPerQueryMeansMatchTheReport` pins it against the artifact's own
 aggregates; treat that test as load-bearing rather than decorative. The fork
 you should still not settle alone is the one OPTKIT-027 left open: **whether
