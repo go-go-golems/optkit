@@ -42,3 +42,12 @@ Tails P1: compare slope graph via plot adapter — src/plot/ boundary, renderInt
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/plot/adapters.ts — The sole plot boundary; slope document and projection
 
+
+## 2026-08-27
+
+Tails P2: workbench document sync to the Go host — snapshot-PUT + SSE, refused/local badge states, open.chunk empty-campaign fix, watchlist format registered in host (rag-ttc 7ae8032b1)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/sync.ts — The sync client — optimistic-apply + snapshot-PUT + SSE
+

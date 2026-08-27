@@ -342,3 +342,109 @@ the compare tile via the plot adapter"
 - store-live campaign campaign:3f84c0554dcfe54df51919e994352c1b is now
   COMPLETED (49 events, 6 episodes, paired Δ 0.1667) — it refuses new
   candidates from here; future seal demos need a fresh store.
+
+## Step 4: Document Sync — the Host Validator Earns Its Keep (rag-ttc 7ae8032b1)
+
+Layouts, pointer documents, and drafts now live on the Go document host.
+The sync client is deliberately small — optimistic-apply + snapshot-PUT
+with the revision header, SSE bump → refetch, server wins conflicts — and
+the most valuable part of the phase was what the host's validator refused
+on first contact with real state.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3 — same working directive)
+
+**Assistant interpretation:** P2 of the tails: wire the frontend to the
+already-tested document host, keep localStorage as the host-absent
+fallback.
+
+**Inferred user intent:** The workbench should stop being per-browser; UI
+state belongs on the server the way ADR H specified.
+
+**Commit (code):** rag-ttc 7ae8032b1 — "workbench: sync the workbench
+document to the Go host (ADR H live end to end)"
+
+### What I did
+- `src/sync.ts`: startDocumentSync — GET-adopt on startup, POST-seed on
+  404 (distinguishing the host's JSON 404 from a bare-mux HTML 404), PUT
+  with `X-Workbench-Revision` debounced 400ms per committed batch, 409 →
+  server wins (refetch + replaceDocument), SSE revision events → refetch
+  when ahead, EventSource reconnects natively. States: starting / synced /
+  refused / local, shown in the status strip (SyncBadge in App.tsx).
+- `workbench.ts`: onMutate keeps the localStorage write (offline cache)
+  and schedules a push; resetLayout pushes explicitly (replaceDocument
+  bypasses onMutate); ensurePointerDocument strips undefined/null/""
+  values.
+- `sink.ts`: open.chunk refuses without campaignId instead of writing
+  `campaign: ""` into a focus pointer.
+- Go host: `ragttc.watchlist/v1` registered (strict envelope, additive
+  reference values, 500-entry cap) + validator test cases, so P3's
+  watchlist document needs no further Go work.
+- Rebuilt the smoke binary, restarted 8517 with `--workbench-docs-store`,
+  and verified live: create-on-404 seeded revision 1; a server-side PUT
+  rename reached the browser via SSE in <1s; the browser's own layout
+  mutation PUT round-tripped; badge states all observed.
+
+### Why
+- The design doc's §8 sync step; UI state on the server is what makes the
+  workbench shareable and what OPTKIT-024's agent seat will read.
+
+### What worked
+- The sync unit tests (6) stubbed fetch + EventSource and covered
+  adopt/seed/local-only/conflict/SSE/refused without any server.
+- The strict host validator instantly caught a shipped frontend bug on
+  first real contact: `open.chunk` wrote `campaign: ""` (ADR I requires
+  campaign), making the whole document unprocessable. Fixed at source.
+
+### What didn't work
+- First live sync attempt: 422 `body key "campaign" must be 1..256 bytes`
+  on a stale chunk pointer — the bug above, plus a stale document already
+  in the layout. Repaired by closing the tile and deleting the orphan
+  pointer document.
+- Playwright `import("/src/workbench.ts")` after HMR edits loaded a SECOND
+  module instance (vite serves `?t=` versions to the app), whose rogue
+  sync pushed invalid documents — the host refused them all
+  (duplicate_singleton, required_binding), which is exactly the contract
+  working, but my probe readings (12 views) were phantoms of that rogue
+  instance. Lesson: after HMR, assert through the DOM, not through fresh
+  dynamic imports.
+
+### What I learned
+- Orphan VIEWS are pruned by placement verbs, but orphan DOCUMENTS are
+  not — a deleted tile can leave its pointer document in the workbench
+  document forever. Worth a pruning pass someday.
+- The local store cannot check singleton/binding rules (they live in the
+  app catalog), so a programmatic openView can commit state the host will
+  refuse; the 'refused' badge state exists for exactly that seam.
+
+### What was tricky to build
+- Distinguishing "host absent" from "document absent": both are 404s
+  through the vite proxy. The host always answers JSON; the bare mux
+  answers text/plain — content-type is the discriminator.
+
+### What warrants a second pair of eyes
+- Conflict policy is server-wins with local optimistic changes replaced —
+  right for layouts, but a lost drag is invisible; if drafts ever get
+  concurrent editors this needs the mutate endpoint instead of snapshot
+  PUT.
+- The rogue-instance pushes mean two tabs of the same browser share one
+  workbench id — concurrent tabs will 409-pingpong occasionally; the
+  server-wins policy converges but a tab-local suppression could be nicer.
+
+### What should be done in the future
+- Orphan-document pruning on close.
+- The mutate endpoint (MutationBatch) as a finer-grained alternative to
+  snapshot PUT once something needs it.
+
+### Code review instructions
+- Start at `apps/workbench/web/src/sync.ts`, then the workbench.ts wiring
+  and the open.chunk fix in sink.ts; Go side is validateWatchlist in
+  pkg/ttc/workbenchhost/documents.go.
+- Validate: `pnpm test` in apps/workbench/web; `GOWORK=off go test
+  ./pkg/ttc/workbenchhost/` in rag-ttc.
+
+### Technical details
+- Server for the live check: 8517 with `--workbench-docs-store
+  <scratch>/wb-smoke/docs-store`; document id `ragttc-workbench`,
+  currently revision 3.
