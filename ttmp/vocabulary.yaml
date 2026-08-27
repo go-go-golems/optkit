@@ -27,6 +27,8 @@ topics:
       description: Scientist-facing experiment review and assessment workflows
     - slug: design
       description: Architecture and implementation design documents
+    - slug: backend
+      description: 'Server-side Go: projections, HTTP surfaces, storage'
 docTypes: []
 intent: []
 status: []

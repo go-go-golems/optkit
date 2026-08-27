@@ -1,7 +1,7 @@
 ---
 Title: 'Reading Results: the Experiments Projection, the Results Tile, and Findings'
 Ticket: OPTKIT-029
-Status: active
+Status: complete
 Topics:
     - backend
     - design
@@ -13,10 +13,11 @@ Owners: []
 RelatedFiles: []
 ExternalSources: []
 Summary: ""
-LastUpdated: 2026-08-27T17:04:10.704675793-04:00
+LastUpdated: 2026-08-27T17:50:22.099771484-04:00
 WhatFor: ""
 WhenToUse: ""
 ---
+
 
 # Reading Results: the Experiments Projection, the Results Tile, and Findings
 
