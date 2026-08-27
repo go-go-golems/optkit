@@ -22,3 +22,12 @@ Design for themes 1-2: 5 presentation types, 5 tiles, 3 workspaces, 2 document f
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/pbui/actions.ts — The action registry every new verb contributes to
 
+
+## 2026-08-27
+
+Design for theme 3: run/hit/chunkPreview types, trail + split tiles, ask lanes, autopsy candidate rows, StageSummary un-coarsening; most of the theme needs no live executor
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/specialistapi/types.go — StageSummary — the lossy projection the design fixes
+
