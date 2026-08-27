@@ -51,3 +51,12 @@ Tails P2: workbench document sync to the Go host — snapshot-PUT + SSE, refused
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/sync.ts — The sync client — optimistic-apply + snapshot-PUT + SSE
 
+
+## 2026-08-27
+
+Tails P3: watchlist as ragttc.watchlist/v1 document — Redux slice deleted, facts derive from the doc, live sync verified; a11y sweep deferred by user (rag-ttc 1c8dbbb45)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/watchlist.ts — Watchlist document read/write and snapshot-fact derivation
+

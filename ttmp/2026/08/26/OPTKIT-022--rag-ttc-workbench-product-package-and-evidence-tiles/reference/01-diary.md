@@ -448,3 +448,81 @@ document to the Go host (ADR H live end to end)"
 - Server for the live check: 8517 with `--workbench-docs-store
   <scratch>/wb-smoke/docs-store`; document id `ragttc-workbench`,
   currently revision 3.
+
+## Step 5: The Watchlist Rides the Host (rag-ttc 1c8dbbb45)
+
+The watchlist was the last per-browser product state. It is now a
+well-known `ragttc.watchlist/v1` document inside the workbench document —
+pin an arm in one browser and every synced browser holds the pin, with
+the Go validator guarding the envelope. The a11y sweep that shared task
+h3q0 was explicitly deferred by the user ("youcan skip a11y / keyboard /
+reader for now").
+
+### Prompt Context
+
+**User prompt (verbatim):** "youcan skip a11y / keyboard / reader for now"
+
+**Assistant interpretation:** Drop the accessibility sweep from the tails;
+P3 reduces to the watchlist document.
+
+**Inferred user intent:** Keep momentum on functional tails; polish passes
+can wait.
+
+**Commit (code):** rag-ttc 1c8dbbb45 — "workbench-ui: the watchlist
+becomes a ragttc.watchlist/v1 document"
+
+### What I did
+- `src/watchlist.ts`: parse/read/write of the watchlist document
+  (documentPut on the well-known id), dedup by refKey, `watchedKeys()`
+  memoized on document-payload identity for snapshot facts, `useWatchlist`
+  hook (stable payload → memoized parse).
+- sink watch.add/watch.remove call the document writers and report the
+  MUTATION outcome (a refused documentPut reads as failed, not performed).
+- runtime readFacts and WatchApp read the document; the Redux watch slice
+  and its localStorage key are deleted.
+- Tests pin the Go envelope exactly (body has ONLY "entries", entries have
+  ONLY type+value) so the frontend cannot drift from the validator.
+
+### Why
+- Task h3q0's document half; §6.9 named the format, and P2 already
+  registered it in the host, so this was frontend-only.
+
+### What worked
+- Live: pin → host revision 4 with a validated document; the inherited
+  watch-toggle flipped to "Remove from watchlist" everywhere the arm
+  renders; unpin → revision 5, empty entries.
+
+### What didn't work
+- Playwright navigation hung (60s timeouts) with the old tab still
+  "Loading": stale tabs each hold an SSE EventSource plus the HMR
+  websocket against the HTTP/1.1 vite dev server, and Chrome's 6-per-host
+  connection cap starves new page loads. Closing the wedged tab fixed it
+  instantly. Production servers should use HTTP/2 or expect this in
+  multi-tab dev.
+
+### What I learned
+- Proto struct serialization turns absent optional ref fields into
+  explicit nulls (`description: null` in the stored arm value) — the
+  additive validator tolerates it, refKey ignores it, but a canonicalizing
+  strip at write time would keep stored documents cleaner.
+
+### What was tricky to build
+- Snapshot facts must stay schema-cheap: watchedKeys() re-derives only
+  when the document payload object changes identity (every workbench
+  mutation replaces it), so hovers never pay a parse.
+
+### What warrants a second pair of eyes
+- watch.add on an already-pinned ref returns true ("performed") without a
+  mutation — arguably it should be inapplicable at the RULE level like
+  evidence-attach; the label function already prevents the menu offering
+  it, so only programmatic verbs can hit the case.
+
+### What should be done in the future
+- Deferred by the user: the accessibility/keyboard/reader sweep (rest of
+  h3q0).
+- Canonical-strip of null fields in stored reference values.
+
+### Code review instructions
+- Start at `apps/workbench/web/src/watchlist.ts`, then the sink switch
+  arms and readFacts.
+- Validate: `pnpm test` (33) and `pnpm typecheck` in apps/workbench/web.
