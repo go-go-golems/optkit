@@ -158,10 +158,11 @@ singleton.
 Sections in catalog order, variables with `label`, `key`, kind badge, cost
 hint, sensitivity badge, and the Short doc inline; Long doc in a disclosure.
 Data: `GET .../catalog` (ETag-cached). Emits `section` and `variable`
-presentations. The `variable` menu's primary action is
-`mutation.add {docId: env.activeDraftDocId, variable}` — greyed with
-`disabledBecause: "no proposal draft is open"` when none is (the OPTKIT-022
-descriptor already declares this; here it comes alive).
+presentations. The `variable` type's PRIMARY rule (`metadata.primary`) binds
+`mutation.add {docId, variable}` from the snapshot's `activeDraftDocId` —
+unavailable with reason "no proposal draft is open" when none is (the
+OPTKIT-022 rule already declares this; here it comes alive, and a bare left
+click on a variable adds the mutation).
 
 ### 4.2 `proposal` — docBound to the draft
 
@@ -172,7 +173,7 @@ the draft digest in an ID tray. Footer: draft-level diagnostics with their
 stable codes rendered as prose. Emits `mutation` and `draft`.
 
 Accept flow: **ADD MUTATION ↦ click a \<variable\> anywhere** — the catalog
-tile, a layer chip in an autopsy (via the `layer → section` conversion the
+tile, a layer chip in an autopsy (via the `ragttc.layer-to-section` translator edge the
 user can drill from), or a lab knob. The accept prompt names the draft:
 `ADD MUTATION to draft <parent> ↦ click a VARIABLE anywhere`.
 
@@ -205,15 +206,27 @@ response, honoring "previews are honest by mutation kind".
 Hypothesis (prose textarea), expected improvement (metric + groups), ordered
 risks, and the **evidence tray**: references attached via accept —
 **ATTACH EVIDENCE ↦ click a \<case\> or \<verdict\>** in the failure gallery,
-a slope-graph mark (`delta → case` conversion), or an autopsy header. Each
+a slope-graph mark (the `ragttc.delta-to-case` translator edge), or an
+autopsy header. Each
 evidence entry renders as a live presentation with its own menu (open the
 case, open the autopsy) so a reviewer can audit the motivation.
 
 At the bottom, the **SealBar**: the seal state, what is missing when not
-sealable (named, not just disabled), and the seal action — a danger verb with
-an explicit confirmation step that restates what sealing does ("creates the
-patch, child snapshot, candidate, and journal event; this is durable"). The
-idempotency key is minted at confirmation and reused on retry.
+sealable (named, not just disabled), and the seal action — a danger verb
+with an explicit confirmation step that restates what sealing does
+("creates the patch, child snapshot, candidate, and journal event; this is
+durable"). The idempotency key is minted at confirmation and reused on
+retry.
+
+The SealBar renders the RESOLVED `proposal.seal` action from the kernel, not
+its own predicate: the rule's availability tests
+`snapshot.capabilities.has("seal")` AND the compiled draft's sealability, so
+the bar, the menu row, and an agent's view of the verb can never disagree.
+Clicking goes through `performAction` — the kernel re-resolves against a
+fresh snapshot, so a draft that stopped being sealable between render and
+click (catalog changed, capability lapsed, compile invalidated) is REFUSED
+before the network is touched. The hand-rolled stale guard in the compile
+loop (§ compile) therefore protects only the preview cache, not sealing.
 
 ### 4.6 Trial and comparison integration
 

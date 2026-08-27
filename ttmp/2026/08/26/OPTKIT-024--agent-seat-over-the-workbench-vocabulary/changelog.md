@@ -18,3 +18,8 @@ Created ticket and wrote the intern guide: pbui-chat vocabulary export, mentions
 
 Uploaded the four-guide PBUI track bundle (OPTKIT-021-024 PBUI Workbench Track Guides.pdf) to /ai/2026/08/26/OPTKIT-021-PBUI-workbench on the reMarkable.
 
+
+## 2026-08-26
+
+Guide retargeted to pbui 0.8.0: kernel rules with goldens-first row spec, translator edges, primary invocation, capability-gated seal, registry-generated vocabulary (pbui commit 6efeaeb)
+

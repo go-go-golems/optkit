@@ -67,8 +67,8 @@ before implementing; it is the complete reference for every mechanism below.
 
 ### 2.1 Vocabulary
 
-The single source of truth about what exists, exported from the product's
-TypeScript definitions and embedded by the Go chat server
+The single source of truth about what exists, GENERATED from the product's
+action registry and type graph and embedded by the Go chat server
 (`pkg/pbuichat/vocabulary.go`):
 
 ```go
@@ -77,18 +77,24 @@ type Vocabulary struct {
     Product       string
     Types         map[string]TypeSpec // {Doc, IDHint, Tone, Verbs []string, Example}
     Verbs         map[string]VerbSpec // {Doc, Fields map[string]string, Danger bool}
-    Conversions   []Conversion        // {From, To}
+    Conversions   []Conversion        // {From, To} — from the translator edges
     // Widget/Sandbox omitted for this product's v1
 }
 ```
 
 The vocabulary is used three ways: it generates the agent's system prompt
 section describing the objects and verbs; it validates model output before a
-verb reaches the router; and it answers the agent's describe-types tool. The
-OPTKIT-021 vocabulary tables and verb inventory export mechanically — ADR L
-reserved exactly the constraints (stable wire names, serializable verbs,
-danger flags on the verb definition) that make this a build step
-(`pnpm vocab`) rather than a design task.
+verb reaches the router; and it answers the agent's describe-types tool.
+
+The export is NOT hand-maintained. PBUI-ACTIONS-3 Phase B (a small pbui
+release landing just before this ticket starts) provides the generator: it
+walks the action registry (`listReachable()`, rule metadata, danger flags),
+the type graph, the translator edges, and the descriptors' doc prose, and
+emits the wire shape above. The build step (`pnpm vocab`) runs the generator
+and a golden JSON test pins the output — so "the menu and the agent disagree
+about what exists" is unrepresentable, and renaming a rule IS the vocabulary
+bump ADR L reserved. The OPTKIT-021 tables remain the reviewed v1 contract
+the generated output is checked against.
 
 Documentation in the vocabulary comes from the same prose as the human UI:
 type docs from the OPTKIT-021 tables, variable docs from the backend catalog's
@@ -114,6 +120,13 @@ families with actor attribution. Mapping for this product:
 | `local` | navigation, draft family, `proposal.compile`, `preview.run` | routed to the OPTKIT-022/023 sink unchanged; attributed `agent` in the trace |
 | `agent` | "send to agent" actions on presentations (e.g. "ask the agent about this failure") | template + references sent into the chat |
 | approval-gated | `proposal.seal`, `trial.run` | becomes a pending approval rendered in the owning tile; a human resolves it; the resolution carries `approvalId` |
+
+Approval is implemented as a CAPABILITY GRANT, not bespoke plumbing: the
+agent's snapshot simply lacks the `seal` capability, so the kernel resolves
+`proposal.seal` unavailable for agent-invoked resolution (the same mechanism
+that greys the human SealBar without authorization). A human approval mints
+a one-shot grant; the router re-resolves with the granted capability and
+performs through fresh revalidation, carrying the `approvalId`.
 
 Attribution is not cosmetic: every performed verb is posted to the chat
 server's verb log (`VerbPerformedCommand {clientSeq, actor, verb, target,
