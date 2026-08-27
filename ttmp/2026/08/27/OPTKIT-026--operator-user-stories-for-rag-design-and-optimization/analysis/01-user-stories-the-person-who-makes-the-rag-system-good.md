@@ -855,10 +855,12 @@ decisions.
   that produces five inconsistent answers to "is anything wrong?".
 - **Multi-turn evaluation is a different unit, not a bigger query.** S43–S45
   need a result whose subject is a conversation with turns beneath it, each
-  turn carrying its own retrieval and its own verdict. This is the one place
-  in the whole set where the existing measurement chain has to be *extended*
-  rather than merely surfaced — everywhere else the record already holds
-  what the story needs.
+  turn carrying its own retrieval and its own verdict. *(Refined while
+  designing Theme 9: this needs a conversation executor, scenario cases, and
+  projections — but no change to the measurement chain itself. Trajectory
+  events already form a span tree and observation subjects are already
+  generic, so a turn is a span and a turn-level score is an ordinary
+  observation. See design-doc 03 §1.)*
 
 ## Consequence for ticket slicing
 

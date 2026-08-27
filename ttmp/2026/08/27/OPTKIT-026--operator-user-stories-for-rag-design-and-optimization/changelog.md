@@ -36,3 +36,12 @@ Design for theme 3: run/hit/chunkPreview types, trail + split tiles, ask lanes, 
 
 Theme 9 (Running the work): 12 stories S37-S48 for long-running jobs — build phases, judge batches watched live, multi-turn conversation evaluation, control, dependencies, overnight handoff
 
+
+## 2026-08-27
+
+Design for theme 9: job/phase/unit/failureGroup/turn types, jobs+job+unit+conversation tiles with kind panels, work projection over BOTH engines, engine-B progress snapshots; multi-turn needs no measurement-chain change
+
+### Related Files
+
+- /home/manuel/go/pkg/mod/github.com/go-go-golems/flowkit@v0.1.1/flow/report.go — StepReport — the per-phase counters the work projection reads
+
