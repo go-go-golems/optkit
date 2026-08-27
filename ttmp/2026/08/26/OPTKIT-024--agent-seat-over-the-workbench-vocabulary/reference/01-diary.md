@@ -187,3 +187,73 @@ integration cost in the chat package where it belongs.
   src/types.ts + createPbuiChat.tsx).
 - Validate: pnpm test + typecheck in the web app; GOWORK=off make test in
   rag-ttc; pnpm -r test in pbui.
+
+## Step 3: Approval as a One-Shot Grant (rag-ttc c8bbe78f7)
+
+The safety half of the agent seat. An agent's danger verb never executes:
+the router's approval gate parks it as a pending request, the SealBar
+renders it beside the hypothesis it argues from, and a human's approve
+click spends a one-shot grant that re-performs the agent's OWN verb —
+same sink, fresh revalidation, approvalId riding in the verb where the
+trace and verb log keep it.
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok, do it. finish the ticket. commit at
+appropriate intervals and keep a detailed diary as you work (using the
+diary format from the skill) Print out a brutalist work slip with the
+plan / different phases for the ticket. then before stsarting a phase,
+plrint a split about the phase, and print one when the phase is done."
+
+**Assistant interpretation:** Complete OPTKIT-024's remaining phases (P4
+approval, P5 agent principal, P6 exit session) with full working
+discipline.
+
+**Inferred user intent:** The ticket lands whole: agent proposes, human
+approves, provenance durable.
+
+**Commit (code):** rag-ttc c8bbe78f7
+
+### What I did
+- approvals Redux slice: requested → approved|denied → consumed; the
+  four-state ledger, one-shot by construction.
+- Router approval gate: agent + {proposal.seal, trial.run} without a
+  grant → park + attributed trace refusal; with an approvalId → verify
+  entry, status, verb kind, SUBJECT (docId/candidateId), then consume and
+  delegate. Mismatch spends nothing.
+- approvalId became a field of the two danger verbs (product union, zod
+  schema, vocabulary regenerated) — the linkage lives in the verb, not in
+  a side channel.
+- ApprovalPrompt/PendingApprovals components: inline in the SealBar for
+  the draft's own seal request, product-wide strip under the masthead so
+  no request depends on the right tile being open.
+- Seal proposer: {kind: "llm", identity: "agent:workbench"} when the
+  actor is the agent. The §4 open question (approving human in candidate
+  identity vs journal metadata) lands as recommended: metadata only — the
+  approving human is the authenticated actor of the seal call. FLAGGED
+  for ADR review, not silently decided: noted here and in the changelog.
+- 5 loop tests: park, one-shot consume + replay refusal, deny, subject
+  mismatch, human-passes-through.
+
+### What worked
+- The tests bound the REAL router against the REAL vocabulary — the gate,
+  the validation, and the sink's honest refusals all exercised together;
+  green on first run.
+
+### What was tricky to build
+- One-shot semantics: consume ON the attempt, not on success — a failed
+  seal spends the grant, and the agent must re-request. The alternative
+  (consume on success) would let a failing verb retry unbounded under one
+  human decision, which is not what "approved once" means.
+
+### What warrants a second pair of eyes
+- The approving human's identity is only the seal call's bearer actor; if
+  the program wants a named human IN the intent, that is an OPTKIT-018
+  schema addition (ADR note).
+- The pending-approvals strip renders from local Redux — approvals are
+  per-browser until the verb log (P6) makes them conversation state.
+
+### Code review instructions
+- src/chat/router.ts (approvalGate), src/components/approvals.tsx,
+  src/store/store.ts approvals slice; validate with
+  `pnpm vitest run src/test/approvals.test.ts`.

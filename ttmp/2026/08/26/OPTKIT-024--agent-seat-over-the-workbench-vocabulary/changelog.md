@@ -41,3 +41,12 @@ P2+P3 core: pbui-chat 0.3.0 reference codec (user ruling) + 'any' field type; ra
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/chat/router.ts — The single dispatcher — codec, validation, attribution
 
+
+## 2026-08-27
+
+P4: approval as one-shot capability grant — router gate, SealBar + global surfaces, approvalId in the verb, proposer llm on approved seals (rag-ttc c8bbe78f7); §4 open question resolved as journal-metadata-only, flagged for ADR review
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/chat/router.ts — The approval gate — park, verify, consume
+
