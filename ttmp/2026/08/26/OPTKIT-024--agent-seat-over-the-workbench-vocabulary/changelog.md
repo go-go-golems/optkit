@@ -50,3 +50,12 @@ P4: approval as one-shot capability grant — router gate, SealBar + global surf
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/chat/router.ts — The approval gate — park, verify, consume
 
+
+## 2026-08-27
+
+P5: agent principal — multi-principal bearer auth on serve, agent granted compile/preview and NOT seal, proven 403 at HTTP level (rag-ttc 456a1d037)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/cmd/rag-ttc/cmds/experiments/optkitrag/principals.go — The grants and the multi-token authenticator
+

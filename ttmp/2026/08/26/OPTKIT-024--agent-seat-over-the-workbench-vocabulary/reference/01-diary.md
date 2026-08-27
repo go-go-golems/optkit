@@ -257,3 +257,45 @@ approves, provenance durable.
 - src/chat/router.ts (approvalGate), src/components/approvals.tsx,
   src/store/store.ts approvals slice; validate with
   `pnpm vitest run src/test/approvals.test.ts`.
+
+## Step 4: The Agent Principal (rag-ttc 456a1d037)
+
+Authorization catches up with the UI: the command API now serves multiple
+bearer principals, and the agent's grant simply does not contain
+proposal.seal. A 403 before any domain logic runs is what "the agent
+cannot seal alone" means as a fact rather than a convention.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 3 — "finish the ticket")
+
+**Assistant interpretation:** P5: the agent principal on the OPTKIT-018
+authorizer.
+
+**Commit (code):** rag-ttc 456a1d037
+
+### What I did
+- principals.go in the serve command package (zero footprint on the
+  colleague's packages): grantAuthorizer (per-actor action sets, mirrors
+  FixedAuthorizer semantics) and multiBearerAuthenticator (constant-time
+  resolution over every candidate token).
+- serve flags --agent-token (empty = no agent seat) and --agent-actor
+  (default actor:agent-workbench — record.ValidateID requires the actor:
+  namespace, which also corrected the frontend's proposer identity).
+- HTTP test on a real fixture store: agent compile 200, agent seal 403,
+  human seal passes authorization, unknown token 401.
+
+### What didn't work
+- "agent:workbench" as the actor id — the record layer requires the
+  actor: namespace. Renamed to actor:agent-workbench everywhere (flags,
+  test, frontend proposer identity), which is the better spelling anyway:
+  one id space, one grep.
+
+### What warrants a second pair of eyes
+- The multi-authenticator compares the provided token against EVERY
+  grant in constant time per grant; with two grants that is fine, with
+  hundreds it would want a keyed lookup with a decoy compare.
+
+### Code review instructions
+- cmd/rag-ttc/cmds/experiments/optkitrag/principals.go + serve.go diff;
+  validate with `GOWORK=off go test ./cmd/rag-ttc/cmds/experiments/optkitrag/`.
