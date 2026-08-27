@@ -164,3 +164,114 @@ built bundle and show every stage (OPTKIT-027 P1)"
 Observed stage row counts for that query: `lexical.*` 20 each,
 `vector.*` 20 each, `retrieval.*` 25 each, `evidence.hydrated` 25,
 `evidence.admitted` 1, `evidence.returned` 5.
+
+## Step 2: The Search Endpoint, and a Boundary That Caught Me (rag-ttc e96f687bc)
+
+The same composition behind HTTP, opened once at startup because the lexical
+index takes an exclusive lock. The response embeds the retrieval output
+verbatim rather than projecting it — the per-candidate scores, channels,
+matched representation ids and fusion contributions are exactly what an
+explanation surface needs, and every projection in this program that has
+coarsened them has had to be un-coarsened later.
+
+The interesting part of this step was a test I did not write. The product
+boundary test rejected my first design outright, and it was right to.
+
+### Prompt Context
+
+**User prompt (verbatim):** (see Step 1 — "Do slice 1-3 in that ticket")
+
+**Assistant interpretation:** P2 — the HTTP search endpoint and the serve
+flags that open a bundle.
+
+**Commit (code):** rag-ttc e96f687bc
+
+### What I did
+- `pkg/ttc/exploreapi`: `Server{Retriever, Facts}` with `GET
+  /api/rag/v1/explore` (availability plus what is loaded) and `POST
+  /api/rag/v1/search`. `SearchResponse` embeds `ttcsearch.SearchOutput`.
+- `serve` gained `--index-bundle`, `--tool-config`, `--repository-root`,
+  `--scratch-directory`, a profile section, and construction through
+  `BuildCobraCommandWithGeppettoMiddlewares` so profile resolution works.
+- Nine tests: availability both ways, five typed refusals, and one that
+  asserts a membership-only stage carries no score **on its own bytes**.
+- Live: served the 200-document bundle and queried it over HTTP.
+
+### Why
+- Task 9ond. The ask tile needs a route; the route needs the handle open
+  once; and the trail tile needs the candidates the campaign projection drops.
+
+### What worked
+- Embedding `SearchOutput` rather than projecting it. Twelve stages arrive
+  intact, `retrieval.fused` candidates carry
+  `contributions:[{channel,rank,weight,value}]`, and `evidence.admitted`
+  arrives with no `candidates` key at all — membership, not zeros.
+- The availability route earns its place immediately: without it, a server
+  started with no bundle would answer searches with an empty list, which
+  reads as "nothing matched" rather than "nothing was configured".
+
+### What didn't work
+- **`TestProductBoundaries` failed my design**: `pkg/ttc/exploreapi/handle.go
+  imports internal/customer/ragsearch: product boundary forbids this
+  dependency`. I had put the handle adapter beside the server. The fix was to
+  invert the dependency — the server declares the narrow `Retriever`
+  interface it needs, and the adapter moved to
+  `cmd/rag-ttc/cmds/experiments/optkitrag/explore.go`, at the composition
+  site where importing the customer package is legitimate. The resulting
+  design is better than the one I wrote, and the boundary test is why.
+  This is exactly the risk I flagged for review in Step 1; the repository
+  answered it before a human had to.
+- Three test call sites of `composeAPIHandler` needed the new parameter,
+  found one at a time because the compiler stops at the first.
+
+### What I learned
+- Retrieval on a 200-document corpus is honest about its own limits: "how do
+  I plant a magnolia?" returns *How to Plant Hydrangeas* twice and a spring
+  blooming guide. There is no magnolia planting content in this slice, and
+  the pipeline surfaces the nearest planting material rather than nothing.
+  That is a corpus finding, not a retrieval bug — and precisely the kind of
+  thing the coverage story (S2) exists to make visible.
+- `evidence.returned` (out 3) comes BEFORE `evidence.admitted` (out 3, no
+  candidates) in the recorded order. Worth knowing before the trail tile
+  renders stages in array order and implies a causality that is not there.
+
+### What was tricky to build
+- `serve` was built with the plain cobra builder, which carries no profile
+  middleware, so `ResolveCLIEngineSettings` had nothing to read. Switching to
+  `BuildCobraCommandWithGeppettoMiddlewares` and making `newServeCommand`
+  fallible was the smallest correct change; the alternative — resolving
+  settings outside the command — would have put provider wiring in main.
+
+### What warrants a second pair of eyes
+- `serve` now constructs through the geppetto middleware chain. Existing
+  flags are unchanged and its tests pass, but the flag surface grew by the
+  whole profile section, which a reviewer should look at once.
+- One session registry per HTTP request. Correct for evidence isolation;
+  confirm the allocation cost is as small as it looks under load.
+
+### What should be done in the future
+- P3: the ask and trail tiles over this response.
+- The explore routes are unauthenticated, matching the read tier. When the
+  corpus contains restricted sources this needs the same sensitivity
+  treatment the campaign projections have.
+
+### Code review instructions
+- `pkg/ttc/exploreapi/exploreapi.go` then
+  `cmd/rag-ttc/cmds/experiments/optkitrag/explore.go` — the interface and its
+  one implementation, deliberately apart.
+- Validate: `go test ./pkg/ttc/exploreapi/ ./cmd/rag-ttc/...`, then serve a
+  bundle and `curl -s localhost:PORT/api/rag/v1/explore`.
+
+### Technical details
+
+```bash
+./rag-ttc experiment optkit-rag campaign serve \
+  --store "$PWD/.cache/rag-ttc/serve-store" --listen 127.0.0.1:8531 \
+  --workbench-token explore-token --workbench-actor actor:operator \
+  --workbench-docs-store "$PWD/.cache/rag-ttc/serve-docs" \
+  --index-bundle ".cache/rag-ttc/indexes/rk-65790ee26943caa0ba6b2ec361a0a874" \
+  --tool-config assets/configs/tool-qa/production-v1.yaml \
+  --repository-root "$PWD" --scratch-directory ".cache/rag-ttc/scratch" \
+  --profile-registries "$HOME/.config/pinocchio/profiles.yaml,$PWD/profiles.yaml" \
+  --profile ttc-live-openai
+```
