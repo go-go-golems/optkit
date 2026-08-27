@@ -381,3 +381,109 @@ message, which named the duplicate instantly.
   `src/store/runs.ts` and the three contributions in `src/pbui/actions.ts`.
 - Validate: `pnpm test && pnpm exec tsc --noEmit`, then serve a bundle, open
   the Explore workspace, ask something, and click a result.
+
+## Step 4: The Material Workspace — Corpus, Document, Split (rag-ttc fec8316c2)
+
+P4 and P5 together, because they share a pointer, a workspace, and most of a
+backend. Three projections over `indexbundle.Inspect`/`Measure`, one pure-CPU
+chunking preview, three tiles, and a third workspace.
+
+The tiles were built to answer questions about the corpus. Within about two
+minutes of pointing them at the real 200-document bundle they answered two I
+had not asked, and both are findings about the RAG system rather than about
+the code.
+
+### Prompt Context
+
+**User prompt (verbatim):** "Do P4 + P5"
+
+**Assistant interpretation:** Corpus survey and document detail (P4), then
+the chunking split (P5), backend and tiles.
+
+**Commit (code):** rag-ttc fec8316c2
+
+### What I did
+- `exploreapi/corpus.go`: survey, document list (sort/filter/page), document
+  detail with chunks and source text; `exploreapi/split.go`: the chunking
+  preview over `chunking.Apply`.
+- `serve` inspects the bundle once at startup and loads the source corpus
+  separately, warning rather than failing when it is missing.
+- `corpus`, `document`, `split` tiles; `corpus`/`document`/`chunkPreview`
+  presentation types; `open.corpus` / `open.document` / `open.split` verbs;
+  Go catalog entries; the Material workspace.
+- 20 Go tests, 59 frontend tests, all green; vocabulary regenerated.
+
+### What worked
+- Wrapping `indexbundle` was as cheap as the guide predicted. The CLI's
+  `inspect corpus` commands and these three routes are now two thin skins
+  over the same two library calls.
+- The histogram made a corpus fact unmissable at a glance (below).
+
+### What I learned — two findings about the corpus, not the code
+
+**1. The chunker is windowing, not structuring.** The survey reports
+`at-limit 1780 chunks / 161 docs` out of 1979 chunks, and p25 = p50 = p75 =
+p95 = **1200**. Over 90% of chunks end because the size limit ended them, not
+because the document did. The histogram is one bar: 1780 chunks in the
+1190–1200 bucket. The TTC content is largely flat prose without markdown
+headings, so `markdown` at 1200 runes degenerates into a fixed window. That
+is worth knowing before anyone tunes fusion.
+
+**2. A large fraction of some documents is directory noise.** Opening
+"Arkansas Trees For Sale" (16 chunks, 16,456 runes) shows chunks #7 through
+#14 are nursery names, addresses and phone numbers, and #14 is a bare list of
+about a hundred phone numbers with no surrounding text. Half that document is
+being chunked, embedded and indexed as retrievable evidence. This is the
+"junk in my corpus" story arriving as observation rather than as a hypothesis.
+
+### What didn't work
+- **My own heading heuristic was wrong on real data.** `documentHasHeading`
+  tested `strings.Contains(text, "#")`, and TTC product copy is full of
+  "#7 Gallon" and "sku: #708559" — so the first live run marked **every**
+  chunk of a 127-chunk document as orphaned. A heuristic that fires on every
+  document tells a person nothing. `firstHeading` now requires one to six
+  hashes followed by whitespace, and there is a test built from the real
+  strings that fooled it.
+- **A shadowed JSON field, caught across the language boundary.**
+  `DocumentResponse` embedded `DocumentSummary` (which has a `chunks` COUNT)
+  and also declared a `chunks` ARRAY. Go silently lets the outer field win,
+  so the count vanished from the wire. The TypeScript mirror refused to
+  compile — `Type 'ChunkView[]' is not assignable to type 'number'` — which
+  is the only reason I noticed. The response now nests the summary, and both
+  numbers survive: the count comes from the manifest and the array from the
+  bundle, so a disagreement between them is exactly the corruption worth
+  seeing.
+- One of my own test cases was wrong (six hashes plus a space IS a valid h6).
+  Fixed the test, not the code.
+- The Material workspace silently failed to appear because an earlier
+  explanatory comment had broken my edit anchor and the replacement never
+  applied. Verifying in the browser is what caught it; the typechecker
+  could not.
+
+### What was tricky to build
+- Keeping "document runes" and "sum of chunk runes" apart everywhere. They
+  differ by exactly the overlap, and merging them would misreport every
+  windowed document — which, per finding 1, is almost all of them here. They
+  are separate fields with separate names in the Go type, the TS type, and
+  the tile's key/value rows.
+
+### What warrants a second pair of eyes
+- The split preview loads the whole source corpus into memory at startup
+  (19MB for the full corpus). Fine at this scale; a streaming read or an
+  on-demand seek would be better before anyone points it at something large.
+- The corpus routes are unauthenticated like the rest of the read tier, but
+  they serve full document text. That is the first place restricted content
+  would leak if this corpus ever had any.
+
+### What should be done in the future
+- P6: the smoke pass and the guide's command block updated with what
+  actually works.
+- The at-limit finding deserves a real experiment: `markdown-heading` and
+  smaller windows against the 148-query evaluation set. That is exactly what
+  the optimization machinery is for, and now there is a reason to run it.
+
+### Code review instructions
+- `pkg/ttc/exploreapi/corpus.go` then `split.go`; the tiles in
+  `src/apps/CorpusApp.tsx`, `DocumentApp.tsx`, `SplitApp.tsx`.
+- Validate: `go test ./pkg/ttc/exploreapi/`, `pnpm test`, then open the
+  Material workspace and choose "Compare chunking…" on any document.

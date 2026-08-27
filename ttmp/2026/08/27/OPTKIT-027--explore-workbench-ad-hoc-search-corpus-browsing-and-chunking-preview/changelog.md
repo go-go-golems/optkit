@@ -36,3 +36,12 @@ Step 3: ask + trail tiles, run/hit types, explore pointer format, two workspaces
 
 - /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/apps/TrailApp.tsx — One hit's path through every stage
 
+
+## 2026-08-27
+
+Steps 4-5: corpus survey/documents/document projections, chunking split preview, three tiles, Material workspace; found 90% at-limit chunking and directory noise in the real corpus (commit fec8316c2)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/exploreapi/corpus.go — The corpus projections over indexbundle
+
