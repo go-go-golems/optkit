@@ -1,7 +1,7 @@
 ---
 Title: Agent Seat over the Workbench Vocabulary
 Ticket: OPTKIT-024
-Status: active
+Status: complete
 Topics:
     - design
     - ui
