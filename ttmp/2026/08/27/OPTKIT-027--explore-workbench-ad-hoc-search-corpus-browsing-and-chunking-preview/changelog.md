@@ -68,3 +68,8 @@ Step 6: font sizes — raw 0.75rem (12px) was larger than base (11.5px); reverte
 
 Ticket complete: guide corrected to what shipped (repeatable --index-bundle, refusal-code taxonomy, the two path quirks, the singleton-per-document rule, and the evaluate step)
 
+
+## 2026-08-27
+
+Handoff written for the incoming colleague: what to run first, the three load-bearing findings, and the OPTKIT-029 scope
+
