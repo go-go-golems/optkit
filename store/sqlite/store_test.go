@@ -243,6 +243,48 @@ func TestQueueLeaseRecoveryAndTerminalIdempotency(t *testing.T) {
 	}
 }
 
+func TestQueueComparesExactAndFractionalSecondsChronologically(t *testing.T) {
+	ctx := context.Background()
+	exactSecond := time.Date(2026, time.August, 29, 12, 0, 0, 0, time.UTC)
+	leaseTime := exactSecond.Add(500 * time.Millisecond)
+	clock := &mutableClock{now: leaseTime}
+	store, err := OpenWithClock(filepath.Join(t.TempDir(), "fractional-time.db"), clock.Now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer store.Close()
+	campaignID := createBudgetCampaign(t, ctx, store, "campaign:fractional-time")
+	artifacts := memory.New()
+	payload, err := artifact.PutCanonical(ctx, artifacts, "schema:test.work/v1", artifact.SensitivityInternal, map[string]int{"value": 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	item, err := scheduler.NewWorkItem(campaignID, "episode", record.SumBytes([]byte("fractional-time")), payload, 0, exactSecond, 500*time.Millisecond)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := store.Enqueue(ctx, []scheduler.WorkItem{item}); err != nil {
+		t.Fatal(err)
+	}
+	leases, err := store.Lease(ctx, "worker", scheduler.LeaseRequest{Limit: 1, Now: leaseTime})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(leases) != 1 {
+		t.Fatalf("exact-second work was not eligible at fractional time: %+v", leases)
+	}
+	if !leases[0].ExpiresAt.Equal(exactSecond.Add(time.Second)) {
+		t.Fatalf("lease expiry = %s", leases[0].ExpiresAt)
+	}
+	reclaimed, err := store.ReclaimExpired(ctx, exactSecond.Add(1500*time.Millisecond))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if reclaimed != 1 {
+		t.Fatalf("exact-second lease expiry was not reclaimed at fractional time: %d", reclaimed)
+	}
+}
+
 func TestQueueRetryBackoff(t *testing.T) {
 	ctx := context.Background()
 	baseTime := time.Unix(4000, 0).UTC()

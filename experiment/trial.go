@@ -21,6 +21,35 @@ type DatasetManifest struct {
 	Digest record.Digest `json:"digest"`
 }
 
+func cloneCase(value Case) Case {
+	cloned := value
+	if value.Input.Schema != nil {
+		schema := *value.Input.Schema
+		cloned.Input.Schema = &schema
+	}
+	cloned.Groups = append([]string(nil), value.Groups...)
+	if value.Metadata != nil {
+		cloned.Metadata = make(map[string]string, len(value.Metadata))
+		for key, item := range value.Metadata {
+			cloned.Metadata[key] = item
+		}
+	}
+	return cloned
+}
+
+func cloneCases(values []Case) []Case {
+	cloned := make([]Case, len(values))
+	for index, value := range values {
+		cloned[index] = cloneCase(value)
+	}
+	return cloned
+}
+
+func cloneDatasetManifest(value DatasetManifest) DatasetManifest {
+	value.Cases = cloneCases(value.Cases)
+	return value
+}
+
 func NewDatasetManifest(role string, cases []Case) (DatasetManifest, error) {
 	if role == "" || len(cases) == 0 {
 		return DatasetManifest{}, fmt.Errorf("dataset role and cases are required")
@@ -35,10 +64,11 @@ func NewDatasetManifest(role string, cases []Case) (DatasetManifest, error) {
 		}
 		seen[c.ID] = struct{}{}
 	}
+	immutableCases := cloneCases(cases)
 	identity := struct {
 		Role  string `json:"role"`
 		Cases []Case `json:"cases"`
-	}{Role: role, Cases: cases}
+	}{Role: role, Cases: immutableCases}
 	digest, _, err := record.SemanticDigest("schema:optkit.dataset/v1", identity)
 	if err != nil {
 		return DatasetManifest{}, err
@@ -47,7 +77,7 @@ func NewDatasetManifest(role string, cases []Case) (DatasetManifest, error) {
 	if err != nil {
 		return DatasetManifest{}, err
 	}
-	return DatasetManifest{ID: rawID, Role: role, Cases: append([]Case(nil), cases...), Digest: digest}, nil
+	return DatasetManifest{ID: rawID, Role: role, Cases: immutableCases, Digest: digest}, nil
 }
 
 type Arm struct {
@@ -98,7 +128,7 @@ func NewCompleteBlockTrial(arms []Arm, dataset DatasetManifest, repeats int, pro
 	if err != nil {
 		return TrialPlan{}, err
 	}
-	return TrialPlan{ID: record.TrialID(rawID), Arms: append([]Arm(nil), arms...), Dataset: dataset, Repeats: repeats, Protocol: protocol}, nil
+	return TrialPlan{ID: record.TrialID(rawID), Arms: append([]Arm(nil), arms...), Dataset: cloneDatasetManifest(dataset), Repeats: repeats, Protocol: protocol}, nil
 }
 
 type EpisodeSpec struct {

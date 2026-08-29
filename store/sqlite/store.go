@@ -145,15 +145,24 @@ CREATE INDEX IF NOT EXISTS budget_reservations_campaign_idx
 `)
 }
 
-const timeLayout = time.RFC3339Nano
+// sqliteTimeLayout is fixed-width so TEXT ordering is chronological. In
+// particular, an exact second must sort before a fractional instant in that
+// second; RFC3339Nano omits trailing fractional zeros and does not provide
+// that property.
+const sqliteTimeLayout = "2006-01-02T15:04:05.000000000Z"
 
-func formatTime(value time.Time) string { return value.UTC().Format(timeLayout) }
+func formatTime(value time.Time) string { return value.UTC().Format(sqliteTimeLayout) }
 
 func parseTime(value string) (time.Time, error) {
 	if value == "" {
 		return time.Time{}, nil
 	}
-	parsed, err := time.Parse(timeLayout, value)
+	parsed, err := time.Parse(sqliteTimeLayout, value)
+	if err != nil {
+		// Accept rows written by the pre-fix RFC3339Nano encoder. New writes use
+		// the fixed-width form required by SQL comparison and ordering.
+		parsed, err = time.Parse(time.RFC3339Nano, value)
+	}
 	if err != nil {
 		return time.Time{}, fmt.Errorf("parse SQLite time %q: %w", value, err)
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-go-golems/optkit/artifact"
 	"github.com/go-go-golems/optkit/artifact/memory"
+	"github.com/go-go-golems/optkit/record"
 )
 
 func TestCompleteBlockExpansionIsDeterministic(t *testing.T) {
@@ -42,6 +43,49 @@ func TestCompleteBlockExpansionIsDeterministic(t *testing.T) {
 		if first[i].ID != second[i].ID || first[i].SemanticKey != second[i].SemanticKey {
 			t.Fatalf("spec %d is not deterministic", i)
 		}
+	}
+}
+
+func TestDatasetManifestOwnsNestedCaseData(t *testing.T) {
+	schema := record.SchemaID("schema:test.case/v1")
+	cases := []Case{{
+		ID: "c1",
+		Input: artifact.Ref{
+			Digest: record.SumBytes([]byte("case")), MediaType: "application/json",
+			Schema: &schema, Size: 4, Sensitivity: artifact.SensitivityInternal,
+		},
+		Groups:   []string{"development"},
+		Metadata: map[string]string{"source": "fixture"},
+	}}
+	manifest, err := NewDatasetManifest("development", cases)
+	if err != nil {
+		t.Fatal(err)
+	}
+	originalDigest := manifest.Digest
+	originalID := manifest.ID
+
+	cases[0].Groups[0] = "mutated"
+	cases[0].Metadata["source"] = "mutated"
+	*cases[0].Input.Schema = "schema:mutated/v1"
+
+	if manifest.Cases[0].Groups[0] != "development" || manifest.Cases[0].Metadata["source"] != "fixture" || *manifest.Cases[0].Input.Schema != "schema:test.case/v1" {
+		t.Fatalf("manifest aliases caller-owned case data: %+v", manifest.Cases[0])
+	}
+	rebuilt, err := NewDatasetManifest(manifest.Role, manifest.Cases)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if rebuilt.Digest != originalDigest || rebuilt.ID != originalID {
+		t.Fatalf("manifest identity changed after caller mutation: got %s/%s want %s/%s", rebuilt.ID, rebuilt.Digest, originalID, originalDigest)
+	}
+
+	plan, err := NewCompleteBlockTrial([]Arm{{ID: "base", Snapshot: "snapshot:base"}, {ID: "candidate", Snapshot: "snapshot:candidate"}}, manifest, 1, "test/v1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	manifest.Cases[0].Metadata["source"] = "changed-after-plan"
+	if plan.Dataset.Cases[0].Metadata["source"] != "fixture" {
+		t.Fatalf("trial plan aliases dataset case metadata: %+v", plan.Dataset.Cases[0])
 	}
 }
 
