@@ -140,10 +140,17 @@ Every domain value a tile renders is wrapped:
 </Presentation>
 ```
 
-Right-click opens the object menu, built from the type's descriptor
-(`actions(value, env)` → `PresentationAction{id, label, verb, danger?,
-disabledBecause?}`). Left-click can carry a default verb via `activate`. The
-mouse-doc line names what is under the pointer and what L/R will do.
+Right-click opens the object menu, resolved by the ACTION KERNEL
+(pbui 0.8.0): the product declares rules in `src/pbui/actions.ts`
+(`createActionRegistry` over a type graph), each with four-state
+availability, presentation metadata, and a `bind` returning the serializable
+verb. Unavailable rows render greyed with their reason and carry no bound
+verb; a tie renders as a non-executable diagnostic row; clicking any row
+re-resolves against a fresh snapshot before delegating. Left-click resolves
+the `primary` invocation — the unique available rule marked
+`metadata.primary` performs (a case chip's primary is `open.autopsy`);
+otherwise the menu opens. The mouse-doc line names what is under the pointer
+and what L/R will do, derived from the same resolution.
 
 Verbs are serializable payloads routed by one `onPerform` sink (OPTKIT-021
 ADR K). In this ticket the sink implements the **navigation** family
@@ -156,8 +163,9 @@ skeleton and the trace record shape are built now.
 `pbui.accept({types, prompt, filter})` requests an object of a type; every
 matching presentation in every tile lights up until one is clicked or Esc
 aborts. This ticket ships two accept flows (compare-arm selection and
-watchlist-add); the conversions table from OPTKIT-021 §7.4 is registered in
-full so OPTKIT-023's flows work without registry changes.
+watchlist-add); the eight translator edges from OPTKIT-021 §7.4 are
+registered in full (with `AcceptChooser` mounted) so OPTKIT-023's flows work
+without registry changes.
 
 ## 4. Package scaffold
 
@@ -171,12 +179,18 @@ rag-ttc/apps/workbench/web/
     pbui/
       types.ts          PresentationValues (OPTKIT-021 §7 tables) + TONES
       verbs.ts          Verb union + describeVerb prose forms
-      registry.ts       createPresentationRegistry({ ...one line per type })
-      runtime.tsx       createPbui({registry, defaultEnvironment, conversions})
+      registry.ts       createPresentationRegistry — representation only
+      actions.ts        the kernel: type graph, contributions per type,
+                        snapshotFor (facts + capabilities), workbench tile
+                        fragment via workbenchTileContributions()
+      translators.ts    the eight OPTKIT-021 §7.4 edges
+      runtime.tsx       createPbui({registry, defaultEnvironment, actions,
+                        snapshotFor, translators})
       descriptors/      campaign.ts arm.ts case.ts verdict.ts layer.ts
                         stage.ts chunk.ts representation.ts artifact.ts
                         trial.ts episode.ts delta.ts decision.ts
-                        journalEvent.ts   (authoring types arrive in 023)
+                        journalEvent.ts   (label/describe/tone ONLY;
+                        authoring types arrive in 023)
     apps/
       CampaignsApp/  FailuresApp/  JudgeApp/  AutopsyApp/  ChunkApp/
       CompareApp/    InspectorApp/ TraceApp/  WatchApp/
@@ -204,37 +218,70 @@ Layer rules (enforced by test, copied from datalab-ui's discipline):
 `apps/` are thin containers over `components/organisms/`; all network calls
 live in `api/`.
 
-## 5. Descriptors and the verb sink, by example
+## 5. Descriptors, rules, and the verb sink, by example
 
-One descriptor, complete (the shape every other type follows):
+One descriptor, complete — representation only (the shape every type
+follows):
 
 ```ts
 // src/pbui/descriptors/case.ts
 import type { PresentationDescriptor } from "@hyperslop-systems/pbui";
 import type { CaseRef, WorkbenchEnvironment } from "../types";
-import type { Verb } from "../verbs";
 
-export const caseDescriptor: PresentationDescriptor<CaseRef, WorkbenchEnvironment, Verb> = {
+export const caseDescriptor: PresentationDescriptor<CaseRef, WorkbenchEnvironment> = {
   tone: "var(--wb-tone-neutral)",
   label: (v) => v.query || v.caseId,
   describe: (v) => ({ presentationType: "case", ...v }),
-  actions: (v, env) => [
-    { id: "autopsy", label: "Open autopsy",
-      verb: { kind: "open.autopsy", campaignId: v.campaignId, caseId: v.caseId, armId: null } },
-    { id: "judge", label: "Read judge verdicts",
-      verb: { kind: "open.judge", campaignId: v.campaignId, caseId: v.caseId, armId: null } },
-    { id: "watch", label: "Add to watchlist",
-      verb: { kind: "watch.add", ref: { type: "case", value: v } } },
-    { id: "evidence", label: "Attach as evidence",
-      verb: { kind: "evidence.attach", docId: env.activeDraftDocId ?? "", ref: { type: "case", value: v } },
-      disabledBecause: env.activeDraftDocId ? undefined : "no proposal draft is open" },
-  ],
 };
 ```
 
-Note the last action: it is *declared now* and greyed with its reason until
-OPTKIT-023 provides an active draft. Declaring unavailable verbs with reasons
-is the pbui norm — the menu teaches the workflow.
+And the case type's menu, declared as kernel rules in `src/pbui/actions.ts`
+(the shape every type follows; `define = defineActions<Values, WorkbenchFacts, Verb>()`):
+
+```ts
+const caseRules = [
+  define.exact("case", {
+    id: "ragttc.case.autopsy", action: "case.open-autopsy",
+    scopes: ["workbench"],
+    metadata: { label: "Open autopsy", order: 0, primary: true },
+    bind: ({ subject }) => ({ kind: "open.autopsy",
+      campaignId: subject.value.campaignId, caseId: subject.value.caseId, armId: null }),
+  }),
+  define.exact("case", {
+    id: "ragttc.case.judge", action: "case.open-judge",
+    scopes: ["workbench"],
+    metadata: { label: "Read judge verdicts", order: 1 },
+    bind: ({ subject }) => ({ kind: "open.judge",
+      campaignId: subject.value.campaignId, caseId: subject.value.caseId, armId: null }),
+  }),
+  define.exact("case", {
+    id: "ragttc.case.watch", action: "case.watch",
+    scopes: ["workbench"],
+    metadata: { label: "Add to watchlist", order: 2 },
+    bind: ({ subject }) => ({ kind: "watch.add",
+      ref: { type: "case", value: subject.value } }),
+  }),
+  define.exact("case", {
+    id: "ragttc.case.evidence", action: "case.attach-evidence",
+    scopes: ["workbench"],
+    test: ({ snapshot }) =>
+      snapshot.product.activeDraftDocId
+        ? available()
+        : unavailable("no proposal draft is open"),
+    metadata: { label: "Attach as evidence", order: 3 },
+    bind: ({ subject, snapshot }) => ({ kind: "evidence.attach",
+      docId: snapshot.product.activeDraftDocId ?? "",
+      ref: { type: "case", value: subject.value } }),
+  }),
+];
+```
+
+Note the last rule: it is *declared now* and greyed with its reason until
+OPTKIT-023 provides an active draft — and because the kernel binds only
+available winners, the greyed row carries no verb at all. Declaring
+unavailable actions with reasons is the pbui norm — the menu teaches the
+workflow. `primary: true` on autopsy makes a bare left click on any case
+chip open its autopsy through fresh revalidation.
 
 The sink skeleton:
 
@@ -440,8 +487,15 @@ Missing scores stay missing; a case with no measured episodes appears with
   declare their binding key; ids appear in the Go catalog — checked against a
   generated JSON export of `DefaultCatalog()` committed beside the test).
 - **Layer tests.** Import-boundary assertions for the §4 rules.
-- **Descriptor tests.** Pure calls with literal values/environments asserting
-  exact verbs, including `disabledBecause` reasons.
+- **Menu golden tests (the row spec).** Because this product is greenfield,
+  the goldens are written FIRST as the specification: for representative
+  references of every type, assert the exact resolved rows — ids, labels,
+  order, danger, unavailable reasons, and bound verbs (absent on disabled
+  rows) — via `registry.resolve()` against literal snapshots. This is the
+  standalone-row-spec pattern `pbui-workbench/src/actions.test.ts` ended at;
+  there is no old implementation to record from.
+- **Descriptor tests.** Pure `label`/`describe`/`tone` calls with literal
+  values and environments.
 - **Fixture replay.** MSW over the archived specialist API fixtures (reuse the
   specialist SPA's setup); tiles tested in loading, empty, diagnostic, error,
   and populated states.
@@ -457,8 +511,10 @@ Missing scores stay missing; a case with no measured episodes appears with
 
 1. Scaffold the package (§4), `App.tsx` with an empty app list, dev proxy;
    commit.
-2. `pbui/types.ts`, `verbs.ts`, read-side descriptors, registry, runtime,
-   conversions; descriptor tests; commit.
+2. `pbui/types.ts`, `verbs.ts`, read-side descriptors (representation
+   only), registry, `actions.ts` (type graph + rules + snapshotFor +
+   `workbenchTileContributions()`), `translators.ts`, runtime; menu golden
+   tests written as the row spec; commit.
 3. Sink skeleton with navigation family + trace store; `inspector` and
    `trace` tiles (they make everything else debuggable); commit.
 4. `campaigns` tile + RTK Query `specialist.ts`; first workspace; commit.

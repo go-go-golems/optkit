@@ -404,3 +404,80 @@ bookkeeping.
 
 ### Technical details
 - Remote dir: `/ai/2026/08/26/OPTKIT-021-PBUI-workbench`.
+
+## Step 6: Retarget the Guide to pbui 0.8.0 (Greenfield, Kernel-Only)
+
+The user ruled that this program has no backwards-compatibility obligations
+and that pbui's legacy surfaces should be deleted rather than deprecated.
+pbui 0.8.0 shipped that deletion (pbui repo, PBUI-ACTIONS-3, commit
+6efeaeb): descriptor `actions()`, `conversions`, and the automatic legacy
+engine are gone; `actions`+`snapshotFor` are required; acceptance always has
+graph-subtype satisfaction; and a `primary` invocation performs the unique
+available primary action on left click. This step rewrote the guide so no
+section names a deleted mechanism.
+
+### Prompt Context
+
+**User prompt (verbatim):** "perfect, update the design docs to have the simplification that not having to worry about lgacy affords us."
+
+**Assistant interpretation:** Rewrite the 021–024 guides against the
+post-cleanup pbui API (the simplification plan presented and approved in
+chat).
+
+**Inferred user intent:** The ragttc workbench guides should describe
+exactly what will be built — elegant, kernel-native, no legacy vocabulary —
+so implementation never touches a mechanism scheduled to die.
+
+### What I did
+- §2.2: descriptors are representation-only; actions are kernel
+  declarations (four-state availability, bind-only-available, ambiguity as
+  data, fresh revalidation); `createPbui` signature updated; primary-click
+  paragraph added; key-files list now names the kernel and pins pbui 0.8.0.
+- ADR J §7.4: conversions table became eight named translator EDGES
+  (`ragttc.verdict-to-case`, …) with chooser-on-tie semantics and a note on
+  subtype satisfaction.
+- ADR J §7.5: split environment (representation: name lookups) from
+  SelectionSnapshot facts (rules), with `seal` as a CAPABILITY — the SealBar
+  and menu render one resolved action and cannot disagree.
+- ADR K: click-to-open gestures are `metadata.primary` rules; danger flags
+  live in rule metadata; unavailable seal rows carry no bound verb.
+- ADR L: the agent vocabulary export is reserved as GENERATED from the
+  registry (PBUI-ACTIONS-3 Phase B), never hand-maintained.
+- Pitfalls: "descriptors must not fetch" became the snapshot cost-boundary
+  rule; the hide-unavailable pitfall now teaches
+  unavailable/inapplicable/hidden selection.
+
+### Why
+- The guides were written against pbui 0.6.x; OPTKIT-022 starts from them.
+
+### What worked
+- Every change was a substitution, not a redesign — the ADR decisions (G–L)
+  survive intact; only their pbui-facing vocabulary moved.
+
+### What didn't work
+- N/A
+
+### What I learned
+- The capability mechanism subsumes what §7.5 had modeled as an environment
+  boolean; the ADR text is simpler after the split than before it.
+
+### What was tricky to build
+- Keeping §7.4's translator ids stable-worthy: they are wire names the ADR L
+  reservation now covers, so they were chosen with the `ragttc.` prefix and
+  recorded as part of the frozen v1 contract.
+
+### What warrants a second pair of eyes
+- The frozen vocabulary now includes translator ids and the two capability
+  names (`seal`, and OPTKIT-024's approval grant); confirm during ADR review
+  that these belong to the v1 freeze.
+
+### What should be done in the future
+- OPTKIT-022/023/024 guide updates follow in this same pass (their own
+  diaries record them).
+
+### Code review instructions
+- Diff this guide against git history; check no section references
+  descriptor actions, conversions, or `canSeal`-in-environment.
+
+### Technical details
+- pbui 0.8.0 = pbui repo `task/use-optkit` commit 6efeaeb; test sweep 1221.

@@ -1,7 +1,7 @@
 ---
 Title: 'Propose Workspace: Draft Document and RRF Vertical Slice'
 Ticket: OPTKIT-023
-Status: active
+Status: complete
 Topics:
     - design
     - implementation

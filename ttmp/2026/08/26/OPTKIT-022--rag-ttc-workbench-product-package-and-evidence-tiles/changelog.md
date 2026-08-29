@@ -18,3 +18,54 @@ Created ticket and wrote the full intern guide: pbui product model, package scaf
 
 Uploaded the four-guide PBUI track bundle (OPTKIT-021-024 PBUI Workbench Track Guides.pdf) to /ai/2026/08/26/OPTKIT-021-PBUI-workbench on the reMarkable.
 
+
+## 2026-08-26
+
+Guide retargeted to pbui 0.8.0: kernel rules with goldens-first row spec, translator edges, primary invocation, capability-gated seal, registry-generated vocabulary (pbui commit 6efeaeb)
+
+
+## 2026-08-26
+
+Product built and live-verified: scaffold+vocabulary+kernel rules+translators+sink+9 tiles (rag-ttc 2f9bc865a, 935d0c295); Go workbenchhost with strict validators, revision-guarded store, SSE, serve.go mount (71ed43e29). Verified against a live fixture campaign end to end. Remaining: plot adapter in compare, frontend doc-host sync, accessibility sweep.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/pbui/actions.ts — The v1 action registry — frozen wire names
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/workbenchhost/documents.go — ADR I validators incl. focus episode/chunk amendment
+
+
+## 2026-08-27
+
+Tails P1: compare slope graph via plot adapter — src/plot/ boundary, renderInteractive delta presentations, mean line, missing-by-name; goldens (rag-ttc b1c139589)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/plot/adapters.ts — The sole plot boundary; slope document and projection
+
+
+## 2026-08-27
+
+Tails P2: workbench document sync to the Go host — snapshot-PUT + SSE, refused/local badge states, open.chunk empty-campaign fix, watchlist format registered in host (rag-ttc 7ae8032b1)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/sync.ts — The sync client — optimistic-apply + snapshot-PUT + SSE
+
+
+## 2026-08-27
+
+Tails P3: watchlist as ragttc.watchlist/v1 document — Redux slice deleted, facts derive from the doc, live sync verified; a11y sweep deferred by user (rag-ttc 1c8dbbb45)
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/apps/workbench/web/src/watchlist.ts — Watchlist document read/write and snapshot-fact derivation
+
+
+## 2026-08-27
+
+Tails P4: worst-first failures projection in specialistapi (recorded facts only, verdict_excerpt omitted — no recorded source) + FailuresApp renders it; live-verified (rag-ttc ad9833025). Tails complete; h3q0's a11y half deferred by user.
+
+### Related Files
+
+- /home/manuel/workspaces/2026-08-24/use-optkit/rag-ttc/pkg/ttc/specialistapi/failures.go — The worst-first projection — ordering and counting of recorded observations
+
