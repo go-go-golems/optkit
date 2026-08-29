@@ -9,13 +9,20 @@ Topics:
 DocType: analysis
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: repo://ttmp/2026/08/27/OPTKIT-028--watching-the-work-build-progress-and-the-job-view/design-doc/01-watching-a-build-progress-phases-and-the-job-view.md
+      Note: Existing job-observability design whose snapshot-only history gap strengthened S38
+    - Path: ws://rag-ttc/cmd/rag-ttc/cmds/experiments/answerquality/runner.go
+      Note: Existing grounded-answer and judge path that motivated S42 and S49
+    - Path: ws://rag-ttc/cmd/rag-ttc/cmds/indexes/build.go
+      Note: Real corpus build and embedding path that motivated durable progress requirements in S38 and S50
 ExternalSources: []
-Summary: Forty-eight user stories for the person responsible for a RAG system's quality, written from needs rather than from existing surfaces — corpus knowledge, ground truth, exploration, experiments, judging, decisions, longevity, delegation to an assistant, and running the long jobs that produce all of it.
-LastUpdated: 2026-08-27T13:45:01.475999225-04:00
+Summary: Fifty user stories for the person responsible for a RAG system's quality, written from needs rather than from existing surfaces — corpus knowledge, ground truth, exploration, experiments, judging, decisions, longevity, delegation, long-running work, and the end-to-end build-to-answer-benchmark workflow.
+LastUpdated: 2026-08-28T21:45:00-04:00
 WhatFor: The needs-first basis from which the workbench's remaining surfaces and ticket slicing are derived.
 WhenToUse: Read before designing any new surface; use as the acceptance vocabulary for OPTKIT-026 and successors.
 ---
+
 
 # User Stories: The Person Who Makes the RAG System Good
 
@@ -50,7 +57,11 @@ Story numbers are stable identifiers, not a reading order: Theme 9 was added
 after the first eight and keeps numbers S37 onward so that references from
 the design documents stay valid. It belongs, in workflow order, beside
 Theme 4 — it is about the long-running jobs that produce everything the
-other themes look at.
+other themes look at. Theme 10 was added after reviewing the first concrete
+operator goal — build and embed a large corpus, then run an LLM-backed answer
+benchmark — because S21 measured retrieval support and S48 enforced job
+dependencies, but neither named the end-to-end product measurement or the
+single operator intention that connects the jobs.
 
 ---
 
@@ -656,6 +667,11 @@ intervene, so they must be the granularity I see.
    completed phases actually measured rather than from a guess.
 4. Be warned when a projection crosses a ceiling before the phase reaches it.
 5. Drill into the active phase to watch individual units.
+6. See a time-series graph of cumulative completion, trailing throughput,
+   retries and failures, and spend, with phase boundaries and changes to
+   concurrency marked on the same history.
+7. Refresh, reconnect, or return after a process restart without losing that
+   history; a stale last sample must look stale rather than live.
 
 ### S39 — Start, pause, stop, and resume without losing work
 
@@ -706,23 +722,31 @@ can only guess about.
 4. See what it cost and how long it took.
 5. Get from there to the configuration that produced it.
 
-### S42 — Watch judgments arrive, and stop early if the rubric is broken
+### S42 — Watch answers and judgments arrive, and stop early if the rubric is broken
 
-A judge batch has a property nothing else in this system has: its output is
-readable prose I can evaluate immediately. If the first ten verdicts show
-the judge misunderstanding the rubric, or scoring something I never asked
-about, then the remaining eleven hundred calls are wasted money producing a
-misleading result. Reading judgments as they arrive is the cheapest quality
-control available anywhere in this program, and it only works if I can see
-them before the batch finishes.
+An answer-and-judge batch has a property nothing else in this system has: its
+output is readable prose I can evaluate immediately. If the first ten answers
+are malformed, or the first ten verdicts show the judge misunderstanding the
+rubric or scoring something I never asked about, then the remaining eleven
+hundred calls are wasted money producing a misleading result. Reading the
+actual answer and its judgment as they arrive is the cheapest quality control
+available anywhere in this program, and it only works if I can see them before
+the batch finishes.
 
-1. See verdicts streaming in as they are produced, newest first.
-2. Read the rationale and the evidence behind any of them.
-3. See the score distribution forming, so a judge stuck at one value becomes
+1. See generated answers and verdicts streaming in as they are produced,
+   newest first, while seeing how many units are waiting for generation and
+   how many are waiting for judgment.
+2. Open one unit and read the question, the bot's answer, its citations, the
+   retrieved evidence, the judge's rationale, and the exact rubric it used.
+3. Keep retrieval failure, answer-generation failure, judge failure, and a
+   valid low score visibly separate in both counts and details.
+4. See the score distribution forming, so a judge stuck at one value becomes
    obvious within a dozen calls.
-4. Stop the batch on the spot.
-5. Fix the rubric and restart, with the already-judged portion either kept
-   or discarded — my choice, stated explicitly rather than assumed.
+5. Stop the batch on the spot without discarding completed answers or
+   judgments.
+6. Fix the answer configuration or rubric and restart, with completed work
+   either reused or discarded — my choice, stated explicitly rather than
+   assumed.
 
 ### S43 — Evaluate a whole conversation, not a single query
 
@@ -786,7 +810,10 @@ an hour of reconstruction before I can do any actual work.
 3. See what stopped and needs a decision, separated from what merely
    finished.
 4. Get from any line of that summary to the underlying detail.
-5. Have the summary persist, so it is still there next week when someone
+5. See the exact corpus and bundle digests, question-suite version, answer
+   model and prompt, and judge model, rubric, and epoch that produced the
+   outcome.
+6. Have the summary persist, so it is still there next week when someone
    asks what that run did.
 
 ### S47 — Steer throughput without editing configuration files
@@ -806,25 +833,87 @@ not make them.
 
 ### S48 — Know what a job depends on, and be refused when the substrate is not ready
 
-Jobs form a chain: ingest, then build, then campaign, then judge. Running a
-campaign against a half-built index produces results that look entirely real
-and are not, and that is a class of mistake I will never catch by reading
-numbers afterwards. The system knows the dependency. It should enforce it
-rather than let me start something that cannot be valid.
+Jobs form a chain: ingest, then build, then answer benchmark, then judge.
+Running a benchmark against a half-built or merely similar index produces
+results that look entirely real and are not, and that is a class of mistake I
+will never catch by reading numbers afterwards. The system knows the
+dependency and the exact content-addressed output that satisfies it. It should
+enforce both rather than let me start something that cannot be valid.
 
 1. See, for any queued job, what it depends on and whether that dependency
    is satisfied.
 2. Be refused, with the reason stated, when starting something whose inputs
-   are incomplete.
-3. Queue work to start automatically when the thing it waits for completes.
+   are incomplete, failed, stale, or have a different identity than the job
+   declared.
+3. Queue work to start automatically when the exact output it waits for is
+   complete, and pass that output's immutable identity forward without my
+   copying a path.
 4. See a chain as one thing when it is one intention, with the phase it has
-   reached.
+   reached and each child job's outcome.
+5. Never let a downstream result omit the identities of the upstream corpus,
+   bundle, question suite, answer configuration, and judge epoch.
+
+---
+
+## Theme 10 — Measuring the bot and chaining the work
+
+*Added after testing the stories against the first concrete operator workflow:
+build and embed a large corpus, then benchmark the answers users would
+actually receive. Theme 5 deliberately separates retrieval support from judge
+trust, and Theme 9 models long-running work. This theme supplies the missing
+product-level measurement and the one-intention workflow connecting those
+parts.*
+
+### S49 — Run an end-to-end grounded-answer benchmark
+
+Retrieving plausible evidence is necessary, but the customer receives an
+answer, not a ranked chunk list. The answer model can omit a required fact,
+misread good evidence, invent a claim, cite the wrong passage, or refuse when
+it should answer. A retrieval-support score cannot see those failures. I want
+the actual bot path — retrieval, prompt construction, answer generation,
+citations, and judgment — measured without losing the component measurements
+that explain why it behaved that way.
+
+1. Choose a ready index bundle, a trusted question suite, the answer model and
+   prompt configuration, and a versioned judge rubric.
+2. Run every question through the same retrieval and answer path the product
+   uses, preserving the generated answer, evidence, citations, prompts, model
+   identities, latency, token usage, and cost.
+3. Measure retrieval support, answer correctness and completeness, citation
+   faithfulness, and refusal behaviour as separate constructs; never average
+   them into one opaque quality number.
+4. Keep retrieval, generation, contract-validation, and judge failures visibly
+   missing rather than converting them to zero scores.
+5. Read aggregate distributions and compare configurations, then drill from
+   any value to the question, answer, evidence, and judge rationale behind it.
+
+### S50 — Start one durable build-to-benchmark workflow
+
+Building the substrate and benchmarking the resulting bot are technically
+separate jobs but one intention for me: "tell me how this corpus recipe
+performs." Manually copying bundle paths, remembering which build finished,
+and launching the benchmark separately creates delay and makes it possible to
+measure the wrong substrate. I want to describe and approve the whole chain
+once, leave it working, and return to a result whose provenance is complete.
+
+1. Select the corpus snapshot, build recipe, question suite, answer
+   configuration, judge rubric, and per-resource ceilings; see phase-by-phase
+   call, token, cost, and duration estimates before anything runs.
+2. Approve once and start build → grounded-answer benchmark → judge → results
+   as one intention with separately inspectable child jobs.
+3. Automatically pass the completed bundle's immutable identity into the
+   benchmark, and refuse or stop the chain when any required output is absent,
+   partial, or mismatched.
+4. Watch phases, progress history, throughput, spend, and grouped failures for
+   the whole chain; stop at a safe boundary without losing completed work.
+5. Finish at a persistent overnight summary and results view labeled with the
+   corpus, bundle, question-suite, answer-model, prompt, and judge identities.
 
 ---
 
 ## What this set implies
 
-Seven observations fall out of the stories once they are read together. They
+Nine observations fall out of the stories once they are read together. They
 are noted here as consequences to test during fleshing-out, not as design
 decisions.
 
@@ -861,6 +950,16 @@ decisions.
   events already form a span tree and observation subjects are already
   generic, so a turn is a span and a turn-level score is an ordinary
   observation. See design-doc 03 §1.)*
+- **Retrieval quality is not product quality.** S21 intentionally asks whether
+  the evidence could support an answer; S49 asks whether the bot actually
+  produced a correct, complete, grounded answer from it. Both measurements
+  are needed, kept separate, because either stage can fail while the other is
+  healthy.
+- **A dependency chain can still be one user intention.** S48 makes child-job
+  dependencies honest; S50 lets a person describe and approve the chain as a
+  whole. The UI may present one workflow, but the backend should retain
+  separately durable build, answer, and judge jobs so each can fail, resume,
+  and be inspected truthfully.
 
 ## Consequence for ticket slicing
 

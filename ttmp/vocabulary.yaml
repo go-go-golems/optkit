@@ -29,6 +29,8 @@ topics:
       description: Architecture and implementation design documents
     - slug: backend
       description: 'Server-side Go: projections, HTTP surfaces, storage'
+    - slug: observability
+      description: Inspectable runtime progress, metrics, failures, and execution events
 docTypes: []
 intent: []
 status: []
